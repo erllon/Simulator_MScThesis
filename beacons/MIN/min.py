@@ -17,6 +17,7 @@ class MinState(Enum):
   FOLLOWING = 1,
   EXPLORING = 2,
   LANDED    = 3
+  NEIGHBOR  = 4
 
 class Min(Beacon):
       
@@ -25,6 +26,7 @@ class Min(Beacon):
     MinState.FOLLOWING: "red",
     MinState.EXPLORING: "green",
     MinState.LANDED:    "black",
+    MinState.NEIGHBOR:  "blue",
   }
 
   def __init__(self, max_range, deployment_strategy):
@@ -45,12 +47,15 @@ class Min(Beacon):
 
   def do_step(self, beacons, SCS, ENV, dt):
     v = self.deployment_strategy.get_velocity_vector(self, beacons, SCS, ENV)
-    self.pos = euler_int(self.pos, v, dt)
+    self.pos = euler_int(self.pos.reshape(2, ), v, dt).reshape(2, )
+    #print(self.pos)
     psi_ref = gva(v)
     tau = 0.1
     self.heading = euler_int(self.heading, (1/tau)*(ssa(psi_ref - self.heading)), dt)
     self._pos_traj = np.hstack((self._pos_traj, self.pos.reshape(2, 1)))
-    self._heading_traj = np.concatenate((self._heading_traj, [self.heading]))
+    # print(f"self._heading_traj: {self._heading_traj}")
+    # print(f"[self.heading]: {[self.heading]}")
+    self._heading_traj = np.concatenate((self._heading_traj, [self.heading]))#[self.heading])) #Finn ut hvorfor denne ikke funker
     self.state_traj = np.concatenate((self.state_traj, [self.state]))
   
   def get_pos_traj_length(self):
@@ -60,7 +65,7 @@ class Min(Beacon):
   PLOTTING STUFF
   """""
   def plot(self, axis):
-    self.heading_arrow = plot_vec(axis, p2v(1, self.heading), self.pos)
+    self.heading_arrow = plot_vec(axis, p2v(1, self.heading), self.pos) #HERE
     return super().plot(axis, clr=self.clr[self.state]) + (self.heading_arrow, )
 
   def plot_traj_line(self, axis):

@@ -33,27 +33,74 @@ def simulate(dt, mins, scs, env):
 
 if __name__ == "__main__":
 
-  _animate, save_animation = False, False
+  _animate, save_animation = True, False
   start_animation_from_min_ID = 0
 
-  env = Env(
-    np.array([
-      -9.8, -9.8
-    ]),
-    obstacle_corners = [
+  obstacle_corners_1D = [
       np.array([
         [-10, -10],
-        [ -9, -10],
-        [ -9,  10],
-        [-10,  10],
+        [ -6, -10],
+      ]),
+    ]
+
+  obstacle_corners_2D_1 = [
+      np.array([
+        [-10, -10],
+        [ -10, -5],
+        [ 10,  -5],
+        [10,  -10],
       ])
     ]
+  obstacle_corners_2D_2 = [
+      np.array([
+        [-10, -10],
+        [ -10, -9],
+        [ 10,  -9],
+        [10,  -10],
+      ]),
+      np.array([
+        [-9.99, -9.01],
+        [-9.99, -9.5],
+        [-8, -9.5],
+        [-8, -9.01],
+      ]),
+      np.array([
+        [-7 ,-9.99],
+        [-6, -9.99],
+        [-6, -9.8],
+        [-7, -9.8]
+      ])
+    ]
+
+  obstacle_corners_2D_3 = [
+      np.array([
+        [-2,  -2],
+        [-2,  2],
+        [ 2,  2],
+        [ 2, -2],
+      ]),
+      # np.array([
+      #   [-0.5, -0.5],
+      #   [ 0.5, -0.5],
+      #   [ 0.5, 0.5],
+      #   [-0.5, 0.5],
+      # ])
+    ]
+
+  env = Env(
+    # np.array([
+    #   -9.8, -5.2
+    # ]),
+    np.array([
+      1.9, 1.9
+    ]),
+    obstacle_corners = obstacle_corners_2D_3#[]#obstacle_corners_2D_1 #[]
   )
 
-  max_range = 3
+  max_range = 0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 3
-  dt = 0.001
+  N_mins = 2*5#7#2*5#3
+  dt = 0.01#0.01
 
   scs = SCS(max_range)
   """ Potential fields exploration
@@ -82,8 +129,10 @@ if __name__ == "__main__":
       DeploymentFSM(
         NoFollow(),
         LineExplore(
+          # force_threshold=0.1,#0.095,
+          # RSSI_threshold=0.1,
           ndims=2,
-          K_o=0.01
+          K_o=0.1#3*0.1
         )
       )
     ) for _ in range(N_mins)
@@ -95,6 +144,10 @@ if __name__ == "__main__":
 
   
   if _animate:
+    for mn in mins[:start_animation_from_min_ID]:
+      mn.plot(ax)
+      mn.plot_traj_line(ax)
+
     offset, min_counter = [0], [start_animation_from_min_ID]
 
     def init():
@@ -112,7 +165,7 @@ if __name__ == "__main__":
         offset[0] += mins[min_counter[0]].get_pos_traj_length()
         min_counter[0] += 1
 
-      return mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
+      return mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0]) ,2
 
 
 
