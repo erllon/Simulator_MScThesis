@@ -32,7 +32,6 @@ def simulate(dt, mins, scs, env):
   print(f"minimum number of neighbors: {min(beacons, key=lambda b: len(b.neighbors))}")    
 
 if __name__ == "__main__":
-
   _animate, save_animation = True, False
   start_animation_from_min_ID = 0
 
@@ -79,12 +78,12 @@ if __name__ == "__main__":
         [ 2,  2],
         [ 2, -2],
       ]),
-      # np.array([
-      #   [-0.5, -0.5],
-      #   [ 0.5, -0.5],
-      #   [ 0.5, 0.5],
-      #   [-0.5, 0.5],
-      # ])
+      np.array([
+        [-0.5, -0.5],
+        [ 0.5, -0.5],
+        [ 0.5, 0.5],
+        [-0.5, 0.5],
+      ])
     ]
 
   env = Env(
@@ -92,14 +91,14 @@ if __name__ == "__main__":
     #   -9.8, -5.2
     # ]),
     np.array([
-      1.9, 1.9
+      0, 0
     ]),
-    obstacle_corners = obstacle_corners_2D_3#[]#obstacle_corners_2D_1 #[]
+    obstacle_corners =  [] #obstacle_corners_2D_3#[]#obstacle_corners_2D_1 #[]
   )
 
   max_range = 0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 2*5#7#2*5#3
+  N_mins = 1*3#7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -131,7 +130,7 @@ if __name__ == "__main__":
         LineExplore(
           # force_threshold=0.1,#0.095,
           # RSSI_threshold=0.1,
-          ndims=2,
+          ndims=1,
           K_o=0.1#3*0.1
         )
       )

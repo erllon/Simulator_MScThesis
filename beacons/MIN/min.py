@@ -40,7 +40,7 @@ class Min(Beacon):
   def insert_into_environment(self, env):
     super().insert_into_environment(env)
     self.state = MinState.SPAWNED
-    self.heading = 0
+    self.heading =  0#np.pi
     self._pos_traj = self.pos.reshape(2, 1)
     self._heading_traj = np.array([self.heading])
     self.state_traj = np.array([self.state], dtype=object)
