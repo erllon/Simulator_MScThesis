@@ -169,7 +169,6 @@ if __name__ == "__main__":
       return mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0]) ,2
 
 
-
     anim = FuncAnimation(fig, animate, init_func=init, interval=2, blit=False)
     if save_animation:
       animation_name = "animation.gif"
