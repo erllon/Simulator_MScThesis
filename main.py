@@ -139,7 +139,6 @@ if __name__ == "__main__":
     ) for _ in range(N_mins)
   ]
 
-
   simulate(dt, mins, scs, env)
   fig, ax = plt.subplots(1)
 
