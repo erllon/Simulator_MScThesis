@@ -165,7 +165,6 @@ if __name__ == "__main__":
       if i - offset[0] >= mins[min_counter[0]].get_pos_traj_length():
         offset[0] += mins[min_counter[0]].get_pos_traj_length()
         min_counter[0] += 1
-
       return mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0]) ,2
 
     anim = FuncAnimation(fig, animate, init_func=init, interval=2, blit=False)
