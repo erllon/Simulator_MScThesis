@@ -10,11 +10,18 @@ class Beacon():
     Beacon.ID_counter += 1
     return ret
 
-  def __init__(self, range, pos=None):
+  def __init__(self, range, xi_max, d_perf, d_none, pos=None):
     self.range = range
     self.pos = pos
     self.ID = self.get_ID()
     self.neighbors = []
+
+    self._xi_max = xi_max
+    self._d_perf = d_perf
+    self._d_none = d_none
+    self._omega = np.pi/(self._d_none - self._d_perf)
+    self._phi = -(np.pi*self._d_perf) / (d_none - d_perf)
+    self._xi_max_decrease = (self._xi_max/2)*self._omega
   
   def insert_into_environment(self, env):
     self.pos = env.entrance_point
@@ -28,6 +35,15 @@ class Beacon():
   
   def get_RSSI(self, other):
     return np.exp(-np.linalg.norm(self.pos - other.pos))
+
+  def get_xi_to_other_from_model(self, other):
+    d = np.linalg.norm(self.pos - other.pos)
+    if d < self._d_perf:
+      return self._xi_max
+    elif self._d_perf <= d and d <= self._d_none:
+      return (self._xi_max/2) * (1 + np.cos(self._omega*d + self._phi))
+    else: #if d_none < d
+      return 0
 
   def get_vec_to_other(self, other):
     return other.pos - self.pos

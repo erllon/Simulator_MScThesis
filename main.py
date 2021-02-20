@@ -98,7 +98,7 @@ if __name__ == "__main__":
 
   max_range = 0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 1*3#7#2*5#3
+  N_mins = 5  #7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -128,12 +128,14 @@ if __name__ == "__main__":
       DeploymentFSM(
         NoFollow(),
         LineExplore(
-          # force_threshold=0.1,#0.095,
-          # RSSI_threshold=0.1,
+          RSSI_threshold=0.5,
+          K_o=0.01,
           ndims=1,
-          K_o=0.1#3*0.1
         )
-      )
+      ),      
+      xi_max=3,
+      d_perf=1,
+      d_none=3
     ) for _ in range(N_mins)
   ]
 

@@ -29,8 +29,8 @@ class Min(Beacon):
     MinState.NEIGHBOR:  "blue",
   }
 
-  def __init__(self, max_range, deployment_strategy):
-    super().__init__(max_range, None)
+  def __init__(self, max_range, deployment_strategy, xi_max=5, d_perf=1, d_none=3):
+    super().__init__(max_range,xi_max, d_perf, d_none, pos=None)
     self.deployment_strategy = deployment_strategy
     self.sensors = []
     for ang in np.arange(0, 360, 90):
