@@ -32,20 +32,41 @@ class LineExplore(ExplorationStrategy):
 
 
       "Global knowledge"
-      k_is = np.ones(x_is.shape)
-      a_is = np.ones(x_is.shape)
-      #Last element of a_is is 1 plus 1/(Last element in k_is) times the sum of all elements in k_is except the last (due to a_m > 1)
-      a_is[-1] = 1 + (1/k_is[-1])*np.sum(k_is[:-1])
 
-      assert k_is[-1]*a_is[-1] > np.sum(k_is) or np.isclose(k_is[-1]*a_is[-1], np.sum(k_is)) and a_is[-1] >= 0,\
-           "Conditions on constants a_i and k_i do not hold. Cannot guarantee x_{n+1} > x_{n}"
+      """ Default values """
+      # k_is = np.ones(x_is.shape)
+      # a_is = np.ones(x_is.shape)
+      # a_is[-1] = 1 + (1/k_is[-1])*np.sum(k_is[:-1])
+
+      """ Leads to equally spaced drones """
+      k_is = np.zeros(x_is.shape)
+      a_is = np.zeros(x_is.shape)
+      k_is[-1] = 2*1
+      a_is[-1] = 1
+
+      """ Test for 'move back gains' (a_i*k_i = 0 for all 0 < i < n) """
+      
+      """ test 1 """
+
+      # k_is = np.zeros(x_is.shape)
+      # a_is = np.ones(x_is.shape)
+      # a_is[-1] = 2
+      # k_is[-1] = 1
+
+      """ test 2 """
+
+      # k_is = np.ones(x_is.shape)
+      # a_is = np.zeros(x_is.shape)
+
+      # a_is[-1] = 2
+      # k_is[-1] = np.sum(k_is) - 1
 
       "Local knowledge"
 
 
       F_n = -np.sum(k_is*(MIN.pos[0] - a_is*(x_is + xi_is)))
       F_o = 0*gof(self.K_o, MIN, ENV)[0]
-      F = self.__clamp(np.array([F_n + F_o, 0]), 10)
+      F = self.__clamp(np.array([F_n + F_o, 0]), 100) #10
     else:
       print("No neighbors")
       raise AtLandingConditionException

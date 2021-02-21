@@ -32,6 +32,35 @@ def simulate(dt, mins, scs, env):
   print(f"minimum number of neighbors: {min(beacons, key=lambda b: len(b.neighbors))}")    
 
 if __name__ == "__main__":
+# %% Plotting styles
+  # set styles
+  try:
+      # installed with "pip install SciencePLots" (https://github.com/garrettj403/SciencePlots.git)
+      # gives quite nice plots
+      plt_styles = ["science", "grid", "bright", "no-latex"]
+      plt.style.use(plt_styles)
+      print(f"pyplot using style set {plt_styles}")
+  except Exception as e:
+      print(e)
+      print("setting grid and only grid and legend manually")
+      plt.rcParams.update(
+          {
+              # setgrid
+              "axes.grid": False,#True,
+              "grid.linestyle": ":",
+              "grid.color": "k",
+              "grid.alpha": 0.5,
+              "grid.linewidth": 0.5,
+              # Legend
+              "legend.frameon": True,
+              "legend.framealpha": 1.0,
+              "legend.fancybox": True,
+              "legend.numpoints": 1,
+          }
+      )
+
+
+
   _animate, save_animation = True, False
   start_animation_from_min_ID = 0
 
@@ -96,9 +125,9 @@ if __name__ == "__main__":
     obstacle_corners =  [] #obstacle_corners_2D_3#[]#obstacle_corners_2D_1 #[]
   )
 
-  max_range = 0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
+  max_range = 3#0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 5  #7#2*5#3
+  N_mins = 10  #7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -142,6 +171,9 @@ if __name__ == "__main__":
   simulate(dt, mins, scs, env)
   fig, ax = plt.subplots(1)
 
+  fig2, ax2 = plt.subplots(1)
+  ax2.set_title("Force applied")
+
   
   if _animate:
     for mn in mins[:start_animation_from_min_ID]:
@@ -179,6 +211,9 @@ if __name__ == "__main__":
     for mn in mins:
       mn.plot(ax)
       mn.plot_traj_line(ax)
-      
+  
+  for m in mins:
+    m.plot_force_hist(ax2)
+  ax2.legend()
   plt.show()
 

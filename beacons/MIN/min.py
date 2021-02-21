@@ -44,6 +44,7 @@ class Min(Beacon):
     self._pos_traj = self.pos.reshape(2, 1)
     self._heading_traj = np.array([self.heading])
     self.state_traj = np.array([self.state], dtype=object)
+    self._force_hist = np.array([0])
 
   def do_step(self, beacons, SCS, ENV, dt):
     v = self.deployment_strategy.get_velocity_vector(self, beacons, SCS, ENV)
@@ -57,9 +58,12 @@ class Min(Beacon):
     # print(f"[self.heading]: {[self.heading]}")
     self._heading_traj = np.concatenate((self._heading_traj, [self.heading]))#[self.heading])) #Finn ut hvorfor denne ikke funker
     self.state_traj = np.concatenate((self.state_traj, [self.state]))
+
+    #as of 21.01 .get_velocity_vector() returns the calculated force, self._force_hist considers the norm of the force
+    self._force_hist = np.hstack((self._force_hist, np.linalg.norm(v)))
   
   def get_pos_traj_length(self):
-        return self._pos_traj.shape[1]
+    return self._pos_traj.shape[1]
 
   """""
   PLOTTING STUFF
@@ -84,3 +88,8 @@ class Min(Beacon):
 
     self.heading_arrow.set_data(*np.hstack((new_pos.reshape(2, 1), new_pos.reshape(2, 1) + p2v(1, self._heading_traj[index]).reshape(2, 1))))
     return self.point, self.annotation, self.radius, self.traj_line, self.heading_arrow
+  
+
+  def plot_force_hist(self, axis):
+    self.force_traj = axis.plot(np.linspace(start=0, stop=len(self._force_hist),num=len(self._force_hist)), self._force_hist, label=f"Drone {self.ID}")
+    return self.force_traj
