@@ -127,7 +127,7 @@ if __name__ == "__main__":
 
   max_range = 3#0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 10  #7#2*5#3
+  N_mins = 2#10  #7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -169,34 +169,46 @@ if __name__ == "__main__":
   ]
 
   simulate(dt, mins, scs, env)
-  fig, ax = plt.subplots(1)
+  fig, ax = plt.subplots(nrows=2,ncols=1)#(1) #Used for animation, TODO: Add another subplot so that the force applied to drone {n+1} is animated as well
 
-  fig2, ax2 = plt.subplots(1)
-  ax2.set_title("Force applied")
+  # fig2, ax2 = plt.subplots(1)
+  # ax2.set_title("Force applied")
 
-  
   if _animate:
     for mn in mins[:start_animation_from_min_ID]:
       mn.plot(ax)
       mn.plot_traj_line(ax)
+      mn.plot_force_hist(ax[1])
 
     offset, min_counter = [0], [start_animation_from_min_ID]
 
     def init():
-      scs.plot(ax)
-      env.plot(ax)
-      artists = []
-      for mn in mins:
-        artists += mn.plot(ax)
-        artists += (mn.plot_traj_line(ax), )
-        mn.plot_pos_from_pos_traj_index(0)
+      if type(ax) == np.ndarray:
+        scs.plot(ax[0])
+        env.plot(ax[0])
+        artists = []
+        for mn in mins:
+          artists += mn.plot(ax[0])
+          artists += (mn.plot_traj_line(ax[0]), ) #Type: Line2D(_line6)
+          print(f"TYPE: {mn.plot_force_hist(ax[1])}")
+          artists += (mn.plot_force_hist(ax[1]), )
+          mn.plot_pos_from_pos_traj_index(0)
+          mn.plot_force_from_traj_index(0)
+      else:
+        scs.plot(ax)
+        env.plot(ax)
+        artists = []
+        for mn in mins:
+          artists += mn.plot(ax)
+          artists += (mn.plot_traj_line(ax), )
+          mn.plot_pos_from_pos_traj_index(0)
       return artists
 
     def animate(i):
       if i - offset[0] >= mins[min_counter[0]].get_pos_traj_length():
         offset[0] += mins[min_counter[0]].get_pos_traj_length()
         min_counter[0] += 1
-      return mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0]) ,2
+      return [mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0]), mins[min_counter[0]].plot_force_from_traj_index(i-offset[0])] #,2
 
     anim = FuncAnimation(fig, animate, init_func=init, interval=2, blit=False)
     if save_animation:
@@ -212,8 +224,8 @@ if __name__ == "__main__":
       mn.plot(ax)
       mn.plot_traj_line(ax)
   
-  for m in mins:
-    m.plot_force_hist(ax2)
-  ax2.legend()
+  # for m in mins:
+  #   m.plot_force_hist(ax2)
+  # ax2.legend()
   plt.show()
 

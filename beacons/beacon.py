@@ -59,15 +59,26 @@ class Beacon():
   PLOTTING STUFF
   """""
   def plot(self, axis, clr="green"):
-    self.point = axis.plot(*self.pos, color=clr, marker="o", markersize=8)[0]
-    self.annotation = axis.annotate(self.ID, xy=(self.pos[0], self.pos[1]), fontsize=14)
-    theta = np.linspace(0, 2*np.pi)
-    self.radius = axis.plot(
-      self.pos[0] + self.range*np.cos(theta), self.pos[1] + self.range*np.sin(theta),
-      linestyle="dashed",
-      color="black",
-      alpha=0.3
-    )[0]
+    if type(axis) == np.ndarray:
+      self.point = axis[0].plot(*self.pos, color=clr, marker="o", markersize=8)[0]
+      self.annotation = axis[0].annotate(self.ID, xy=(self.pos[0], self.pos[1]), fontsize=14)
+      theta = np.linspace(0, 2*np.pi)
+      self.radius = axis[0].plot(
+        self.pos[0] + self.range*np.cos(theta), self.pos[1] + self.range*np.sin(theta),
+        linestyle="dashed",
+        color="black",
+        alpha=0.3
+      )[0]
+    else: #type(axis)==matplotlib.axes._subplots.AxesSubplot
+      self.point = axis.plot(*self.pos, color=clr, marker="o", markersize=8)[0]
+      self.annotation = axis.annotate(self.ID, xy=(self.pos[0], self.pos[1]), fontsize=14)
+      theta = np.linspace(0, 2*np.pi)
+      self.radius = axis.plot(
+        self.pos[0] + self.range*np.cos(theta), self.pos[1] + self.range*np.sin(theta),
+        linestyle="dashed",
+        color="black",
+        alpha=0.3
+      )[0]
 
     return self.point, self.annotation, self.radius
 

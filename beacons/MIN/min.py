@@ -59,7 +59,7 @@ class Min(Beacon):
     self._heading_traj = np.concatenate((self._heading_traj, [self.heading]))#[self.heading])) #Finn ut hvorfor denne ikke funker
     self.state_traj = np.concatenate((self.state_traj, [self.state]))
 
-    #as of 21.01 .get_velocity_vector() returns the calculated force, self._force_hist considers the norm of the force
+    #As of 21.01 .get_velocity_vector() returns the calculated force, self._force_hist considers the norm of the force
     self._force_hist = np.hstack((self._force_hist, np.linalg.norm(v)))
   
   def get_pos_traj_length(self):
@@ -69,12 +69,28 @@ class Min(Beacon):
   PLOTTING STUFF
   """""
   def plot(self, axis):
-    self.heading_arrow = plot_vec(axis, p2v(1, self.heading), self.pos) #HERE
-    return super().plot(axis, clr=self.clr[self.state]) + (self.heading_arrow, )
+    if type(axis) == np.ndarray:
+      self.heading_arrow = plot_vec(axis[0], p2v(1, self.heading), self.pos)
+      return super().plot(axis[0], clr=self.clr[self.state]) + (self.heading_arrow, )
+    else:
+      self.heading_arrow = plot_vec(axis, p2v(1, self.heading), self.pos) #HERE
+      return super().plot(axis, clr=self.clr[self.state]) + (self.heading_arrow, )
 
   def plot_traj_line(self, axis):
-    self.traj_line, = axis.plot(*self._pos_traj, alpha=0.4)
+    if type(axis) == np.ndarray:
+      self.traj_line, = axis[0].plot(*self._pos_traj, alpha=0.4)
+    else:
+      self.traj_line, = axis.plot(*self._pos_traj, alpha=0.4)
+
     return self.traj_line
+  
+  def plot_force_hist(self, axis):
+    if type(axis) == np.ndarray:
+      self.force_traj, = axis[1].plot(np.linspace(start=0, stop=len(self._force_hist),num=len(self._force_hist)), self._force_hist, label=f"Drone {self.ID}")
+    else:
+      self.force_traj, = axis.plot(np.linspace(start=0, stop=len(self._force_hist),num=len(self._force_hist)), self._force_hist, label=f"Drone {self.ID}")
+
+    return self.force_traj
 
   def plot_pos_from_pos_traj_index(self, index):
     new_pos = self._pos_traj[:, index]
@@ -90,6 +106,7 @@ class Min(Beacon):
     return self.point, self.annotation, self.radius, self.traj_line, self.heading_arrow
   
 
-  def plot_force_hist(self, axis):
-    self.force_traj = axis.plot(np.linspace(start=0, stop=len(self._force_hist),num=len(self._force_hist)), self._force_hist, label=f"Drone {self.ID}")
+  def plot_force_from_traj_index(self, index):
+    new_force = self._force_hist[index]
+    self.force_traj.set_data(0, self._force_hist[:index])
     return self.force_traj
