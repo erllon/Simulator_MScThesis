@@ -41,28 +41,23 @@ class Min(Beacon):
   def insert_into_environment(self, env):
     super().insert_into_environment(env)
     self.state = MinState.SPAWNED
-    self.heading =  0#np.pi
+    self.heading =  0
     self._pos_traj = self.pos.reshape(2, 1)
     self._heading_traj = np.array([self.heading])
     self.state_traj = np.array([self.state], dtype=object)
-    # self._force_hist = np.array([0])
     self._v_traj = np.array([0])
 
   def do_step(self, beacons, SCS, ENV, dt):
     v = self.deployment_strategy.get_velocity_vector(self, beacons, SCS, ENV)
     self.pos = euler_int(self.pos.reshape(2, ), v, dt).reshape(2, )
-    #print(self.pos)
     psi_ref = gva(v)
     tau = 0.1
     self.heading = euler_int(self.heading, (1/tau)*(ssa(psi_ref - self.heading)), dt)
     self._pos_traj = np.hstack((self._pos_traj, self.pos.reshape(2, 1)))
-    # print(f"self._heading_traj: {self._heading_traj}")
-    # print(f"[self.heading]: {[self.heading]}")
-    self._heading_traj = np.concatenate((self._heading_traj, [self.heading]))#[self.heading])) #Finn ut hvorfor denne ikke funker
+    self._heading_traj = np.concatenate((self._heading_traj, [self.heading]))
     self.state_traj = np.concatenate((self.state_traj, [self.state]))
 
     #As of 21.01 .get_velocity_vector() returns the calculated force, self._force_hist considers the norm of the force
-    # self._force_hist = np.hstack((self._force_hist, np.linalg.norm(v)))
     self._v_traj = np.hstack((self._v_traj, np.linalg.norm(v)))  
   
   def get_v_traj_length(self):
@@ -77,28 +72,14 @@ class Min(Beacon):
   def plot(self, axis):
     self.heading_arrow = plot_vec(axis, p2v(1, self.heading), self.pos)
     return super().plot(axis, clr=self.clr[self.state]) + (self.heading_arrow, )
-    # if type(axis) == np.ndarray:
-    #   self.heading_arrow = plot_vec(axis[0], p2v(1, self.heading), self.pos)
-    #   return super().plot(axis[0], clr=self.clr[self.state]) + (self.heading_arrow, )
-    # else:
-    #   self.heading_arrow = plot_vec(axis, p2v(1, self.heading), self.pos) #HERE
-    #   return super().plot(axis, clr=self.clr[self.state]) + (self.heading_arrow, )
 
   def plot_traj_line(self, axis):
     self.traj_line, = axis.plot(*self._pos_traj, alpha=0.4)
-    # if type(axis) == np.ndarray:  
-    #   self.traj_line, = axis[0].plot(*self._pos_traj, alpha=0.4)
-    # else:
-    #   self.traj_line, = axis.plot(*self._pos_traj, alpha=0.4)
 
     return self.traj_line
   
   def plot_force_traj_line(self, axis):
     self.force_traj_line, = axis.plot(np.linspace(start=0, stop=len(self._v_traj),num=len(self._v_traj)), self._v_traj, label=f"Drone {self.ID}")
-    # if type(axis) == np.ndarray:
-    #   self.force_traj_line, = axis[1].plot(np.linspace(start=0, stop=len(self._v_traj),num=len(self._v_traj)), self._v_traj, label=f"Drone {self.ID}")
-    # else:
-    #   self.force_traj_line, = axis.plot(np.linspace(start=0, stop=len(self._v_traj),num=len(self._v_traj)), self._v_traj, label=f"Drone {self.ID}")
 
     return self.force_traj_line
 
@@ -110,7 +91,6 @@ class Min(Beacon):
     self.annotation.set_y(new_pos[1])
     theta = np.linspace(0, 2*np.pi)
     self.radius.set_data(new_pos.reshape(2, 1) + p2v(self.range, theta))
-    # print(f"self._pos_traj[:, :index]: {self._pos_traj[:, :index]}")
     self.traj_line.set_data(self._pos_traj[:, :index])
 
     self.heading_arrow.set_data(*np.hstack((new_pos.reshape(2, 1), new_pos.reshape(2, 1) + p2v(1, self._heading_traj[index]).reshape(2, 1))))
@@ -118,6 +98,5 @@ class Min(Beacon):
 
   def plot_force_from_traj_index(self, index):
     new_force = self._v_traj[:index]
-    # print(f"new_force: {new_force}")
-    self.force_traj_line.set_data(np.linspace(0,index,num=len(new_force)),new_force)#([:index], self._force_hist[:index])
+    self.force_traj_line.set_data(np.linspace(0,index,num=len(new_force)),new_force)
     return self.force_traj_line
