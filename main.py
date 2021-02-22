@@ -58,12 +58,7 @@ if __name__ == "__main__":
               "legend.numpoints": 1,
           }
       )
-
-
-
-  _animate, save_animation = True, False
-  start_animation_from_min_ID = 0
-
+# %% Environment initialization
   obstacle_corners_1D = [
       np.array([
         [-10, -10],
@@ -125,9 +120,13 @@ if __name__ == "__main__":
     obstacle_corners =  [] #obstacle_corners_2D_3#[]#obstacle_corners_2D_1 #[]
   )
 
+# %%Parameter initialization
+  _animate, save_animation = True, False
+  start_animation_from_min_ID = 0
+
   max_range = 3#0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 5#10  #7#2*5#3
+  N_mins = 10  #7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -169,16 +168,16 @@ if __name__ == "__main__":
   ]
 
   simulate(dt, mins, scs, env)
-  fig, ax = plt.subplots(nrows=2,ncols=1)#(1) #Used for animation, TODO: Add another subplot so that the force applied to drone {n+1} is animated as well
+  fig, ax = plt.subplots(nrows=2,ncols=1)
 
   # fig2, ax2 = plt.subplots(1)
   # ax2.set_title("Force applied")
 
   if _animate:
     for mn in mins[:start_animation_from_min_ID]:
-      mn.plot(ax)
-      mn.plot_traj_line(ax)
-      mn.plot_force_hist(ax[1])
+      mn.plot(ax[0])
+      mn.plot_traj_line(ax[0])
+      mn.plot_force_traj_line(ax[1])
 
     offset, min_counter = [0], [start_animation_from_min_ID]
 
@@ -190,17 +189,16 @@ if __name__ == "__main__":
         for mn in mins:
           artists += mn.plot(ax[0])
           artists += (mn.plot_traj_line(ax[0]), ) #Type: Line2D(_line6)
-          #print(f"TYPE: {mn.plot_force_traj_line(ax[1])}")
           artists += (mn.plot_force_traj_line(ax[1]), )
           mn.plot_pos_from_pos_traj_index(0)
           mn.plot_force_from_traj_index(0)
       else:
-        scs.plot(ax)
-        env.plot(ax)
+        scs.plot(ax[0])
+        env.plot(ax[0])
         artists = []
         for mn in mins:
-          artists += mn.plot(ax)
-          artists += (mn.plot_traj_line(ax), )
+          artists += mn.plot(ax[0])
+          artists += (mn.plot_traj_line(ax[0]), )
           mn.plot_pos_from_pos_traj_index(0)
       return artists
 
@@ -218,14 +216,13 @@ if __name__ == "__main__":
       print(f"Animation saved to {animation_name}")
 
   else:
-    env.plot(ax)
-    scs.plot(ax)
+    env.plot(ax[0])
+    scs.plot(ax[0])
     for mn in mins:
-      mn.plot(ax)
-      mn.plot_traj_line(ax)
-  
-  # for m in mins:
-  #   m.plot_force_hist(ax2)
-  # ax2.legend()
+      mn.plot(ax[0])
+      mn.plot_traj_line(ax[0])
+      mn.plot_force_traj_line(ax[1])
+      ax[1].legend()
+      
   plt.show()
 

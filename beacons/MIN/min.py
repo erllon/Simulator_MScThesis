@@ -75,26 +75,30 @@ class Min(Beacon):
   PLOTTING STUFF
   """""
   def plot(self, axis):
-    if type(axis) == np.ndarray:
-      self.heading_arrow = plot_vec(axis[0], p2v(1, self.heading), self.pos)
-      return super().plot(axis[0], clr=self.clr[self.state]) + (self.heading_arrow, )
-    else:
-      self.heading_arrow = plot_vec(axis, p2v(1, self.heading), self.pos) #HERE
-      return super().plot(axis, clr=self.clr[self.state]) + (self.heading_arrow, )
+    self.heading_arrow = plot_vec(axis, p2v(1, self.heading), self.pos)
+    return super().plot(axis, clr=self.clr[self.state]) + (self.heading_arrow, )
+    # if type(axis) == np.ndarray:
+    #   self.heading_arrow = plot_vec(axis[0], p2v(1, self.heading), self.pos)
+    #   return super().plot(axis[0], clr=self.clr[self.state]) + (self.heading_arrow, )
+    # else:
+    #   self.heading_arrow = plot_vec(axis, p2v(1, self.heading), self.pos) #HERE
+    #   return super().plot(axis, clr=self.clr[self.state]) + (self.heading_arrow, )
 
   def plot_traj_line(self, axis):
-    if type(axis) == np.ndarray:
-      self.traj_line, = axis[0].plot(*self._pos_traj, alpha=0.4)
-    else:
-      self.traj_line, = axis.plot(*self._pos_traj, alpha=0.4)
+    self.traj_line, = axis.plot(*self._pos_traj, alpha=0.4)
+    # if type(axis) == np.ndarray:  
+    #   self.traj_line, = axis[0].plot(*self._pos_traj, alpha=0.4)
+    # else:
+    #   self.traj_line, = axis.plot(*self._pos_traj, alpha=0.4)
 
     return self.traj_line
   
   def plot_force_traj_line(self, axis):
-    if type(axis) == np.ndarray:
-      self.force_traj_line, = axis[1].plot(np.linspace(start=0, stop=len(self._v_traj),num=len(self._v_traj)), self._v_traj, label=f"Drone {self.ID}")
-    else:
-      self.force_traj_line, = axis.plot(np.linspace(start=0, stop=len(self._v_traj),num=len(self._v_traj)), self._v_traj, label=f"Drone {self.ID}")
+    self.force_traj_line, = axis.plot(np.linspace(start=0, stop=len(self._v_traj),num=len(self._v_traj)), self._v_traj, label=f"Drone {self.ID}")
+    # if type(axis) == np.ndarray:
+    #   self.force_traj_line, = axis[1].plot(np.linspace(start=0, stop=len(self._v_traj),num=len(self._v_traj)), self._v_traj, label=f"Drone {self.ID}")
+    # else:
+    #   self.force_traj_line, = axis.plot(np.linspace(start=0, stop=len(self._v_traj),num=len(self._v_traj)), self._v_traj, label=f"Drone {self.ID}")
 
     return self.force_traj_line
 
@@ -117,11 +121,3 @@ class Min(Beacon):
     # print(f"new_force: {new_force}")
     self.force_traj_line.set_data(np.linspace(0,index,num=len(new_force)),new_force)#([:index], self._force_hist[:index])
     return self.force_traj_line
-
-    """
-    def update(frame):
-      xdata.append(frame)
-      ydata.append(np.sin(frame))
-      ln.set_data(xdata, ydata)
-      return ln,
-    """
