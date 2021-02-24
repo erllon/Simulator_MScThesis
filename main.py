@@ -173,7 +173,7 @@ if __name__ == "__main__":
   # fig2, ax2 = plt.subplots(1)
   # ax2.set_title("Force applied")
 
-  if _animate: # TODO: If animate: everything in same fig,  else: drones in one fig, "properties" in another fig
+  if _animate: # TODO: if _animate: everything in same fig,  else: drones in one fig, "properties" in another fig
     for mn in mins[:start_animation_from_min_ID]:
       mn.plot(ax[0])
       mn.plot_traj_line(ax[0])

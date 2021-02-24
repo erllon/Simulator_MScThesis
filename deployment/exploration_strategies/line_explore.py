@@ -21,13 +21,13 @@ class LineExplore(ExplorationStrategy):
 
   def get_exploration_velocity(self, MIN, beacons, ENV):
     F, F_n, F_o = None, None, None
+    #xi_is = np.array([])
     xi_is = np.array([MIN.get_xi_to_other_from_model(b) for b in beacons])
-    #RSSIs = np.array([MIN.get_RSSI(beacon) for beacon in beacons])
+
     neigh_indices, = np.where(xi_is > self.RSSI_threshold) #np.where(RSSIs_all <= MIN.range) 
     xi_is_neigh = xi_is[neigh_indices]
-    # print(f"xi_is: {xi_is}")
-    print(f"xi_is_neigh: {xi_is_neigh}")
-    MIN._xi_traj = np.hstack((MIN._xi_traj, np.sum(xi_is, axis=0)))#np.max(xi_is) #axis=0, but should be 1D...
+    
+    MIN._xi_traj = np.column_stack((MIN._xi_traj, xi_is)) #np.max(xi_is) #axis=0, but should be 1D...
 
     F = None
     if self.ndims == 1:

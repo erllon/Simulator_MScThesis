@@ -46,8 +46,7 @@ class Min(Beacon):
     self._heading_traj = np.array([self.heading])
     self.state_traj = np.array([self.state], dtype=object)
     self._v_traj = np.array([0])
-    self._xi_traj = np.array([0])
-
+    self._xi_traj = np.zeros((self.ID,1)) #xi for all prev drones
 
   def do_step(self, beacons, SCS, ENV, dt):
     v = self.deployment_strategy.get_velocity_vector(self, beacons, SCS, ENV)
@@ -84,8 +83,14 @@ class Min(Beacon):
     self.force_traj_line, = axis.plot(np.linspace(start=0, stop=len(self._v_traj),num=len(self._v_traj)), self._v_traj, label=f"Drone {self.ID}")
     return self.force_traj_line
 
-  def plot_xi_traj_line(self, axis):
-    self.xi_traj_line, = axis.plot(np.linspace(start=0, stop=len(self._xi_traj),num=len(self._xi_traj)), self._xi_traj, label=f"Drone {self.ID}")
+  def plot_xi_traj_line(self, axis):    
+    self.xi_traj_line = np.array([])
+    for i in range(self._xi_traj.shape[0]):
+#     if np.array(neigh_indices != self.prev_neigh_indices).all():      
+      if np.array(self._xi_traj[i,:] != 0).any():
+        # self.xi_traj_line, = axis.plot(np.linspace(start=0, stop=len(self._xi_traj[i,:]),num=len(self._xi_traj[i,:])), self._xi_traj[i], label=f"Drone {i}")
+        tmp, = axis.plot(np.linspace(start=0, stop=len(self._xi_traj[i,:]),num=len(self._xi_traj[i,:])), self._xi_traj[i], label=f"Drone {i}")
+        self.xi_traj_line = np.append(self.xi_traj_line, tmp)
     return self.xi_traj_line
 
   def plot_pos_from_pos_traj_index(self, index):
@@ -97,7 +102,6 @@ class Min(Beacon):
     theta = np.linspace(0, 2*np.pi)
     self.radius.set_data(new_pos.reshape(2, 1) + p2v(self.range, theta))
     self.traj_line.set_data(self._pos_traj[:, :index])
-
     self.heading_arrow.set_data(*np.hstack((new_pos.reshape(2, 1), new_pos.reshape(2, 1) + p2v(1, self._heading_traj[index]).reshape(2, 1))))
     return self.point, self.annotation, self.radius, self.traj_line, self.heading_arrow 
 
@@ -107,6 +111,8 @@ class Min(Beacon):
     return self.force_traj_line
   
   def plot_xi_from_traj_index(self, index):
-    new_xi = self._xi_traj[:index]
-    self.xi_traj_line.set_data(np.linspace(0,index,num=len(new_xi)),new_xi)
-    return self.xi_traj_line
+    for i in range(len(self._xi_traj)):      
+      new_xi = self._xi_traj[:,:index+1]
+      for j in range(len(new_xi)):      
+        self.xi_traj_line[j].set_data(np.linspace(0,index,num=new_xi.shape[1]), new_xi[j])
+      return self.xi_traj_line
