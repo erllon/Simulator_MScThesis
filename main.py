@@ -126,7 +126,7 @@ if __name__ == "__main__":
 
   max_range = 3#0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 10  #7#2*5#3
+  N_mins = 5#10  #7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -168,7 +168,7 @@ if __name__ == "__main__":
   ]
 
   simulate(dt, mins, scs, env)
-  fig, ax = plt.subplots(nrows=2,ncols=1)
+  fig, ax = plt.subplots(nrows=3,ncols=1)
 
   # fig2, ax2 = plt.subplots(1)
   # ax2.set_title("Force applied")
@@ -190,8 +190,11 @@ if __name__ == "__main__":
           artists += mn.plot(ax[0])
           artists += (mn.plot_traj_line(ax[0]), ) #Type: Line2D(_line6)
           artists += (mn.plot_force_traj_line(ax[1]), )
+          artists += (mn.plot_xi_traj_line(ax[2]), )
           mn.plot_pos_from_pos_traj_index(0)
           mn.plot_force_from_traj_index(0)
+          mn.plot_xi_from_traj_index(0)
+        ax[1].legend()
       else:
         scs.plot(ax[0])
         env.plot(ax[0])
@@ -206,7 +209,10 @@ if __name__ == "__main__":
       if i - offset[0] >= mins[min_counter[0]].get_pos_traj_length():
         offset[0] += mins[min_counter[0]].get_pos_traj_length()
         min_counter[0] += 1
-      return mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0]), mins[min_counter[0]].plot_force_from_traj_index(i-offset[0]) #2
+      plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
+      plt_force_traj = mins[min_counter[0]].plot_force_from_traj_index(i-offset[0])
+      plt_xi_traj = mins[min_counter[0]].plot_xi_from_traj_index(i-offset[0])
+      return plt_pos_traj, plt_force_traj, plt_xi_traj  #mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0]), mins[min_counter[0]].plot_force_from_traj_index(i-offset[0]) #2
 
     anim = FuncAnimation(fig, animate, init_func=init, interval=2, blit=False)
     if save_animation:
@@ -222,7 +228,10 @@ if __name__ == "__main__":
       mn.plot(ax[0])
       mn.plot_traj_line(ax[0])
       mn.plot_force_traj_line(ax[1])
+      mn.plot_force_traj_line(ax[2])
       ax[1].legend()
-      
+      ax[2].legend()
+
+  
   plt.show()
 

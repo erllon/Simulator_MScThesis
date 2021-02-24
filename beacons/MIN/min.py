@@ -46,6 +46,8 @@ class Min(Beacon):
     self._heading_traj = np.array([self.heading])
     self.state_traj = np.array([self.state], dtype=object)
     self._v_traj = np.array([0])
+    self._xi_traj = np.array([0])
+
 
   def do_step(self, beacons, SCS, ENV, dt):
     v = self.deployment_strategy.get_velocity_vector(self, beacons, SCS, ENV)
@@ -58,7 +60,8 @@ class Min(Beacon):
     self.state_traj = np.concatenate((self.state_traj, [self.state]))
 
     #As of 21.01 .get_velocity_vector() returns the calculated force, self._force_hist considers the norm of the force
-    self._v_traj = np.hstack((self._v_traj, np.linalg.norm(v)))  
+    self._v_traj = np.hstack((self._v_traj, np.linalg.norm(v)))
+    #self._xi_traj blir satt i self.deployment_strategy.get_velocity_vector()
   
   def get_v_traj_length(self):
     return len(self._v_traj)
@@ -75,13 +78,15 @@ class Min(Beacon):
 
   def plot_traj_line(self, axis):
     self.traj_line, = axis.plot(*self._pos_traj, alpha=0.4)
-
     return self.traj_line
   
   def plot_force_traj_line(self, axis):
     self.force_traj_line, = axis.plot(np.linspace(start=0, stop=len(self._v_traj),num=len(self._v_traj)), self._v_traj, label=f"Drone {self.ID}")
-
     return self.force_traj_line
+
+  def plot_xi_traj_line(self, axis):
+    self.xi_traj_line, = axis.plot(np.linspace(start=0, stop=len(self._xi_traj),num=len(self._xi_traj)), self._xi_traj, label=f"Drone {self.ID}")
+    return self.xi_traj_line
 
   def plot_pos_from_pos_traj_index(self, index):
     new_pos = self._pos_traj[:, index]
@@ -100,3 +105,8 @@ class Min(Beacon):
     new_force = self._v_traj[:index]
     self.force_traj_line.set_data(np.linspace(0,index,num=len(new_force)),new_force)
     return self.force_traj_line
+  
+  def plot_xi_from_traj_index(self, index):
+    new_xi = self._xi_traj[:index]
+    self.xi_traj_line.set_data(np.linspace(0,index,num=len(new_xi)),new_xi)
+    return self.xi_traj_line

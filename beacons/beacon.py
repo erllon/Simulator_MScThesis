@@ -45,6 +45,9 @@ class Beacon():
     else: #if d_none < d
       return 0
 
+  def get_xi_max_decrease(self):
+    return self._xi_max_decrease
+    
   def get_vec_to_other(self, other):
     return other.pos - self.pos
   
