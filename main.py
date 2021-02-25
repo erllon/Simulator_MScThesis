@@ -169,7 +169,9 @@ if __name__ == "__main__":
 
   simulate(dt, mins, scs, env)
   fig, ax = plt.subplots(nrows=3,ncols=1)
-
+  ax[0].title.set_text("Deployment")
+  ax[1].title.set_text(r"$\left\|\| F_{applied} \right\|\|$")
+  ax[2].title.set_text(r"$\xi$ from neighbors")
   # fig2, ax2 = plt.subplots(1)
   # ax2.set_title("Force applied")
 
