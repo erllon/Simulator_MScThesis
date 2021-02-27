@@ -11,6 +11,8 @@ from deployment.following_strategies.no_follow import NoFollow
 from deployment.exploration_strategies.line_explore import LineExplore
 from deployment.deployment_fsm import DeploymentFSM
 
+from plot_fields import FieldPlotter
+
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
@@ -29,7 +31,8 @@ def simulate(dt, mins, scs, env):
     print(f"min {m.ID} landed at pos\t\t\t {m.pos}")
     if not m.deployment_strategy.get_target() is None:
           print(f"Its target now has {len(m.deployment_strategy.get_target().neighbors)} neighs\n------------------", )
-  print(f"minimum number of neighbors: {min(beacons, key=lambda b: len(b.neighbors))}")    
+  print(f"minimum number of neighbors: {min(beacons, key=lambda b: len(b.neighbors))}") 
+  return beacons   
 
 if __name__ == "__main__":
 # %% Plotting styles
@@ -121,12 +124,12 @@ if __name__ == "__main__":
   )
 
 # %%Parameter initialization
-  _animate, save_animation = True, False
+  _animate, save_animation = False, False
   start_animation_from_min_ID = 0
 
   max_range = 3#0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 5#10  #7#2*5#3
+  N_mins = 7#10  #7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -167,7 +170,12 @@ if __name__ == "__main__":
     ) for _ in range(N_mins)
   ]
 
-  simulate(dt, mins, scs, env)
+  beacons = simulate(dt, mins, scs, env)
+
+  F = FieldPlotter(beacons=beacons, RSSI_threshold=LineExplore.RSSI_TRHESHOLD)
+  F.plot_potential_field()
+  F.plot_force_field()
+
   fig, ax = plt.subplots(nrows=3,ncols=1)
   ax[0].title.set_text("Deployment")
   ax[1].title.set_text(r"$\left\|\| F_{applied} \right\|\|$")

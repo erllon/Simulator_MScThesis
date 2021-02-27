@@ -30,7 +30,7 @@ class Min(Beacon):
     MinState.NEIGHBOR:  "blue",
   }
 
-  def __init__(self, max_range, deployment_strategy, xi_max=5, d_perf=1, d_none=3):
+  def __init__(self, max_range, deployment_strategy, xi_max=5, d_perf=1, d_none=3, k=0, a=0, v=np.zeros((2, ))):
     super().__init__(max_range,xi_max, d_perf, d_none, pos=None)
     self.deployment_strategy = deployment_strategy
     self.sensors = []
@@ -101,7 +101,7 @@ class Min(Beacon):
     self.annotation.set_y(new_pos[1])
     theta = np.linspace(0, 2*np.pi)
     self.radius.set_data(new_pos.reshape(2, 1) + p2v(self.range, theta))
-    self.radius2.set_data(new_pos.reshape(2, 1) + p2v(self._d_perf, theta))
+    self.radius2.set_data(new_pos.reshape(2, 1) + p2v(self.d_perf, theta))
     self.traj_line.set_data(self._pos_traj[:, :index])
     self.heading_arrow.set_data(*np.hstack((new_pos.reshape(2, 1), new_pos.reshape(2, 1) + p2v(1, self._heading_traj[index]).reshape(2, 1))))
     return self.point, self.annotation, self.radius, self.radius2, self.traj_line, self.heading_arrow 

@@ -8,6 +8,9 @@ from beacons.MIN.min import Min, MinState
 import numpy as np
 
 class LineExplore(ExplorationStrategy):
+
+  RSSI_TRHESHOLD = 0.5
+
   def __init__(self, K_o=1, force_threshold=0.01, RSSI_threshold=0.6, ndims=1): #RSSI_threshold=0.6
     self.K_o = K_o
     self.force_threshold = force_threshold
