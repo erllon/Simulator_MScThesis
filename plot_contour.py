@@ -1,6 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+class FieldPlotter():
+
+    def __init__(self, **kwargs):
+        #kwargs can either consist of "beacons" and "RSSI_threshold" or be a dictionary "dict" of both
+        assert ("beacons" in kwargs and "RSSI_threshold" in kwargs or "dict" in kwargs) 
+
+
+
 x_0 = np.array([-4,-4])
 x_1 = np.array([-3,-3])
 x_2 = np.array([-2,-3])
