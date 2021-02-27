@@ -8,7 +8,7 @@ from deployment.following_strategies.straight_line_follow import StraightLineFol
 from deployment.exploration_strategies.potential_fields_explore import PotentialFieldsExplore
 from deployment.exploration_strategies.heuristic_explore import HeuristicExplore
 from deployment.following_strategies.no_follow import NoFollow
-from deployment.exploration_strategies.line_explore import LineExplore
+from deployment.exploration_strategies.line_explore import LineExplore, LineExploreKind
 from deployment.deployment_fsm import DeploymentFSM
 
 from plot_fields import FieldPlotter
@@ -159,9 +159,9 @@ if __name__ == "__main__":
       DeploymentFSM(
         NoFollow(),
         LineExplore(
-          RSSI_threshold=0.5,
+          # RSSI_threshold=0.5,
           K_o=0.01,
-          ndims=1,
+          kind=LineExploreKind.TWO_DIM_LOCAL,
         )
       ),      
       xi_max=3,
@@ -172,7 +172,7 @@ if __name__ == "__main__":
 
   beacons = simulate(dt, mins, scs, env)
 
-  F = FieldPlotter(beacons=beacons, RSSI_threshold=LineExplore.RSSI_TRHESHOLD)
+  F = FieldPlotter(beacons=beacons, RSSI_threshold=LineExplore.RSSI_THRESHOLD)
   F.plot_potential_field()
   F.plot_force_field()
 

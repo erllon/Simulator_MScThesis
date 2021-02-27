@@ -60,17 +60,17 @@ class FieldPlotter():
                 *drone_config.values(),
                 X,
                 Y,
-                )*(XI_i > self.neigh_RSSI_threshold)
+            )*(XI_i > self.neigh_RSSI_threshold)
             ax.scatter(*drone_config["x"], color="blue" if not beacon_ID == 0 else "green", zorder=100)
-            surf = ax.plot_surface(
-                X,
-                Y,
-                Z,
-                cmap=cm.coolwarm,
-                linewidth=0,
-                antialiased=False,
-                alpha=0.5
-            )
+        surf = ax.plot_surface(
+            X,
+            Y,
+            Z,
+            cmap=cm.coolwarm,
+            linewidth=0,
+            antialiased=False,
+            alpha=0.5
+        )
 
         fig.colorbar(surf, shrink=0.5, aspect=5)
         
