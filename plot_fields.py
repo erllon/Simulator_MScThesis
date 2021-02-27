@@ -44,7 +44,7 @@ class FieldPlotter():
 
         return X, Y, Z
 
-    def plot_potential_field(self):
+    def plot_potential_field(self): #TODO: Add potential field from obstacels
         X, Y, Z = self.__init_X_Y_Z()
 
         fig, ax = plt.subplots(subplot_kw={"projection":"3d"})
