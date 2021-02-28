@@ -12,7 +12,8 @@ x = np.arange(-4.0, 4.0, 0.1)
 y = np.arange(-4.0, 4.0, 0.1)
 X, Y = np.meshgrid(x, y)
 
-Z = 0.5*(np.sqrt((x_0[0]-X)**2 + (x_0[1]-Y)**2)**2) + np.sqrt((x_1[0]-X)**2 + (x_1[1]-Y)**2)**2# + np.sqrt((x_2[0]-X)**2 + (x_2[1]-Y)**2)**2+ np.sqrt((x_3[0]-X)**2 + (x_3[1]-Y)**2)**2)   #X*Y #np.sin(X)*np.cos(Y)
+#Z = 0.5*(np.sqrt((x_0[0]-X)**2 + (x_0[1]-Y)**2)**2) + np.sqrt((x_1[0]-X)**2 + (x_1[1]-Y)**2)**2# + np.sqrt((x_2[0]-X)**2 + (x_2[1]-Y)**2)**2+ np.sqrt((x_3[0]-X)**2 + (x_3[1]-Y)**2)**2)   #X*Y #np.sin(X)*np.cos(Y)
+Z = 0.5*(np.sqrt((X-x_0[0])**2 + (Y-x_0[1])**2)**2) + np.sqrt((X-x_1[0])**2 + (Y-x_1[1])**2)**2
 print(f"Z: {Z}")
 print(f"min_Z = {np.min(Z)}")
 print(f"indices = {np.argmin(Z)}")

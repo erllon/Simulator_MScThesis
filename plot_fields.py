@@ -53,7 +53,7 @@ class FieldPlotter():
         ax.set_zlabel("U")
 
         for beacon_ID, drone_config in self.config_dict.items():
-            # drone_config has the following keys: "x", "k", "a", "v", "d_perf", "d_none", "xi_max"
+            # drone_config.keys(): "x", "k", "a", "v", "d_perf", "d_none", "xi_max"
             x_i, _, _, _, d_perf_i, d_none_i, xi_max_i = drone_config.values()
             XI_i = FieldPlotter.__xi(x_i, d_perf_i, d_none_i, xi_max_i, X, Y)
             Z += FieldPlotter.get_U_i(
@@ -80,6 +80,7 @@ class FieldPlotter():
         U, V  = np.zeros(X.shape), np.zeros(Y.shape) # x- and y-component of the vectors
 
         _, ax = plt.subplots()
+        ax.title.set_text("F")
         ax.set_xlabel("x [m]")
         ax.set_ylabel("y [m]")
 
@@ -121,6 +122,8 @@ class FieldPlotter():
     def get_U_i(x_i, k_i, a_i, v_i, d_perf_i, d_none_i, xi_max_i, X, Y):
         x_component = X - a_i*(np.ones(X.shape)*x_i[0] + v_i[0]*FieldPlotter.__xi(x_i, d_perf_i, d_none_i, xi_max_i, X, Y))
         y_component = Y - a_i*(np.ones(Y.shape)*x_i[1] + v_i[1]*FieldPlotter.__xi(x_i, d_perf_i, d_none_i, xi_max_i, X, Y))
+        # x_component = X
+        # y_component = Y
         return (1/2)*k_i*(x_component**2 + y_component**2)
 
     @staticmethod
@@ -128,3 +131,79 @@ class FieldPlotter():
         F_x = -k_i*(X - a_i*(np.ones(X.shape)*x_i[0] + v_i[0]*FieldPlotter.__xi(x_i, d_perf_i, d_none_i, xi_max_i, X, Y)))
         F_y = -k_i*(Y - a_i*(np.ones(Y.shape)*x_i[1] + v_i[1]*FieldPlotter.__xi(x_i, d_perf_i, d_none_i, xi_max_i, X, Y)))
         return F_x, F_y
+
+from matplotlib import cm
+from matplotlib.ticker import LinearLocator
+import numpy as np
+
+def f(X, Y, r_th):
+    x_part2 = ((X-0*np.ones(X.shape))**2)
+    y_part2 = ((Y-0*np.ones(Y.shape))**2)
+    r_i = x_part2 + y_part2
+    return 0.5*(1/r_i-1/r_th)**2
+    # if (r_i < r_th).any() and (r_i != 0).all():
+    #     return 0.5*(1/r_i-1/r_th)**2
+    # else:
+    #     return np.zeros(X.shape)
+
+if __name__=="__main__":
+    try:
+      # installed with "pip install SciencePLots" (https://github.com/garrettj403/SciencePlots.git)
+      # gives quite nice plots
+      plt_styles = ["science", "grid", "bright", "no-latex"]
+      plt.style.use(plt_styles)
+      print(f"pyplot using style set {plt_styles}")
+    except Exception as e:
+      print(e)
+      print("setting grid and only grid and legend manually")
+      plt.rcParams.update(
+          {
+              # setgrid
+              "axes.grid": False,#True,
+              "grid.linestyle": ":",
+              "grid.color": "k",
+              "grid.alpha": 0.5,
+              "grid.linewidth": 0.5,
+              # Legend
+              "legend.frameon": True,
+              "legend.framealpha": 1.0,
+              "legend.fancybox": True,
+              "legend.numpoints": 1,
+          }
+      )
+
+    fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+
+    # Make data.
+    X = np.arange(-10, 10, 0.25)
+    Y = np.arange(-10, 10, 0.25)
+    X, Y = np.meshgrid(X, Y)
+    # R = np.sqrt(X**2 + Y**2)
+    x_part1 = ((X-0*np.ones(X.shape))**2)/3
+    y_part1 = ((Y-0*np.ones(Y.shape))**2)/3
+    exponent = -(x_part1+y_part1)
+    Z1 = np.exp(exponent)    #np.sin(R)
+
+    x_part2 = ((X-2*np.ones(X.shape))**2)
+    y_part2 = ((Y-2*np.ones(Y.shape))**2)
+    r_i = x_part2 + y_part2
+    r_th = 4
+    Z2 = f(X,Y,r_th)#0.5*(1/r_i-1/r_th)**2
+    Z3 = X*Y
+    Z4 = 1/X
+    # Plot the surface.
+    surf = ax.plot_surface(X, Y, Z2, cmap=cm.coolwarm,
+                        linewidth=0, antialiased=False)
+    
+    # Customize the z axis.
+    # ax.set_zlim(-1.01, 1.01)
+    ax.zaxis.set_major_locator(LinearLocator(10))
+    # A StrMethodFormatter is used automatically
+    ax.zaxis.set_major_formatter('{x:.02f}')
+    ax.title.set_text(r"$U_o = k_{obs}exp\left\{-\left(\frac{(x-x_{obs,i})^2}{\sigma_x^2} + \frac{(y-y_{obs,i})^2}{\sigma_y^2}\right)\right\}$")
+    # Add a color bar which maps values to colors.
+    fig.colorbar(surf, shrink=0.5, aspect=5)
+
+    plt.show()
+
+    
