@@ -39,6 +39,7 @@ class LineExplore(ExplorationStrategy):
 
     x_is = np.concatenate([b.pos.reshape(2, 1) for b in beacons], axis=1)
     xi_is = np.array([MIN.get_xi_to_other_from_model(b) for b in beacons])
+    MIN._xi_traj = np.column_stack((MIN._xi_traj, xi_is)) #np.max(xi_is) #axis=0, but should be 1D...
 
     if int(self.kind) <= LineExploreKind.TWO_DIM_GLOBAL:
       """GLOBAL METHODS"""
@@ -165,6 +166,14 @@ class LineExplore(ExplorationStrategy):
   
       print(np.rad2deg(np.arctan2(MIN.v[1], MIN.v[0])), MIN.ID)
       raise AtLandingConditionException
+    return F
+
+# %%Clamp
+  @staticmethod
+  def __clamp(F, limit):
+    norm_F = np.linalg.norm(F)
+    if norm_F > limit:
+      return limit*F/norm_F
     return F
 #     neigh_indices, = np.where(xi_is > self.RSSI_threshold) #np.where(RSSIs_all <= MIN.range) 
 #     xi_is_neigh = xi_is[neigh_indices]
@@ -360,10 +369,3 @@ class LineExplore(ExplorationStrategy):
     #   raise AtLandingConditionException
     # return F
 
-# %%Clamp
-  @staticmethod
-  def __clamp(F, limit):
-    norm_F = np.linalg.norm(F)
-    if norm_F > limit:
-      return limit*F/norm_F
-    return F

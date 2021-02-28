@@ -124,7 +124,7 @@ if __name__ == "__main__":
   )
 
 # %%Parameter initialization
-  _animate, save_animation = False, False
+  _animate, save_animation = True, False
   start_animation_from_min_ID = 0
 
   max_range = 3#0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
