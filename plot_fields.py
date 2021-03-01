@@ -137,10 +137,17 @@ from matplotlib.ticker import LinearLocator
 import numpy as np
 
 def f(X, Y, r_th):
-    x_part2 = ((X-0*np.ones(X.shape))**2)
-    y_part2 = ((Y-0*np.ones(Y.shape))**2)
-    r_i = x_part2 + y_part2
-    return 0.5*(1/r_i-1/r_th)**2
+    try:
+        # mat = np.concatenate(vecs, axis=1)
+        # return -gain*np.sum(mat/np.linalg.norm(mat, axis=0)**3, axis=1)
+        x_part2 = ((X-0*np.ones(X.shape))**2)
+        y_part2 = ((Y-0*np.ones(Y.shape))**2)
+        r_i = x_part2 + y_part2
+        return 0.5*(1/r_i-1/r_th)**2
+    except ValueError:
+        print("Except")
+        return np.zeros((2, ))
+    
     # if (r_i < r_th).any() and (r_i != 0).all():
     #     return 0.5*(1/r_i-1/r_th)**2
     # else:
@@ -174,25 +181,24 @@ if __name__=="__main__":
 
     fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
 
-    # Make data.
+        # Make data.
     X = np.arange(-10, 10, 0.25)
     Y = np.arange(-10, 10, 0.25)
     X, Y = np.meshgrid(X, Y)
-    # R = np.sqrt(X**2 + Y**2)
-    x_part1 = ((X-0*np.ones(X.shape))**2)/3
-    y_part1 = ((Y-0*np.ones(Y.shape))**2)/3
-    exponent = -(x_part1+y_part1)
-    Z1 = np.exp(exponent)    #np.sin(R)
 
-    x_part2 = ((X-2*np.ones(X.shape))**2)
-    y_part2 = ((Y-2*np.ones(Y.shape))**2)
-    r_i = x_part2 + y_part2
-    r_th = 4
-    Z2 = f(X,Y,r_th)#0.5*(1/r_i-1/r_th)**2
-    Z3 = X*Y
-    Z4 = 1/X
+    x_part1 = ((X+6*np.ones(X.shape))**2)/2
+    y_part1 = ((Y+6*np.ones(Y.shape))**2)/2
+    exponent1 = -(x_part1+y_part1)
+    Z1 = np.exp(exponent1)
+
+    x_part2 = ((X-6*np.ones(X.shape))**2)/1
+    y_part2 = ((Y-6*np.ones(Y.shape))**2)/1
+    exponent2 = -(x_part2+y_part2)
+    Z2 = np.exp(exponent2)
+
+    Z = Z1 + Z2
     # Plot the surface.
-    surf = ax.plot_surface(X, Y, Z2, cmap=cm.coolwarm,
+    surf = ax.plot_surface(X, Y, Z, cmap=cm.coolwarm,
                         linewidth=0, antialiased=False)
     
     # Customize the z axis.

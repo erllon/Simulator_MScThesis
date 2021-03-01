@@ -20,7 +20,6 @@ class LineExplore(ExplorationStrategy):
 
   def __init__(self, K_o=1, force_threshold=0.01, kind=LineExploreKind.ONE_DIM_GLOBAL): #RSSI_threshold=0.6
     self.K_o = K_o
-    self.K_o = K_o
     self.kind = kind
     self.force_threshold = force_threshold
     # self.RSSI_threshold = RSSI_threshold
@@ -78,7 +77,7 @@ class LineExplore(ExplorationStrategy):
            "Conditions on constants a_i and k_i do not hold. Cannot guarantee x_{n+1} > x_{n}"
         
         F_n = np.array([-np.sum(k_is*(MIN.pos[0] - a_is*(x_is + xi_is))), 0])
-        F_o = 0*F_o[0]
+        F_o = 1*F_o[0]
       
       elif self.kind == LineExploreKind.TWO_DIM_GLOBAL:
         k_is = np.zeros(len(beacons))
@@ -136,7 +135,7 @@ class LineExplore(ExplorationStrategy):
             """
             
           F_n = np.array([-np.sum(k_is*(MIN.pos[0] - a_is*(x_is + xi_is))), 0])
-          F_o = 0*F_o
+          F_o = 1*F_o
 
         else:
           """ Behdads gain approach """
@@ -148,11 +147,13 @@ class LineExplore(ExplorationStrategy):
           ], axis=1)
 
           F_n = -np.sum(k_is*(MIN.pos.reshape(2, 1) - a_is*(x_is + xi_is*v_is)), axis=1).reshape(2, )
-          F_o = 0*F_o
+          F_o = 1*F_o.reshape(2,)
 
           MIN.a = np.min(a_is) + 1
           MIN.k = 1
-
+    print(f"F_n: {F_n}")
+    print(f"F_o: {F_o}")
+    print("****************")
     F = F_n + F_o
     at_landing_condition = land_due_to_no_neighs or np.linalg.norm(F) < self.force_threshold
     
