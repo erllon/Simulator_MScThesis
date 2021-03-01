@@ -76,13 +76,13 @@ class Beacon():
       color="black",
       alpha=0.3
     )[0]
-    self.radius2 = axis.plot(
-      self.pos[0] + self.d_perf*np.cos(theta), self.pos[1] + self.d_perf*np.sin(theta),
-      linestyle="dashed",
-      color="black",
-      alpha=0.3
-    )[0]
+    # self.radius2 = axis.plot(
+    #   self.pos[0] + self.d_perf*np.cos(theta), self.pos[1] + self.d_perf*np.sin(theta),
+    #   linestyle="dashed",
+    #   color="black",
+    #   alpha=0.3
+    # )[0]
 
-    return self.point, self.annotation, self.radius, self.radius2
+    return self.point, self.annotation, self.radius#, self.radius2
 
 

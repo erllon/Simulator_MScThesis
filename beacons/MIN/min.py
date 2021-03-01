@@ -101,10 +101,10 @@ class Min(Beacon):
     self.annotation.set_y(new_pos[1])
     theta = np.linspace(0, 2*np.pi)
     self.radius.set_data(new_pos.reshape(2, 1) + p2v(self.range, theta))
-    self.radius2.set_data(new_pos.reshape(2, 1) + p2v(self.d_perf, theta))
+    # self.radius2.set_data(new_pos.reshape(2, 1) + p2v(self.d_perf, theta))
     self.traj_line.set_data(self._pos_traj[:, :index])
     self.heading_arrow.set_data(*np.hstack((new_pos.reshape(2, 1), new_pos.reshape(2, 1) + p2v(1, self._heading_traj[index]).reshape(2, 1))))
-    return self.point, self.annotation, self.radius, self.radius2, self.traj_line, self.heading_arrow 
+    return self.point, self.annotation, self.radius, self.traj_line, self.heading_arrow #,self.radius2 
 
   def plot_force_from_traj_index(self, index):
     new_force = self._v_traj[:index]
