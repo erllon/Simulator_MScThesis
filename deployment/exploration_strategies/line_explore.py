@@ -18,7 +18,7 @@ class LineExplore(ExplorationStrategy):
 
   RSSI_THRESHOLD = 0.5
 
-  def __init__(self, K_o=1, force_threshold=0.01, kind=LineExploreKind.ONE_DIM_GLOBAL): #RSSI_threshold=0.6
+  def __init__(self, K_o=1, force_threshold=0.2, kind=LineExploreKind.ONE_DIM_GLOBAL): #RSSI_threshold=0.6
     self.K_o = K_o
     self.kind = kind
     self.force_threshold = force_threshold
@@ -151,10 +151,14 @@ class LineExplore(ExplorationStrategy):
 
           MIN.a = np.min(a_is) + 1
           MIN.k = 1
-    print(f"F_n: {F_n}")
-    print(f"F_o: {F_o}")
-    print("****************")
+    # print(f"F_n: {F_n}")
+    # print(f"F_o: {F_o}")
+    # print(f"norm(F): {np.linalg.norm(F_n+F_o)}")
+    # print("****************")
+    F_n = self.__clamp(F_n,10)
     F = F_n + F_o
+    a = np.linalg.norm(F)
+    b = self.force_threshold
     at_landing_condition = land_due_to_no_neighs or np.linalg.norm(F) < self.force_threshold
     
     if at_landing_condition:
@@ -164,10 +168,11 @@ class LineExplore(ExplorationStrategy):
       ])
       v_i_base = np.array([1, 0]).reshape(2, 1)
       MIN.v = rot_mat_2D(MIN.heading + (np.pi/2)*np.random.uniform(-1, 1))@v_i_base
-  
       print(np.rad2deg(np.arctan2(MIN.v[1], MIN.v[0])), MIN.ID)
       raise AtLandingConditionException
-    return F
+    # print(f"Clamp: {self.__clamp(F, 10)}")
+    # return self.__clamp(F, 10)
+    return F 
 
 # %%Clamp
   @staticmethod
