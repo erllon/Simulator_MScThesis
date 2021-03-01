@@ -71,11 +71,17 @@ if __name__ == "__main__":
 
   obstacle_corners_2D_1 = [
       np.array([
-        [-10, -10],
-        [ -10, -5],
-        [ 10,  -5],
-        [10,  -10],
-      ])
+        [-5, -5],
+        [-5,  5],
+        [ 5,  5],
+        [ 5, -5],
+      ]),
+      # np.array([
+      #   [2.5, 9.98],
+      #   [2.5, -1],
+      #   [3.0, -1],
+      #   [3.0, 9.98]
+      # ])
     ]
   obstacle_corners_2D_2 = [
       np.array([
@@ -99,11 +105,17 @@ if __name__ == "__main__":
     ]
 
   obstacle_corners_2D_3 = [
+      # np.array([
+      #   [3,  -2],
+      #   [3,  2],
+      #   [7,  2],
+      #   [7, -2],
+      # ]),
       np.array([
-        [3,  -2],
-        [3,  2],
-        [7,  2],
-        [7, -2],
+        [3, -6],
+        [3,  6],
+        [7,  6],
+        [7, -6],
       ]),
       # np.array([
       #   [-0.5, -0.5],
@@ -120,16 +132,16 @@ if __name__ == "__main__":
     np.array([
       0, 0
     ]),
-    obstacle_corners =  obstacle_corners_2D_3#[]#obstacle_corners_2D_1 #[]
+    obstacle_corners =  obstacle_corners_2D_1#[]#obstacle_corners_2D_1 #[]
   )
 
 # %%Parameter initialization
-  _animate, save_animation = True, False
-  start_animation_from_min_ID = 1
+  _animate, save_animation = False, False
+  start_animation_from_min_ID = 2
 
   max_range = 3#0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 3#10  #7#2*5#3
+  N_mins = 5*2#3#10  #7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -160,10 +172,10 @@ if __name__ == "__main__":
         NoFollow(),
         LineExplore(
           # RSSI_threshold=0.5,
-          K_o=0.4,#0.01,
-          kind=LineExploreKind.ONE_DIM_LOCAL,
+          K_o=12,#0.1,#0.01, #12 works somewhat with TWO_DIM_LOCAL, else much lower (0.4-ish)
+          kind=LineExploreKind.TWO_DIM_LOCAL,
         )
-      ),      
+      ),
       xi_max=3,
       d_perf=1,
       d_none=3
