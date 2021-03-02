@@ -132,7 +132,7 @@ if __name__ == "__main__":
     np.array([
       0, 0
     ]),
-    obstacle_corners =  obstacle_corners_2D_1#[]#obstacle_corners_2D_1 #[]
+    obstacle_corners =  []#obstacle_corners_2D_1#[]#obstacle_corners_2D_1 #[]
   )
 
 # %%Parameter initialization
@@ -141,7 +141,7 @@ if __name__ == "__main__":
 
   max_range = 3#0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 5*2#3#10  #7#2*5#3
+  N_mins = 7#3#10  #7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -173,7 +173,7 @@ if __name__ == "__main__":
         LineExplore(
           # RSSI_threshold=0.5,
           K_o=12,#0.1,#0.01, #12 works somewhat with TWO_DIM_LOCAL, else much lower (0.4-ish)
-          kind=LineExploreKind.TWO_DIM_LOCAL,
+          kind=LineExploreKind.ONE_DIM_LOCAL,
         )
       ),
       xi_max=3,
@@ -184,9 +184,9 @@ if __name__ == "__main__":
 
   beacons = simulate(dt, mins, scs, env)
 
-  F = FieldPlotter(beacons=beacons, RSSI_threshold=LineExplore.RSSI_THRESHOLD)
-  F.plot_potential_field()
-  F.plot_force_field()
+  # F = FieldPlotter(beacons=beacons, RSSI_threshold=LineExplore.RSSI_THRESHOLD)
+  # F.plot_potential_field()
+  # F.plot_force_field()
 
   fig, ax = plt.subplots(nrows=3,ncols=1)
   ax[0].title.set_text("Deployment")
@@ -250,9 +250,9 @@ if __name__ == "__main__":
       mn.plot(ax[0])
       mn.plot_traj_line(ax[0])
       mn.plot_force_traj_line(ax[1])
-      mn.plot_force_traj_line(ax[2])
+      mn.plot_xi_traj_line(ax[2])
       ax[1].legend()
-      ax[2].legend()
+      #ax[2].legend()
 
   
   plt.show()
