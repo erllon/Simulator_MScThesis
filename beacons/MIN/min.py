@@ -89,7 +89,7 @@ class Min(Beacon):
 #     if np.array(neigh_indices != self.prev_neigh_indices).all():      
       if np.array(self._xi_traj[i,:] != 0).any():
         # self.xi_traj_line, = axis.plot(np.linspace(start=0, stop=len(self._xi_traj[i,:]),num=len(self._xi_traj[i,:])), self._xi_traj[i], label=f"Drone {i}")
-        tmp, = axis.plot(np.linspace(start=0, stop=len(self._xi_traj[i,:]),num=len(self._xi_traj[i,:])), self._xi_traj[i], label=f"Drone {i}")
+        tmp, = axis.plot(np.linspace(start=0, stop=len(self._xi_traj[i,:]),num=len(self._xi_traj[i,:])), self._xi_traj[i])#, label=f"Drone {i}")
         self.xi_traj_line = np.append(self.xi_traj_line, tmp)
     return self.xi_traj_line
 
