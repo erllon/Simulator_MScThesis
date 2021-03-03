@@ -71,10 +71,10 @@ if __name__ == "__main__":
 
   obstacle_corners_2D_1 = [
       np.array([
-        [-1, -1],
-        [-1,   20],
-        [   10,   20],
-        [   10, -1],
+        [-10, -1],
+        [-10, 20],
+        [10, 20],
+        [10, -1],
       ]),
       # np.array([
       #   [2.5, 9.98],
@@ -141,7 +141,7 @@ if __name__ == "__main__":
 
   max_range = 3 #0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 8#3#10  #7#2*5#3
+  N_mins = 12#3#10  #7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -172,7 +172,7 @@ if __name__ == "__main__":
         NoFollow(),
         LineExplore(
           # RSSI_threshold=0.5,
-          K_o= 10*(i),#30,# 12 0.1,#0.01, #12 works somewhat with TWO_DIM_LOCAL, else much lower (0.4-ish)
+          K_o= 5*1*(i+1),#30,# 12 0.1,#0.01, #12 works somewhat with TWO_DIM_LOCAL, else much lower (0.4-ish)
           kind=LineExploreKind.TWO_DIM_LOCAL,
         )
       ),
@@ -272,6 +272,7 @@ if __name__ == "__main__":
       # ax.legend()
 
       #ax[2].legend()
+    ax.axis('equal')
 
   
   plt.show()
