@@ -18,7 +18,7 @@ class LineExplore(ExplorationStrategy):
 
   RSSI_THRESHOLD = 0.5
 
-  def __init__(self, K_o=1, force_threshold=0.2, kind=LineExploreKind.ONE_DIM_GLOBAL): #RSSI_threshold=0.6
+  def __init__(self, K_o=1, force_threshold=0.1, kind=LineExploreKind.ONE_DIM_GLOBAL): #RSSI_threshold=0.6
     self.K_o = K_o
     self.kind = kind
     self.force_threshold = force_threshold
@@ -154,8 +154,9 @@ class LineExplore(ExplorationStrategy):
     # print(f"F_n: {F_n}")
     # print(f"F_o: {F_o}")
     # print(f"norm(F): {np.linalg.norm(F_n+F_o)}")
-    # print("****************")
-    F_n = self.__clamp(F_n,10)
+    # print("****************")    
+    F_n = self.__clamp(F_n,17)
+    #F_o = self.__clamp(F_o,10)
     F = F_n + F_o
     a = np.linalg.norm(F)
     b = self.force_threshold
