@@ -7,6 +7,7 @@ from beacons.MIN.min import Min, MinState
 
 import numpy as np
 from enum import IntEnum
+from helpers import get_vector_angle as gva
 
 class LineExploreKind(IntEnum):
       ONE_DIM_GLOBAL = 1,
@@ -35,6 +36,7 @@ class LineExplore(ExplorationStrategy):
 
     F_n = np.zeros((2, ))
     F_o = gof(self.K_o, MIN, ENV)
+    F_o_angle = gva(F_o)
 
     x_is = np.concatenate([b.pos.reshape(2, 1) for b in beacons], axis=1)
     xi_is = np.array([MIN.get_xi_to_other_from_model(b) for b in beacons])
@@ -168,8 +170,10 @@ class LineExplore(ExplorationStrategy):
         [np.sin(theta),  np.cos(theta)],
       ])
       v_i_base = np.array([1, 0]).reshape(2, 1)
-      MIN.v = rot_mat_2D(MIN.heading + (np.pi/2)*np.random.uniform(-1, 1))@v_i_base
+      alpha = F_o_angle + (np.pi/2)*np.random.uniform(-1, -1) #MIN.heading + (np.pi/2)*np.random.uniform(-1, 1)
+      MIN.v = rot_mat_2D(alpha)@v_i_base
       print(np.rad2deg(np.arctan2(MIN.v[1], MIN.v[0])), MIN.ID)
+      print(np.rad2deg(F_o_angle), MIN.ID)
       raise AtLandingConditionException
     # print(f"Clamp: {self.__clamp(F, 10)}")
     # return self.__clamp(F, 10)
