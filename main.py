@@ -183,24 +183,15 @@ if __name__ == "__main__":
   ]
 
   beacons = simulate(dt, mins, scs, env)
-
-  # F = FieldPlotter(beacons=beacons, RSSI_threshold=LineExplore.RSSI_THRESHOLD)
-  # F.plot_potential_field()
-  # F.plot_force_field()
-  #HER
+  
   if plot_propterties:
     fig, ax = plt.subplots(nrows=3,ncols=1)
     ax[0].title.set_text("Deployment")
     ax[1].title.set_text(r"$\left\|\| F_{applied} \right\|\|$") #Set title
     ax[2].title.set_text(r"$\xi$ from neighbors")               #Set title
   else:
-    fig, ax = plt.subplots(1,1)#plt.subplots(nrows=3,ncols=1)
-    ax.title.set_text("Deployment")# ax[0].title.set_text("Deployment")
-  #HER
-  # ax[1].title.set_text(r"$\left\|\| F_{applied} \right\|\|$")
-  # ax[2].title.set_text(r"$\xi$ from neighbors")
-  # fig2, ax2 = plt.subplots(1)
-  # ax2.set_title("Force applied")
+    fig, ax = plt.subplots(1,1)
+    ax.title.set_text("Deployment")
 
   if _animate: # TODO: if _animate: everything in same fig,  else: drones in one fig, "properties" in another fig
     for mn in mins[:start_animation_from_min_ID]:
@@ -219,9 +210,7 @@ if __name__ == "__main__":
         scs.plot(ax[0])
         env.plot(ax[0])
         artists = []
-        for mn in mins:
-          # artists += mn.plot(ax)
-          # artists += (mn.plot_traj_line(ax), )
+        for mn in mins:        
           artists += mn.plot(ax[0])
           artists += (mn.plot_traj_line(ax[0]), ) #Type: Line2D(_line6)
           artists += (mn.plot_force_traj_line(ax[1]), )
@@ -234,44 +223,12 @@ if __name__ == "__main__":
       else:
         scs.plot(ax)
         env.plot(ax)
-        # scs.plot(ax[0])
-        # env.plot(ax[0])
         artists = []
         for mn in mins:
           artists += mn.plot(ax)
           artists += (mn.plot_traj_line(ax), )
-          # artists += mn.plot(ax[0])
-          # artists += (mn.plot_traj_line(ax[0]), )
           mn.plot_pos_from_pos_traj_index(0)
       return artists
-      # if type(ax) == np.ndarray:        
-      #   scs.plot(ax)
-      #   env.plot(ax)
-      #   artists = []
-      #   for mn in mins:
-      #     artists += mn.plot(ax)
-      #     artists += (mn.plot_traj_line(ax), )
-      #     # artists += mn.plot(ax[0])
-      #     # artists += (mn.plot_traj_line(ax[0]), ) #Type: Line2D(_line6)
-      #     # artists += (mn.plot_force_traj_line(ax[1]), )
-      #     # artists += (mn.plot_xi_traj_line(ax[2]), )
-      #     mn.plot_pos_from_pos_traj_index(0)
-      #     mn.plot_force_from_traj_index(0)
-      #     mn.plot_xi_from_traj_index(0)
-      #   ax[1].legend()
-      # else:
-      #   scs.plot(ax)
-      #   env.plot(ax)
-      #   # scs.plot(ax[0])
-      #   # env.plot(ax[0])
-      #   artists = []
-      #   for mn in mins:
-      #     artists += mn.plot(ax)
-      #     artists += (mn.plot_traj_line(ax), )
-      #     # artists += mn.plot(ax[0])
-      #     # artists += (mn.plot_traj_line(ax[0]), )
-      #     mn.plot_pos_from_pos_traj_index(0)
-      # return artists
 
     def animate(i):
       if i - offset[0] >= mins[min_counter[0]].get_pos_traj_length():
@@ -300,8 +257,6 @@ if __name__ == "__main__":
 
       mn.plot_force_traj_line(ax[1])
       mn.plot_xi_traj_line(ax[2])
-      # ax[1].legend()
-      #ax[2].legend()
     else:
       env.plot(ax)
       scs.plot(ax)
@@ -309,14 +264,6 @@ if __name__ == "__main__":
         mn.plot(ax)
         mn.plot_traj_line(ax)
       ax.legend()
-      #ax[2].legend()
       ax.axis('equal')
 
-  # if plot_propterties:
-  #   ax[1].legend()
-
   plt.show()
-
-
-# %%
-#
