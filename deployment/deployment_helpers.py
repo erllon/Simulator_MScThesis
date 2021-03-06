@@ -46,7 +46,7 @@ def get_generic_force_vector(vecs, gain, sigma_x=1, sigma_y=1): #TODO: Add force
         quadratic_force = -1*gain/5*np.sum(mat,axis=1)
         # print(f"quad_force: {quadratic_force}")
 
-        return quadratic_force#reciprocal_force#exponential_force#
+        return exponential_force#quadratic_force#reciprocal_force#exponential_force#
     except:
         e = sys.exc_info()[0]
         # print(f"Error: {e}")
