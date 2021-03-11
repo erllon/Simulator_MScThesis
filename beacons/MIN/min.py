@@ -63,6 +63,37 @@ class Min(Beacon):
     #As of 21.01 .get_velocity_vector() returns the calculated force, self._force_hist considers the norm of the force
     self._v_traj = np.hstack((self._v_traj, np.linalg.norm(v)))
     #self._xi_traj blir satt i self.deployment_strategy.get_velocity_vector()  
+
+  def generate_target_pos(self, beacons, ENV, next_min):
+    # Get vectors to neighbors
+    # if type(self) == 
+    self.compute_neighbors(beacons)
+    vecs_to_neighs = [
+        # normalize(self.get_vec_to_other(n).reshape(2, 1)) for n in self.neighbors if not (self.get_vec_to_other(n) == 0).all()
+        self.get_vec_to_other(n).reshape(2, 1) for n in self.neighbors if not (self.get_vec_to_other(n) == 0).all()
+
+    ]
+    for s in self.sensors:
+        s.sense(ENV)
+    vecs_to_obs = [
+        # normalize((R_z(self.heading)@R_z(s.host_relative_angle)@s.measurement.get_val())[:2])
+        # for s in self.sensors if s.measurement.is_valid()
+        (R_z(self.heading)@R_z(s.host_relative_angle)@s.measurement.get_val())[:2]
+        for s in self.sensors if s.measurement.is_valid()
+    ]
+    if len(vecs_to_obs) != 0:
+      tot_vec = - np.sum(vecs_to_neighs,axis=0).reshape(2, ) - np.sum(vecs_to_obs,axis=0).reshape(2, )
+    else:
+      tot_vec = - np.sum(vecs_to_neighs,axis=0).reshape(2, )
+    mid_angle = gva(tot_vec)
+    target_angle = mid_angle + np.random.uniform(-1,1)*np.pi/4
+
+    target = self.pos + p2v(self.target_r,target_angle)
+    next_min.target_pos = target
+    #Get vectors to obstacles
+    #Sum vectors to form "red" vector
+    #Generate target on cirle within interval (angle)
+    #Assign generated target to next_min.target_pos    
   
   def get_v_traj_length(self):
     return len(self._v_traj)

@@ -145,12 +145,12 @@ if __name__ == "__main__":
   )
 
 # %%Parameter initialization
-  _animate, save_animation, plot_propterties = False, False, False
+  _animate, save_animation, plot_propterties = True, False, False
   start_animation_from_min_ID = 0
 
   max_range = 3 #0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 4 #10  #7#2*5#3
+  N_mins = 5 #10  #7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
