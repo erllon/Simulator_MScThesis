@@ -6,7 +6,8 @@ from helpers import (
   polar_to_vec as p2v,
   normalize,
   euler_int,
-  plot_vec
+  plot_vec,
+  rot_z_mat as R_z
 )
 
 import numpy as np
@@ -34,6 +35,7 @@ class Min(Beacon):
     super().__init__(max_range,xi_max, d_perf, d_none, pos=None)
     self.deployment_strategy = deployment_strategy
     self.sensors = []
+    self.target_pos = np.array([None, None]).reshape(2, )
     for ang in np.arange(0, 360, 90):
       r = RangeSensor(max_range)
       r.mount(self, ang)
@@ -60,7 +62,7 @@ class Min(Beacon):
 
     #As of 21.01 .get_velocity_vector() returns the calculated force, self._force_hist considers the norm of the force
     self._v_traj = np.hstack((self._v_traj, np.linalg.norm(v)))
-    #self._xi_traj blir satt i self.deployment_strategy.get_velocity_vector()
+    #self._xi_traj blir satt i self.deployment_strategy.get_velocity_vector()  
   
   def get_v_traj_length(self):
     return len(self._v_traj)

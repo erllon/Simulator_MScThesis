@@ -17,7 +17,8 @@ def get_obstacle_forces(K_o, MIN, ENV):
     ]
     return get_generic_force_vector(vecs_to_obs, K_o)
 
-def get_generic_force_vector(vecs, gain, sigma_x=1, sigma_y=1): #TODO: Add force threshold
+def get_generic_force_vector(vecs, gain, sigma_x=1, sigma_y=1): #TODO: Add force threshold,
+    #TODO: Add the force with threshold distance!
     # try:
     #     mat = np.concatenate(vecs, axis=1)
     #     F= -gain*np.sum(mat/np.linalg.norm(mat, axis=0)**3, axis=1)
