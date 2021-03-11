@@ -1,4 +1,13 @@
 import numpy as np
+from helpers import (
+  get_smallest_signed_angle as ssa,
+  get_vector_angle as gva,
+  polar_to_vec as p2v,
+  normalize,
+  euler_int,
+  plot_vec,
+  rot_z_mat as R_z
+)
 
 class Beacon():
 
@@ -12,6 +21,7 @@ class Beacon():
 
   def __init__(self, range, xi_max, d_perf, d_none, k=0, a=0, v=np.zeros((2, )), pos=None):
     self.range = range
+    self.target_r = range #TODO: Scale this down, so that the target is not generated at border?
     self.pos = pos
     self.ID = self.get_ID()
     self.neighbors = []
@@ -38,6 +48,33 @@ class Beacon():
   def compute_neighbors(self, others):
     self.neighbors = list(filter(lambda other: self.is_within_range(other) and self != other, others))
   
+  def generate_target_pos(self, beacons, ENV, next_min):
+    # Get vectors to neighbors
+    # if type(self) == 
+    self.compute_neighbors(beacons)
+    vecs_to_neighs = [
+        normalize(self.get_vec_to_other(n).reshape(2, 1)) for n in self.neighbors if not (self.get_vec_to_other(n) == 0).all()
+    ]
+    for s in self.sensors:
+        s.sense(ENV)
+    vecs_to_obs = [
+        normalize((R_z(self.heading)@R_z(s.host_relative_angle)@s.measurement.get_val())[:2])
+        for s in self.sensors if s.measurement.is_valid()
+    ]
+    if len(vecs_to_obs) != 0:
+      tot_vec = - np.sum(vecs_to_neighs,axis=0).reshape(2, ) - np.sum(vecs_to_obs,axis=0).reshape(2, )
+    else:
+      tot_vec = - np.sum(vecs_to_neighs,axis=0).reshape(2, )
+    mid_angle = gva(tot_vec)
+    target_angle = mid_angle + np.random.uniform(-1,1)*np.pi/4
+
+    target = p2v(self.target_r,target_angle)
+    next_min.target_pos = target
+    #Get vectors to obstacles
+    #Sum vectors to form "red" vector
+    #Generate target on cirle within interval (angle)
+    #Assign generated target to next_min.target_pos    
+
   def get_RSSI(self, other):
     return np.exp(-np.linalg.norm(self.pos - other.pos))
 

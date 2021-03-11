@@ -1,6 +1,6 @@
 import numpy as np
 from helpers import rot_z_mat as R_z
-
+import sys
 
 def get_neighbor_forces(K_n, MIN):
     vecs_to_neighs = [
@@ -17,7 +17,8 @@ def get_obstacle_forces(K_o, MIN, ENV):
     ]
     return get_generic_force_vector(vecs_to_obs, K_o)
 
-def get_generic_force_vector(vecs, gain, sigma_x=1, sigma_y=1): #TODO: Add force threshold
+def get_generic_force_vector(vecs, gain, sigma_x=1, sigma_y=1): #TODO: Add force threshold,
+    #TODO: Add the force with threshold distance!
     # try:
     #     mat = np.concatenate(vecs, axis=1)
     #     F= -gain*np.sum(mat/np.linalg.norm(mat, axis=0)**3, axis=1)
@@ -26,6 +27,8 @@ def get_generic_force_vector(vecs, gain, sigma_x=1, sigma_y=1): #TODO: Add force
     #     return np.zeros((2, )) 
     try:
         mat = np.concatenate(vecs, axis=1) #inneholder 2 arrays
+
+        """Exponential force"""
         first_x = -2*(gain)/sigma_x**2 * mat[0,:] #vec
         first_y = -2*(gain)/sigma_y**2 * mat[1,:] #vec
         first = np.vstack((first_x, first_y))
@@ -35,11 +38,17 @@ def get_generic_force_vector(vecs, gain, sigma_x=1, sigma_y=1): #TODO: Add force
         exponent = -(exponent_x + exponent_y)
 
         tot = first*np.e**exponent
-        # print(f"F_o: {np.sum(tot,axis=1)}")
-        # F_old = -gain*np.sum(mat/np.linalg.norm(mat, axis=0)**3, axis=1)
-        # print(f"F_old: {F_old}")
-        # print("-------------------------")
-        return np.sum(tot,axis=1)
-        # return -gain*np.sum(mat/np.linalg.norm(mat, axis=0)**3, axis=1)
+        exponential_force = np.sum(tot,axis=1)
+        
+        """Reciprocal force"""
+        reciprocal_force = -gain*np.sum(mat/np.linalg.norm(mat, axis=0)**3, axis=1)
+
+        """Quadratic force"""
+        quadratic_force = -1*gain/5*np.sum(mat,axis=1)
+        # print(f"quad_force: {quadratic_force}")
+
+        return exponential_force#quadratic_force#reciprocal_force#exponential_force#
     except:
+        e = sys.exc_info()[0]
+        # print(f"Error: {e}")
         return np.zeros((2, ))

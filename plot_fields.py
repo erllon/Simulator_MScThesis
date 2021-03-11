@@ -191,8 +191,8 @@ if __name__=="__main__":
     exponent1 = -(x_part1+y_part1)
     Z1 = np.exp(exponent1)
 
-    x_part2 = ((X-6*np.ones(X.shape))**2)/1
-    y_part2 = ((Y-6*np.ones(Y.shape))**2)/1
+    x_part2 = ((6*np.ones(X.shape)-X)**2)/1
+    y_part2 = ((6*np.ones(Y.shape)-Y)**2)/1
     exponent2 = -(x_part2+y_part2)
     Z2 = np.exp(exponent2)
 

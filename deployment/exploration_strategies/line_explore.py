@@ -173,6 +173,7 @@ class LineExplore(ExplorationStrategy):
       v_i_base = np.array([1, 0]).reshape(2, 1)
       MIN.v = rot_mat_2D(MIN.heading + np.random.uniform(F_o_angle-np.pi/4, F_o_angle-np.pi/4))@v_i_base#np.random.uniform(-abs(F_o_angle), abs(F_o_angle)))@v_i_base #F_o_angle-np.pi/6)@v_i_base(np.pi/1)*np.random.uniform(-1, 1))@v_i_base
       print(np.rad2deg(np.arctan2(MIN.v[1], MIN.v[0])), MIN.ID)
+      print(np.rad2deg(F_o_angle), MIN.ID)
       raise AtLandingConditionException
     # print(f"Clamp: {self.__clamp(F, 10)}")
     # return self.__clamp(F, 10)

@@ -6,6 +6,7 @@ from beacons.MIN.min import Min, MinState
 from deployment.following_strategies.attractive_follow import AttractiveFollow
 from deployment.following_strategies.straight_line_follow import StraightLineFollow
 from deployment.exploration_strategies.potential_fields_explore import PotentialFieldsExplore
+from deployment.exploration_strategies.new_potential_fields_explore import NewPotentialFieldsExplore
 from deployment.exploration_strategies.heuristic_explore import HeuristicExplore
 from deployment.following_strategies.no_follow import NoFollow
 from deployment.exploration_strategies.line_explore import LineExplore, LineExploreKind
@@ -17,20 +18,28 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
+from helpers import polar_to_vec as p2v
+
 def simulate(dt, mins, scs, env):
   scs.insert_into_environment(env)
   beacons = np.array([scs], dtype=object)
 
-  for m in mins:
-    m.insert_into_environment(env)
-    while not m.state == MinState.LANDED:
-          m.do_step(beacons, scs, env, dt)
-    beacons = np.append(beacons, m)
+  #scs.generate_target_pos(beacons,env, mins[0])
+  mins[0].target_pos = p2v(mins[0].target_r,np.pi/4)
+  #for m in mins:
+  for i in range(len(mins)):
+    mins[i].insert_into_environment(env)
+    while not mins[i].state == MinState.LANDED:
+      mins[i].do_step(beacons, scs, env, dt)
+    if i < len(mins)-1:
+      mins[i].generate_target_pos(beacons,env, mins[i+1])
+    beacons = np.append(beacons, mins[i])
     for b in beacons:
       b.compute_neighbors(beacons)
-    print(f"min {m.ID} landed at pos\t\t\t {m.pos}")
-    if not m.deployment_strategy.get_target() is None:
-          print(f"Its target now has {len(m.deployment_strategy.get_target().neighbors)} neighs\n------------------", )
+    print(f"min {mins[i].ID} landed at pos\t\t\t {mins[i].pos}")
+    print(f"min {mins[i].ID} target\t\t\t\t {mins[i].target_pos}")
+    if not mins[i].deployment_strategy.get_target() is None:
+          print(f"Its target now has {len(mins[i].deployment_strategy.get_target().neighbors)} neighs\n------------------", )
   print(f"minimum number of neighbors: {min(beacons, key=lambda b: len(b.neighbors))}") 
   return beacons   
 
@@ -71,10 +80,10 @@ if __name__ == "__main__":
 
   obstacle_corners_2D_1 = [
       np.array([
-        [-10, -1],
-        [-10, 20],
-        [10, 20],
-        [10, -1],
+        [-0.1, -0.1],
+        [-0.1,     10],
+        [10,         10],
+        [10,     -0.1],
       ]),
       # np.array([
       #   [2.5, 9.98],
@@ -136,12 +145,12 @@ if __name__ == "__main__":
   )
 
 # %%Parameter initialization
-  _animate, save_animation = False, False
-  start_animation_from_min_ID = 6
+  _animate, save_animation, plot_propterties = False, False, False
+  start_animation_from_min_ID = 0
 
   max_range = 3 #0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 12#3#10  #7#2*5#3
+  N_mins = 4 #10  #7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -170,11 +179,12 @@ if __name__ == "__main__":
       max_range,
       DeploymentFSM(
         NoFollow(),
-        LineExplore(
-          # RSSI_threshold=0.5,
-          K_o= 5*1*(i+1),#30,# 12 0.1,#0.01, #12 works somewhat with TWO_DIM_LOCAL, else much lower (0.4-ish)
-          kind=LineExploreKind.TWO_DIM_LOCAL,
-        )
+        # LineExplore(
+        #   # RSSI_threshold=0.5,
+        #   K_o= 5*1*(i+1),#30,# 12 0.1,#0.01, #12 works somewhat with TWO_DIM_LOCAL, else much lower (0.4-ish)
+        #   kind=LineExploreKind.TWO_DIM_LOCAL,
+        # )
+        NewPotentialFieldsExplore()
       ),
       xi_max=3,
       d_perf=1,
@@ -183,57 +193,50 @@ if __name__ == "__main__":
   ]
 
   beacons = simulate(dt, mins, scs, env)
-
-  # F = FieldPlotter(beacons=beacons, RSSI_threshold=LineExplore.RSSI_THRESHOLD)
-  # F.plot_potential_field()
-  # F.plot_force_field()
-  #HER
-  fig, ax = plt.subplots(1,1)#plt.subplots(nrows=3,ncols=1)
-  ax.title.set_text("Deployment")# ax[0].title.set_text("Deployment")
-  #HER
-  # ax[1].title.set_text(r"$\left\|\| F_{applied} \right\|\|$")
-  # ax[2].title.set_text(r"$\xi$ from neighbors")
-  # fig2, ax2 = plt.subplots(1)
-  # ax2.set_title("Force applied")
+  
+  if plot_propterties:
+    fig, ax = plt.subplots(nrows=3,ncols=1)
+    ax[0].title.set_text("Deployment")
+    ax[1].title.set_text(r"$\left\|\| F_{applied} \right\|\|$") #Set title
+    ax[2].title.set_text(r"$\xi$ from neighbors")               #Set title
+  else:
+    fig, ax = plt.subplots(1,1)
+    ax.title.set_text("Deployment")
 
   if _animate: # TODO: if _animate: everything in same fig,  else: drones in one fig, "properties" in another fig
     for mn in mins[:start_animation_from_min_ID]:
-      mn.plot(ax)
-      # mn.plot(ax[0])
-      # mn.plot_traj_line(ax[0])
-      # mn.plot_force_traj_line(ax[1])
+      if plot_propterties:
+        mn.plot(ax[0])
+        mn.plot_traj_line(ax[0])
+        mn.plot_force_traj_line(ax[1])
+      else:
+        mn.plot(ax)
+
 
     offset, min_counter = [0], [start_animation_from_min_ID]
 
     def init():
-      if type(ax) == np.ndarray:
-        # scs.plot(ax[0])
-        # env.plot(ax[0])
-        scs.plot(ax)
-        env.plot(ax)
+      if plot_propterties:
+        scs.plot(ax[0])
+        env.plot(ax[0])
         artists = []
-        for mn in mins:
-          artists += mn.plot(ax)
-          artists += (mn.plot_traj_line(ax), )
-          # artists += mn.plot(ax[0])
-          # artists += (mn.plot_traj_line(ax[0]), ) #Type: Line2D(_line6)
-          # artists += (mn.plot_force_traj_line(ax[1]), )
-          # artists += (mn.plot_xi_traj_line(ax[2]), )
+        for mn in mins:        
+          artists += mn.plot(ax[0])
+          artists += (mn.plot_traj_line(ax[0]), ) #Type: Line2D(_line6)
+          artists += (mn.plot_force_traj_line(ax[1]), )
+          artists += (mn.plot_xi_traj_line(ax[2]), )
           mn.plot_pos_from_pos_traj_index(0)
           mn.plot_force_from_traj_index(0)
           mn.plot_xi_from_traj_index(0)
-        ax[1].legend()
+        if start_animation_from_min_ID == 0:
+          ax[1].legend()  
       else:
         scs.plot(ax)
         env.plot(ax)
-        # scs.plot(ax[0])
-        # env.plot(ax[0])
         artists = []
         for mn in mins:
           artists += mn.plot(ax)
           artists += (mn.plot_traj_line(ax), )
-          # artists += mn.plot(ax[0])
-          # artists += (mn.plot_traj_line(ax[0]), )
           mn.plot_pos_from_pos_traj_index(0)
       return artists
 
@@ -242,11 +245,12 @@ if __name__ == "__main__":
         offset[0] += mins[min_counter[0]].get_pos_traj_length()
         min_counter[0] += 1
       plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
-      # plt_force_traj = mins[min_counter[0]].plot_force_from_traj_index(i-offset[0])
-      # plt_xi_traj = mins[min_counter[0]].plot_xi_from_traj_index(i-offset[0])
-      return plt_pos_traj, #plt_force_traj, plt_xi_traj  #mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0]), mins[min_counter[0]].plot_force_from_traj_index(i-offset[0]) #2
+      #plt_force_traj = mins[min_counter[0]].plot_force_from_traj_index(i-offset[0])
+      #plt_xi_traj = mins[min_counter[0]].plot_xi_from_traj_index(i-offset[0])
+      return plt_pos_traj#, plt_force_traj, plt_xi_traj  #mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0]), mins[min_counter[0]].plot_force_from_traj_index(i-offset[0]) #2
 
     anim = FuncAnimation(fig, animate, init_func=init, interval=2, blit=False)
+    
     if save_animation:
       animation_name = "animation.gif"
       print("Saving animation")
@@ -254,29 +258,22 @@ if __name__ == "__main__":
       print(f"Animation saved to {animation_name}")
 
   else:
-    #HER
-    # env.plot(ax[0])
-    # scs.plot(ax[0])
-    env.plot(ax)
-    scs.plot(ax)
-    for mn in mins:
-      #HER
-      # mn.plot(ax[0])
-      # mn.plot_traj_line(ax[0])
-      mn.plot(ax)
-      mn.plot_traj_line(ax)
-      # mn.plot_force_traj_line(ax[1])
-      # mn.plot_xi_traj_line(ax[2])
-      # HER
-      # ax[1].legend()
-      # ax.legend()
+    if plot_propterties:
+      env.plot(ax[0])
+      scs.plot(ax[0])
+      for mn in mins:
+        mn.plot(ax[0])
+        mn.plot_traj_line(ax[0])
 
-      #ax[2].legend()
-    ax.axis('equal')
+      mn.plot_force_traj_line(ax[1])
+      mn.plot_xi_traj_line(ax[2])
+    else:
+      env.plot(ax)
+      scs.plot(ax)
+      for mn in mins:
+        mn.plot(ax)
+        mn.plot_traj_line(ax)
+      ax.legend()
+      ax.axis('equal')
 
-  
   plt.show()
-
-
-# %%
-#
