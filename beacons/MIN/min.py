@@ -64,31 +64,42 @@ class Min(Beacon):
     self._v_traj = np.hstack((self._v_traj, np.linalg.norm(v)))
     #self._xi_traj blir satt i self.deployment_strategy.get_velocity_vector()  
 
-  def generate_target_pos(self, beacons, ENV, next_min):
-    # Get vectors to neighbors
-    # if type(self) == 
+  def generate_target_pos(self, beacons, ENV, prev_min, next_min):
     self.compute_neighbors(beacons)
-    vecs_to_neighs = [
-        # normalize(self.get_vec_to_other(n).reshape(2, 1)) for n in self.neighbors if not (self.get_vec_to_other(n) == 0).all()
-        self.get_vec_to_other(n).reshape(2, 1) for n in self.neighbors if not (self.get_vec_to_other(n) == 0).all()
-
-    ]
+    # vecs_to_neighs = [
+    #     # normalize(self.get_vec_to_other(n).reshape(2, 1)) for n in self.neighbors if not (self.get_vec_to_other(n) == 0).all()
+    #     self.get_vec_to_other(n).reshape(2, 1) for n in self.neighbors if not (self.get_vec_to_other(n) == 0).all()
+    # ]
+    vec_to_prev = self.get_vec_to_other(prev_min).reshape(2, 1)
     for s in self.sensors:
         s.sense(ENV)
-    vecs_to_obs = [
-        # normalize((R_z(self.heading)@R_z(s.host_relative_angle)@s.measurement.get_val())[:2])
-        # for s in self.sensors if s.measurement.is_valid()
-        (R_z(self.heading)@R_z(s.host_relative_angle)@s.measurement.get_val())[:2]
-        for s in self.sensors if s.measurement.is_valid()
-    ]
-    if len(vecs_to_obs) != 0:
-      tot_vec = - np.sum(vecs_to_neighs,axis=0).reshape(2, ) - np.sum(vecs_to_obs,axis=0).reshape(2, )
-    else:
-      tot_vec = - np.sum(vecs_to_neighs,axis=0).reshape(2, )
-    mid_angle = gva(tot_vec)
+    # vecs_to_obs = [
+    #     # normalize((R_z(self.heading)@R_z(s.host_relative_angle)@s.measurement.get_val())[:2])
+    #     # for s in self.sensors if s.measurement.is_valid()
+    #     (R_z(self.heading)@R_z(s.host_relative_angle)@s.measurement.get_val())[:2]
+    #     for s in self.sensors if s.measurement.is_valid()
+    # ]
+    vecs_to_obs = []
+    for s in self.sensors:
+      if s.measurement.is_valid():
+        #vector to obstacle in world frame
+        vector = (R_z(self.heading)@R_z(s.host_relative_angle)@s.measurement.get_val())[:2]
+        #scaling the vector that points away from obstalce
+        #so that obstacles that are close to the drone produce larger vectors
+        meas_length = np.linalg.norm(vector)
+        vec_to_obs = (self.range - meas_length)*normalize(vector)
+        vecs_to_obs.append(vec_to_obs)
+
+    if len(vecs_to_obs) != 0: #if obstacles present
+      tot_vec = self.pos - (self.range - np.linalg.norm(vec_to_prev))*normalize(vec_to_prev.reshape(2, )) - np.sum(vecs_to_obs,axis=0).reshape(2, )
+
+    else: #if no obstacles present, only consider vector pointing away from prev min
+      tot_vec = - vec_to_prev.reshape(2, ) #- np.sum(vecs_to_neighs,axis=0).reshape(2, )
+    
+    mid_angle = gva(tot_vec) #angle that is "mean" of angle-interval
     target_angle = mid_angle + np.random.uniform(-1,1)*np.pi/4
 
-    target = self.pos + p2v(self.target_r,target_angle)
+    target = self.pos + p2v(self.target_r,target_angle) #p2v(self.target_r, target_angle)
     next_min.target_pos = target
     #Get vectors to obstacles
     #Sum vectors to form "red" vector

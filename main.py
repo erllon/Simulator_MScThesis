@@ -25,14 +25,17 @@ def simulate(dt, mins, scs, env):
   beacons = np.array([scs], dtype=object)
 
   #scs.generate_target_pos(beacons,env, mins[0])
-  mins[0].target_pos = p2v(mins[0].target_r,np.pi/4)
+  mins[0].target_pos = p2v(mins[0].target_r,np.random.uniform(0, np.pi/2))
   #for m in mins:
   for i in range(len(mins)):
     mins[i].insert_into_environment(env)
     while not mins[i].state == MinState.LANDED:
       mins[i].do_step(beacons, scs, env, dt)
-    if i < len(mins)-1:
-      mins[i].generate_target_pos(beacons,env, mins[i+1])
+    if i < len(mins)-1: #as long as i is not the index of the last min
+      if i-1 > 0: #"prev_drone" for drone 1 will be the scs
+        mins[i].generate_target_pos(beacons,env,mins[i-1], mins[i+1])
+      else:
+        mins[i].generate_target_pos(beacons,env,scs, mins[i+1])
     beacons = np.append(beacons, mins[i])
     for b in beacons:
       b.compute_neighbors(beacons)
@@ -145,7 +148,7 @@ if __name__ == "__main__":
   )
 
 # %%Parameter initialization
-  _animate, save_animation, plot_propterties = True, False, False
+  _animate, save_animation, plot_propterties = False, False, False
   start_animation_from_min_ID = 0
 
   max_range = 3 #0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
