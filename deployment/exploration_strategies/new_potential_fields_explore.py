@@ -13,7 +13,9 @@ import numpy as np
 
 class NewPotentialFieldsExplore(ExplorationStrategy):
     
-    def __init__(self, K_n=1, K_o=1, min_force_threshold=0.1):
+    def __init__(self, K_n=1, K_o=3
+    
+    , min_force_threshold=0.1):
         self.__K_n = K_n
         self.__K_o = K_o
         self.__min_force_threshold = min_force_threshold    

@@ -153,7 +153,7 @@ if __name__ == "__main__":
 
   max_range = 3 #0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 5 #10  #7#2*5#3
+  N_mins = 3 #10  #7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -273,9 +273,13 @@ if __name__ == "__main__":
     else:
       env.plot(ax)
       scs.plot(ax)
-      for mn in mins:
-        mn.plot(ax)
-        mn.plot_traj_line(ax)
+      for j in range(len(mins)):#mn in mins:
+        mins[j].plot(ax)
+        mins[j].plot_traj_line(ax)
+        if j == 0:
+          mins[j].plot_vectors(scs,env,ax)
+        else:
+          mins[j].plot_vectors(mins[j-1],env,ax)
       ax.legend()
       ax.axis('equal')
 

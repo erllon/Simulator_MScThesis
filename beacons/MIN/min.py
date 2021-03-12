@@ -21,6 +21,11 @@ class MinState(Enum):
   LANDED    = 3
   NEIGHBOR  = 4
 
+class VectorTypes(Enum):
+  OBSTACLE = 0,
+  PREV_MIN = 1,
+  TOTAL    = 2
+
 class Min(Beacon):
       
   clr = {
@@ -29,6 +34,12 @@ class Min(Beacon):
     MinState.EXPLORING: "green",
     MinState.LANDED:    "black",
     MinState.NEIGHBOR:  "blue",
+  }
+
+  vec_clr = {
+    VectorTypes.OBSTACLE: "blue",
+    VectorTypes.PREV_MIN: "green",
+    VectorTypes.TOTAL:    "red"
   }
 
   def __init__(self, max_range, deployment_strategy, xi_max=5, d_perf=1, d_none=3, k=0, a=0, v=np.zeros((2, ))):
@@ -91,10 +102,10 @@ class Min(Beacon):
         vecs_to_obs.append(vec_to_obs)
 
     if len(vecs_to_obs) != 0: #if obstacles present
-      tot_vec = self.pos - (self.range - np.linalg.norm(vec_to_prev))*normalize(vec_to_prev.reshape(2, )) - np.sum(vecs_to_obs,axis=0).reshape(2, )
-
+      # tot_vec = self.pos - vec_to_prev.reshape(2, ) - np.sum(vecs_to_obs,axis=0).reshape(2, )
+      tot_vec =  - (self.range - np.linalg.norm(vec_to_prev))*normalize(vec_to_prev.reshape(2, )) - np.sum(vecs_to_obs,axis=0).reshape(2, )
     else: #if no obstacles present, only consider vector pointing away from prev min
-      tot_vec = - vec_to_prev.reshape(2, ) #- np.sum(vecs_to_neighs,axis=0).reshape(2, )
+      tot_vec =  - vec_to_prev.reshape(2, ) #- np.sum(vecs_to_neighs,axis=0).reshape(2, )
     
     mid_angle = gva(tot_vec) #angle that is "mean" of angle-interval
     target_angle = mid_angle + np.random.uniform(-1,1)*np.pi/4
@@ -118,7 +129,28 @@ class Min(Beacon):
   def plot(self, axis):
     self.heading_arrow = plot_vec(axis, p2v(1, self.heading), self.pos)
     return super().plot(axis, clr=self.clr[self.state]) + (self.heading_arrow, )
-
+  
+  def plot_vectors(self, prev_drone, ENV, axis):
+    self.obstacles = []
+    for s in self.sensors:
+      s.sense(ENV)
+    for s in self.sensors:
+      if s.measurement.is_valid():
+        #vector to obstacle in world frame
+        vector = (R_z(self.heading)@R_z(s.host_relative_angle)@s.measurement.get_val())[:2]
+        #scaling the vector that points away from obstalce
+        #so that obstacles that are close to the drone produce larger vectors
+        meas_length = np.linalg.norm(vector)
+        vec_to_obs = (self.range - meas_length)*normalize(vector)
+        self.obstacles.append(vec_to_obs)
+    self.prev_drone = self.get_vec_to_other(prev_drone)
+    self.a = plot_vec(axis, -self.prev_drone, self.pos, clr=self.vec_clr[VectorTypes.PREV_MIN])
+    for obs_vec in self.obstacles:
+      self.b = plot_vec(axis, -obs_vec, self.pos, clr=self.vec_clr[VectorTypes.OBSTACLE])
+    if len(self.obstacles) != 0:
+      self.c = plot_vec(axis, -self.prev_drone- np.sum(self.obstacles,axis=0).reshape(2, ), self.pos, clr=self.vec_clr[VectorTypes.TOTAL] )
+    else:
+      self.c = plot_vec(axis, -self.prev_drone, self.pos, clr=self.vec_clr[VectorTypes.TOTAL] )
   def plot_traj_line(self, axis):
     self.traj_line, = axis.plot(*self._pos_traj, alpha=0.4)
     return self.traj_line
