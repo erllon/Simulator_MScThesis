@@ -5,6 +5,7 @@ from beacons.MIN.min import Min, MinState
 
 from deployment.following_strategies.attractive_follow import AttractiveFollow
 from deployment.following_strategies.straight_line_follow import StraightLineFollow
+from deployment.following_strategies.new_attractive_follow import NewAttractiveFollow
 from deployment.exploration_strategies.potential_fields_explore import PotentialFieldsExplore
 from deployment.exploration_strategies.new_potential_fields_explore import NewPotentialFieldsExplore
 from deployment.exploration_strategies.heuristic_explore import HeuristicExplore
@@ -26,6 +27,7 @@ def simulate(dt, mins, scs, env):
 
   #scs.generate_target_pos(beacons,env, mins[0])
   mins[0].target_pos = p2v(mins[0].target_r,np.random.uniform(0, np.pi/2))
+  mins[0].prev = scs
   #for m in mins:
   for i in range(len(mins)):
     mins[i].insert_into_environment(env)
@@ -36,6 +38,7 @@ def simulate(dt, mins, scs, env):
         mins[i].generate_target_pos(beacons,env,mins[i-1], mins[i+1])
       else:
         mins[i].generate_target_pos(beacons,env,scs, mins[i+1])
+      mins[i+1].prev = mins[i]
     beacons = np.append(beacons, mins[i])
     for b in beacons:
       b.compute_neighbors(beacons)
@@ -149,11 +152,11 @@ if __name__ == "__main__":
 
 # %%Parameter initialization
   _animate, save_animation, plot_propterties = False, False, False
-  start_animation_from_min_ID = 0
+  start_animation_from_min_ID = 1
 
   max_range = 3 #0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 3 #10  #7#2*5#3
+  N_mins = 5  #7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -181,12 +184,13 @@ if __name__ == "__main__":
     Min(
       max_range,
       DeploymentFSM(
-        NoFollow(),
+        # NoFollow(),
         # LineExplore(
         #   # RSSI_threshold=0.5,
         #   K_o= 5*1*(i+1),#30,# 12 0.1,#0.01, #12 works somewhat with TWO_DIM_LOCAL, else much lower (0.4-ish)
         #   kind=LineExploreKind.TWO_DIM_LOCAL,
         # )
+        NewAttractiveFollow(K_o=1),
         NewPotentialFieldsExplore()
       ),
       xi_max=3,
@@ -211,9 +215,11 @@ if __name__ == "__main__":
       if plot_propterties:
         mn.plot(ax[0])
         mn.plot_traj_line(ax[0])
+        mn.plot_vectors(mn.prev, env, ax[0])
         mn.plot_force_traj_line(ax[1])
       else:
         mn.plot(ax)
+        mn.plot_vectors(mn.prev, env, ax)      
 
 
     offset, min_counter = [0], [start_animation_from_min_ID]
@@ -267,7 +273,7 @@ if __name__ == "__main__":
       for mn in mins:
         mn.plot(ax[0])
         mn.plot_traj_line(ax[0])
-
+        mn.plot_vectors(mn.prev, env, ax[0])
       mn.plot_force_traj_line(ax[1])
       mn.plot_xi_traj_line(ax[2])
     else:

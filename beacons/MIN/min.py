@@ -24,7 +24,8 @@ class MinState(Enum):
 class VectorTypes(Enum):
   OBSTACLE = 0,
   PREV_MIN = 1,
-  TOTAL    = 2
+  TOTAL    = 2,
+  INTERVAL = 3
 
 class Min(Beacon):
       
@@ -39,14 +40,17 @@ class Min(Beacon):
   vec_clr = {
     VectorTypes.OBSTACLE: "blue",
     VectorTypes.PREV_MIN: "green",
-    VectorTypes.TOTAL:    "red"
+    VectorTypes.TOTAL:    "red",
+    VectorTypes.INTERVAL: "black"
   }
 
-  def __init__(self, max_range, deployment_strategy, xi_max=5, d_perf=1, d_none=3, k=0, a=0, v=np.zeros((2, ))):
+  def __init__(self, max_range, deployment_strategy, xi_max=5, d_perf=1, d_none=3, k=0, a=0, v=np.zeros((2, ),), K_target=1):
     super().__init__(max_range,xi_max, d_perf, d_none, pos=None)
+    self.K_target = K_target
     self.deployment_strategy = deployment_strategy
     self.sensors = []
     self.target_pos = np.array([None, None]).reshape(2, )
+    self.prev = None
     for ang in np.arange(0, 360, 90):
       r = RangeSensor(max_range)
       r.mount(self, ang)
@@ -112,6 +116,7 @@ class Min(Beacon):
 
     target = self.pos + p2v(self.target_r,target_angle) #p2v(self.target_r, target_angle)
     next_min.target_pos = target
+    next_min.prev_drone = prev_min
     #Get vectors to obstacles
     #Sum vectors to form "red" vector
     #Generate target on cirle within interval (angle)
@@ -131,7 +136,7 @@ class Min(Beacon):
     return super().plot(axis, clr=self.clr[self.state]) + (self.heading_arrow, )
   
   def plot_vectors(self, prev_drone, ENV, axis):
-    self.obstacles = []
+    obstacles = []
     for s in self.sensors:
       s.sense(ENV)
     for s in self.sensors:
@@ -142,15 +147,24 @@ class Min(Beacon):
         #so that obstacles that are close to the drone produce larger vectors
         meas_length = np.linalg.norm(vector)
         vec_to_obs = (self.range - meas_length)*normalize(vector)
-        self.obstacles.append(vec_to_obs)
-    self.prev_drone = self.get_vec_to_other(prev_drone)
-    self.a = plot_vec(axis, -self.prev_drone, self.pos, clr=self.vec_clr[VectorTypes.PREV_MIN])
-    for obs_vec in self.obstacles:
+        obstacles.append(vec_to_obs)
+    vec_to_prev_drone = self.get_vec_to_other(self.prev)
+    self.a = plot_vec(axis, -vec_to_prev_drone, self.pos, clr=self.vec_clr[VectorTypes.PREV_MIN])
+    for obs_vec in obstacles:
       self.b = plot_vec(axis, -obs_vec, self.pos, clr=self.vec_clr[VectorTypes.OBSTACLE])
-    if len(self.obstacles) != 0:
-      self.c = plot_vec(axis, -self.prev_drone- np.sum(self.obstacles,axis=0).reshape(2, ), self.pos, clr=self.vec_clr[VectorTypes.TOTAL] )
+
+    if len(obstacles) != 0:
+      tot_vec = -vec_to_prev_drone- np.sum(obstacles,axis=0).reshape(2, )
     else:
-      self.c = plot_vec(axis, -self.prev_drone, self.pos, clr=self.vec_clr[VectorTypes.TOTAL] )
+      tot_vec = -vec_to_prev_drone
+
+    self.c = plot_vec(axis, tot_vec, self.pos, clr=self.vec_clr[VectorTypes.TOTAL] )
+    interval_vec_1 = R_z(np.pi/4)[:2,:2]@tot_vec
+    interval_vec_2 = R_z(-np.pi/4)[:2,:2]@tot_vec
+    self.d1 = plot_vec(axis, interval_vec_1, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
+    self.d2 = plot_vec(axis, interval_vec_2, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
+
+
   def plot_traj_line(self, axis):
     self.traj_line, = axis.plot(*self._pos_traj, alpha=0.4)
     return self.traj_line
