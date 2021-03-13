@@ -44,13 +44,16 @@ class Min(Beacon):
     VectorTypes.INTERVAL: "black"
   }
 
-  def __init__(self, max_range, deployment_strategy, xi_max=5, d_perf=1, d_none=3, k=0, a=0, v=np.zeros((2, ),), K_target=1):
+  def __init__(self, max_range, deployment_strategy, xi_max=5, d_perf=1, d_none=3, k=0, a=0, v=np.zeros((2, ),), K_target=1, target_threshold=0.15):
     super().__init__(max_range,xi_max, d_perf, d_none, pos=None)
     self.K_target = K_target
     self.deployment_strategy = deployment_strategy
+    self.target_threshold = target_threshold
     self.sensors = []
     self.target_pos = np.array([None, None]).reshape(2, )
     self.prev = None
+    self.test = np.zeros(2)
+    self.test2 = np.zeros(2)
     for ang in np.arange(0, 360, 90):
       r = RangeSensor(max_range)
       r.mount(self, ang)
@@ -110,13 +113,22 @@ class Min(Beacon):
       tot_vec =  - (self.range - np.linalg.norm(vec_to_prev))*normalize(vec_to_prev.reshape(2, )) - np.sum(vecs_to_obs,axis=0).reshape(2, )
     else: #if no obstacles present, only consider vector pointing away from prev min
       tot_vec =  - vec_to_prev.reshape(2, ) #- np.sum(vecs_to_neighs,axis=0).reshape(2, )
-    
+
     mid_angle = gva(tot_vec) #angle that is "mean" of angle-interval
     target_angle = mid_angle + np.random.uniform(-1,1)*np.pi/4
 
-    target = self.pos + p2v(self.target_r,target_angle) #p2v(self.target_r, target_angle)
-    next_min.target_pos = target
+    Rot_mat = R_z(gva(tot_vec))
+    origin_transl = np.hstack((self.pos,0)).reshape((3,1))
+    rest = np.array([0,0,0,1])
+    a = np.hstack((Rot_mat,origin_transl))
+    h_trans_mat = np.vstack((a,rest))#np.vstack((np.vstack((Rot_mat,origin_transl)),rest))
+
+    target_pos = self.pos + R_z(gva(tot_vec))[:2,:2]@p2v(self.target_r,target_angle) #p2v(self.target_r, target_angle)
+    self.test = target_pos#gva(target_pos)
+    self.test2 = p2v(self.target_r,target_angle)
+    next_min.target_pos = target_pos
     next_min.prev_drone = prev_min
+    return target_pos
     #Get vectors to obstacles
     #Sum vectors to form "red" vector
     #Generate target on cirle within interval (angle)
@@ -163,6 +175,8 @@ class Min(Beacon):
     interval_vec_2 = R_z(-np.pi/4)[:2,:2]@tot_vec
     self.d1 = plot_vec(axis, interval_vec_1, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
     self.d2 = plot_vec(axis, interval_vec_2, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
+    self.test1_1 = axis.plot(*self.test, color="red",marker="o",markersize=8)
+    self.test2_2 = axis.plot(*self.test2, color="green",marker="o",markersize=8)
 
 
   def plot_traj_line(self, axis):

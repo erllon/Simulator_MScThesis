@@ -63,7 +63,7 @@ class FollowingStrategy(ABC):
             self.__curr_RSSI = MIN.get_RSSI(self.btf)
             if self.is_following_target():
                 if self.__curr_RSSI >= FollowingStrategy.DEADZONE_RSSI_STRENGTH:
-                    if (MIN.pos == self.target.pos).all():
+                    if np.linalg.norm(MIN.pos - self.target.pos) < 0.15:#(MIN.pos == self.target.pos).all():
                         raise AtTargetException
                     if self.__deadzone_v is None:
                         """
