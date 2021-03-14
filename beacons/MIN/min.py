@@ -57,6 +57,9 @@ class Min(Beacon):
     for ang in np.arange(0, 360, 90):
       r = RangeSensor(max_range)
       r.mount(self, ang)
+    self.tot_vec = np.zeros(2)
+    self.vecs_to_obs = []
+    self.vec_to_prev = np.zeros(2)
 
   def insert_into_environment(self, env):
     super().insert_into_environment(env)
@@ -88,7 +91,7 @@ class Min(Beacon):
     #     # normalize(self.get_vec_to_other(n).reshape(2, 1)) for n in self.neighbors if not (self.get_vec_to_other(n) == 0).all()
     #     self.get_vec_to_other(n).reshape(2, 1) for n in self.neighbors if not (self.get_vec_to_other(n) == 0).all()
     # ]
-    vec_to_prev = self.get_vec_to_other(prev_min).reshape(2, 1)
+    self.vec_to_prev = self.get_vec_to_other(prev_min).reshape(2, 1)
     for s in self.sensors:
         s.sense(ENV)
     # vecs_to_obs = [
@@ -97,7 +100,7 @@ class Min(Beacon):
     #     (R_z(self.heading)@R_z(s.host_relative_angle)@s.measurement.get_val())[:2]
     #     for s in self.sensors if s.measurement.is_valid()
     # ]
-    vecs_to_obs = []
+    self.vecs_to_obs = []
     for s in self.sensors:
       if s.measurement.is_valid():
         #vector to obstacle in world frame
@@ -106,26 +109,34 @@ class Min(Beacon):
         #so that obstacles that are close to the drone produce larger vectors
         meas_length = np.linalg.norm(vector)
         vec_to_obs = (self.range - meas_length)*normalize(vector)
-        vecs_to_obs.append(vec_to_obs)
+        self.vecs_to_obs.append(vec_to_obs)
 
-    if len(vecs_to_obs) != 0: #if obstacles present
-      # tot_vec = self.pos - vec_to_prev.reshape(2, ) - np.sum(vecs_to_obs,axis=0).reshape(2, )
-      tot_vec =  - (self.range - np.linalg.norm(vec_to_prev))*normalize(vec_to_prev.reshape(2, )) - np.sum(vecs_to_obs,axis=0).reshape(2, )
+    if len(self.vecs_to_obs) != 0: #if obstacles present
+      # tot_vec = - vec_to_prev.reshape(2, ) - np.sum(vecs_to_obs,axis=0).reshape(2, ) #+ self.pos
+      self.tot_vec =  - (self.range - np.linalg.norm(self.vec_to_prev))*normalize(self.vec_to_prev.reshape(2, )) - np.sum(self.vecs_to_obs,axis=0).reshape(2, )
+      self.vec_to_prev = (self.range - np.linalg.norm(self.vec_to_prev))*normalize(self.vec_to_prev.reshape(2, ))
     else: #if no obstacles present, only consider vector pointing away from prev min
-      tot_vec =  - vec_to_prev.reshape(2, ) #- np.sum(vecs_to_neighs,axis=0).reshape(2, )
+      self.tot_vec =  - self.vec_to_prev.reshape(2, ) #- np.sum(vecs_to_neighs,axis=0).reshape(2, )
 
-    mid_angle = gva(tot_vec) #angle that is "mean" of angle-interval
-    target_angle = mid_angle + np.random.uniform(-1,1)*np.pi/4
-
-    Rot_mat = R_z(gva(tot_vec))
+    print(f"tot_vec: {self.tot_vec}")
+    mid_angle = gva(self.tot_vec) #angle that is "mean" of angle-interval
+    print(f"angle_tot_vec: {mid_angle*180/np.pi}")
+    rand = np.random.uniform(-1,1)*np.pi/4
+    print(f"rand: {rand*180/np.pi}")
+    target_angle = mid_angle + rand#np.random.uniform(-1,1)*np.pi/4
+    print(f"target_angle_deg: {target_angle*180/np.pi}")
+    Rot_mat = R_z(gva(self.tot_vec))
     origin_transl = np.hstack((self.pos,0)).reshape((3,1))
     rest = np.array([0,0,0,1])
     a = np.hstack((Rot_mat,origin_transl))
     h_trans_mat = np.vstack((a,rest))#np.vstack((np.vstack((Rot_mat,origin_transl)),rest))
 
-    target_pos = self.pos + R_z(gva(tot_vec))[:2,:2]@p2v(self.target_r,target_angle) #p2v(self.target_r, target_angle)
-    self.test = target_pos#gva(target_pos)
-    self.test2 = p2v(self.target_r,target_angle)
+    target_pos = self.pos + p2v(self.target_r, target_angle) #R_z(gva(tot_vec))[:2,:2]@p2v(self.target_r,target_angle)
+
+    target_pos_tilde = np.hstack((target_pos,0,1)).reshape((4,1))
+    target_pos_world = h_trans_mat @ target_pos_tilde
+    self.test = target_pos #R_z(-gva(tot_vec))[:2,:2]@target_pos #target_pos_world[:2]#gva(target_pos)
+    self.test2 = p2v(self.target_r, target_angle)
     next_min.target_pos = target_pos
     next_min.prev_drone = prev_min
     return target_pos
@@ -148,35 +159,45 @@ class Min(Beacon):
     return super().plot(axis, clr=self.clr[self.state]) + (self.heading_arrow, )
   
   def plot_vectors(self, prev_drone, ENV, axis):
-    obstacles = []
-    for s in self.sensors:
-      s.sense(ENV)
-    for s in self.sensors:
-      if s.measurement.is_valid():
-        #vector to obstacle in world frame
-        vector = (R_z(self.heading)@R_z(s.host_relative_angle)@s.measurement.get_val())[:2]
-        #scaling the vector that points away from obstalce
-        #so that obstacles that are close to the drone produce larger vectors
-        meas_length = np.linalg.norm(vector)
-        vec_to_obs = (self.range - meas_length)*normalize(vector)
-        obstacles.append(vec_to_obs)
-    vec_to_prev_drone = self.get_vec_to_other(self.prev)
-    self.a = plot_vec(axis, -vec_to_prev_drone, self.pos, clr=self.vec_clr[VectorTypes.PREV_MIN])
-    for obs_vec in obstacles:
+    # obstacles = []
+    # for s in self.sensors:
+    #   s.sense(ENV)
+    # for s in self.sensors:
+    #   if s.measurement.is_valid():
+    #     #vector to obstacle in world frame
+    #     vector = (R_z(self.heading)@R_z(s.host_relative_angle)@s.measurement.get_val())[:2]
+    #     #scaling the vector that points away from obstalce
+    #     #so that obstacles that are close to the drone produce larger vectors
+    #     meas_length = np.linalg.norm(vector)
+    #     vec_to_obs = (self.range - meas_length)*normalize(vector)
+    #     obstacles.append(vec_to_obs)
+    # vec_to_prev_drone = self.get_vec_to_other(self.prev)
+    # self.a = plot_vec(axis, -vec_to_prev_drone, self.pos, clr=self.vec_clr[VectorTypes.PREV_MIN])
+    # for obs_vec in obstacles:
+    #   self.b = plot_vec(axis, -obs_vec, self.pos, clr=self.vec_clr[VectorTypes.OBSTACLE])
+
+    # if len(obstacles) != 0:
+    #   tot_vec = -vec_to_prev_drone - np.sum(obstacles,axis=0).reshape(2, )
+    # else:
+    #   tot_vec = -vec_to_prev_drone
+
+
+    for obs_vec in self.vecs_to_obs:
       self.b = plot_vec(axis, -obs_vec, self.pos, clr=self.vec_clr[VectorTypes.OBSTACLE])
-
-    if len(obstacles) != 0:
-      tot_vec = -vec_to_prev_drone- np.sum(obstacles,axis=0).reshape(2, )
-    else:
-      tot_vec = -vec_to_prev_drone
-
-    self.c = plot_vec(axis, tot_vec, self.pos, clr=self.vec_clr[VectorTypes.TOTAL] )
-    interval_vec_1 = R_z(np.pi/4)[:2,:2]@tot_vec
-    interval_vec_2 = R_z(-np.pi/4)[:2,:2]@tot_vec
+    self.c1 = plot_vec(axis, self.tot_vec, self.pos, clr=self.vec_clr[VectorTypes.TOTAL] )
+    # self.c2 = plot_vec(axis, self.tot_vec, np.zeros(2), clr=self.vec_clr[VectorTypes.TOTAL] )
+    interval_vec_1 = R_z(np.pi/4)[:2,:2]@self.tot_vec
+    interval_vec_2 = R_z(-np.pi/4)[:2,:2]@self.tot_vec
     self.d1 = plot_vec(axis, interval_vec_1, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
     self.d2 = plot_vec(axis, interval_vec_2, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
-    self.test1_1 = axis.plot(*self.test, color="red",marker="o",markersize=8)
-    self.test2_2 = axis.plot(*self.test2, color="green",marker="o",markersize=8)
+    self.e = plot_vec(axis, self.vec_to_prev, self.pos, clr=self.vec_clr[VectorTypes.PREV_MIN])
+
+    # self.e1 = plot_vec(axis, interval_vec_1, np.zeros(2), clr=self.vec_clr[VectorTypes.INTERVAL])
+    # self.e2 = plot_vec(axis, interval_vec_2, np.zeros(2), clr=self.vec_clr[VectorTypes.INTERVAL])
+    # self.test1_1 = axis.plot(*self.test, color="red",marker="o",markersize=8)
+    # axis.annotate(f"{self.ID+1}", self.test)
+    # self.test2_2 = axis.plot(*self.test2, color="green",marker="o",markersize=8)
+    # axis.annotate(f"{self.ID+1}", self.test2)
 
 
   def plot_traj_line(self, axis):
