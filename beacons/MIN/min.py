@@ -41,7 +41,7 @@ class Min(Beacon):
     VectorTypes.OBSTACLE: "blue",
     VectorTypes.PREV_MIN: "green",
     VectorTypes.TOTAL:    "red",
-    VectorTypes.INTERVAL: "black"
+    VectorTypes.INTERVAL: "orange"
   }
 
   def __init__(self, max_range, deployment_strategy, xi_max=5, d_perf=1, d_none=3, k=0, a=0, v=np.zeros((2, ),), K_target=1, target_threshold=0.15):
@@ -159,38 +159,15 @@ class Min(Beacon):
     return super().plot(axis, clr=self.clr[self.state]) + (self.heading_arrow, )
   
   def plot_vectors(self, prev_drone, ENV, axis):
-    # obstacles = []
-    # for s in self.sensors:
-    #   s.sense(ENV)
-    # for s in self.sensors:
-    #   if s.measurement.is_valid():
-    #     #vector to obstacle in world frame
-    #     vector = (R_z(self.heading)@R_z(s.host_relative_angle)@s.measurement.get_val())[:2]
-    #     #scaling the vector that points away from obstalce
-    #     #so that obstacles that are close to the drone produce larger vectors
-    #     meas_length = np.linalg.norm(vector)
-    #     vec_to_obs = (self.range - meas_length)*normalize(vector)
-    #     obstacles.append(vec_to_obs)
-    # vec_to_prev_drone = self.get_vec_to_other(self.prev)
-    # self.a = plot_vec(axis, -vec_to_prev_drone, self.pos, clr=self.vec_clr[VectorTypes.PREV_MIN])
-    # for obs_vec in obstacles:
-    #   self.b = plot_vec(axis, -obs_vec, self.pos, clr=self.vec_clr[VectorTypes.OBSTACLE])
-
-    # if len(obstacles) != 0:
-    #   tot_vec = -vec_to_prev_drone - np.sum(obstacles,axis=0).reshape(2, )
-    # else:
-    #   tot_vec = -vec_to_prev_drone
-
-
-    for obs_vec in self.vecs_to_obs:
-      self.b = plot_vec(axis, -obs_vec, self.pos, clr=self.vec_clr[VectorTypes.OBSTACLE])
-    self.c1 = plot_vec(axis, self.tot_vec, self.pos, clr=self.vec_clr[VectorTypes.TOTAL] )
+    # for obs_vec in self.vecs_to_obs:
+      # self.b = plot_vec(axis, -obs_vec, self.pos, clr=self.vec_clr[VectorTypes.OBSTACLE])
+    self.c1 = plot_vec(axis, normalize(self.tot_vec), self.pos, clr=self.vec_clr[VectorTypes.TOTAL] )
     # self.c2 = plot_vec(axis, self.tot_vec, np.zeros(2), clr=self.vec_clr[VectorTypes.TOTAL] )
-    interval_vec_1 = R_z(np.pi/4)[:2,:2]@self.tot_vec
-    interval_vec_2 = R_z(-np.pi/4)[:2,:2]@self.tot_vec
+    interval_vec_1 = normalize(R_z(np.pi/4)[:2,:2]@self.tot_vec)
+    interval_vec_2 = normalize(R_z(-np.pi/4)[:2,:2]@self.tot_vec)
     self.d1 = plot_vec(axis, interval_vec_1, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
     self.d2 = plot_vec(axis, interval_vec_2, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
-    self.e = plot_vec(axis, self.vec_to_prev, self.pos, clr=self.vec_clr[VectorTypes.PREV_MIN])
+    #self.e = plot_vec(axis, self.vec_to_prev, self.pos, clr=self.vec_clr[VectorTypes.PREV_MIN])
 
     # self.e1 = plot_vec(axis, interval_vec_1, np.zeros(2), clr=self.vec_clr[VectorTypes.INTERVAL])
     # self.e2 = plot_vec(axis, interval_vec_2, np.zeros(2), clr=self.vec_clr[VectorTypes.INTERVAL])
