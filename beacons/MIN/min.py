@@ -87,19 +87,21 @@ class Min(Beacon):
 
   def generate_target_pos(self, beacons, ENV, prev_min, next_min):
     self.compute_neighbors(beacons)
-    # vecs_to_neighs = [
-    #     # normalize(self.get_vec_to_other(n).reshape(2, 1)) for n in self.neighbors if not (self.get_vec_to_other(n) == 0).all()
-    #     self.get_vec_to_other(n).reshape(2, 1) for n in self.neighbors if not (self.get_vec_to_other(n) == 0).all()
-    # ]
+
+    """Computing vectors to all neighbors"""
+    vecs_to_neighs = []
+    for n in self.neighbors:
+      if not (self.get_vec_to_other(n) == 0).all():
+        vec = self.get_vec_to_other(n).reshape(2, 1)
+        dist = np.linalg.norm(vec)
+        vecs_to_neighs.append((self.range - dist)*normalize(vec))
+    
+    """Only calculating vector to previous drone"""
     self.vec_to_prev = self.get_vec_to_other(prev_min).reshape(2, 1)
     for s in self.sensors:
         s.sense(ENV)
-    # vecs_to_obs = [
-    #     # normalize((R_z(self.heading)@R_z(s.host_relative_angle)@s.measurement.get_val())[:2])
-    #     # for s in self.sensors if s.measurement.is_valid()
-    #     (R_z(self.heading)@R_z(s.host_relative_angle)@s.measurement.get_val())[:2]
-    #     for s in self.sensors if s.measurement.is_valid()
-    # ]
+    
+    """Calculating vectors to obstacles"""
     self.vecs_to_obs = []
     for s in self.sensors:
       if s.measurement.is_valid():
@@ -111,32 +113,39 @@ class Min(Beacon):
         vec_to_obs = (self.range - meas_length)*normalize(vector)
         self.vecs_to_obs.append(vec_to_obs)
 
-    if len(self.vecs_to_obs) != 0: #if obstacles present
-      # tot_vec = - vec_to_prev.reshape(2, ) - np.sum(vecs_to_obs,axis=0).reshape(2, ) #+ self.pos
-      self.tot_vec =  - (self.range - np.linalg.norm(self.vec_to_prev))*normalize(self.vec_to_prev.reshape(2, )) - np.sum(self.vecs_to_obs,axis=0).reshape(2, )
+    if len(self.vecs_to_obs) != 0:
+      """If obstacles present"""
+      """Total vector when considering only previous drone"""
+      # self.tot_vec =  - (self.range - np.linalg.norm(self.vec_to_prev))*normalize(self.vec_to_prev.reshape(2, )) - np.sum(self.vecs_to_obs,axis=0).reshape(2, )
       self.vec_to_prev = (self.range - np.linalg.norm(self.vec_to_prev))*normalize(self.vec_to_prev.reshape(2, ))
-    else: #if no obstacles present, only consider vector pointing away from prev min
-      self.tot_vec =  - self.vec_to_prev.reshape(2, ) #- np.sum(vecs_to_neighs,axis=0).reshape(2, )
+
+      """Total vector when considering all neighbors"""
+      self.tot_vec = -np.sum(vecs_to_neighs, axis=0).reshape(2, ) - np.sum(self.vecs_to_obs,axis=0).reshape(2, )
+    else:
+      """If no obstacles present in range of drone"""
+      self.tot_vec = -np.sum(vecs_to_neighs, axis=0).reshape(2, )
 
     print(f"tot_vec: {self.tot_vec}")
     mid_angle = gva(self.tot_vec) #angle that is "mean" of angle-interval
-    print(f"angle_tot_vec: {mid_angle*180/np.pi}")
+    # print(f"angle_tot_vec: {mid_angle*180/np.pi}")
     rand = np.random.uniform(-1,1)*np.pi/4
-    print(f"rand: {rand*180/np.pi}")
+    # print(f"rand: {rand*180/np.pi}")
     target_angle = mid_angle + rand#np.random.uniform(-1,1)*np.pi/4
-    print(f"target_angle_deg: {target_angle*180/np.pi}")
-    Rot_mat = R_z(gva(self.tot_vec))
-    origin_transl = np.hstack((self.pos,0)).reshape((3,1))
-    rest = np.array([0,0,0,1])
-    a = np.hstack((Rot_mat,origin_transl))
-    h_trans_mat = np.vstack((a,rest))#np.vstack((np.vstack((Rot_mat,origin_transl)),rest))
+    # print(f"target_angle_deg: {target_angle*180/np.pi}")
+    # Rot_mat = R_z(gva(self.tot_vec))
+    # origin_transl = np.hstack((self.pos,0)).reshape((3,1))
+    # rest = np.array([0,0,0,1])
+    # a = np.hstack((Rot_mat,origin_transl))
+    # h_trans_mat = np.vstack((a,rest))#np.vstack((np.vstack((Rot_mat,origin_transl)),rest))
+    print(f"mid_angle: {mid_angle}")
+    print(f"rand: {rand}")
+    print(f"target_angle: {target_angle}")
+    target_pos = self.pos + p2v(self.target_r, target_angle)#.reshape((2,)) #R_z(gva(tot_vec))[:2,:2]@p2v(self.target_r,target_angle)
 
-    target_pos = self.pos + p2v(self.target_r, target_angle) #R_z(gva(tot_vec))[:2,:2]@p2v(self.target_r,target_angle)
-
-    target_pos_tilde = np.hstack((target_pos,0,1)).reshape((4,1))
-    target_pos_world = h_trans_mat @ target_pos_tilde
-    self.test = target_pos #R_z(-gva(tot_vec))[:2,:2]@target_pos #target_pos_world[:2]#gva(target_pos)
-    self.test2 = p2v(self.target_r, target_angle)
+    # target_pos_tilde = np.hstack((target_pos,0,1)).reshape((4,1))
+    # target_pos_world = h_trans_mat @ target_pos_tilde
+    # self.test = target_pos #R_z(-gva(tot_vec))[:2,:2]@target_pos #target_pos_world[:2]#gva(target_pos)
+    # self.test2 = p2v(self.target_r, target_angle)
     next_min.target_pos = target_pos
     next_min.prev_drone = prev_min
     return target_pos
