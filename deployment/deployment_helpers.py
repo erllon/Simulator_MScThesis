@@ -17,7 +17,7 @@ def get_obstacle_forces(K_o, MIN, ENV):
     ]
     return get_generic_force_vector(vecs_to_obs, K_o)
 
-def get_generic_force_vector(vecs, gain, sigma_x=1, sigma_y=1): #TODO: Add force threshold,
+def get_generic_force_vector(vecs, gain, sigma_x=1, sigma_y=1, d_o = 1): #TODO: Add force threshold,
     #TODO: Add the force with threshold distance!
     # try:
     #     mat = np.concatenate(vecs, axis=1)
@@ -41,13 +41,14 @@ def get_generic_force_vector(vecs, gain, sigma_x=1, sigma_y=1): #TODO: Add force
         exponential_force = np.sum(tot,axis=1)
         
         """Reciprocal force"""
-        reciprocal_force = -gain*np.sum(mat/np.linalg.norm(mat, axis=0)**3, axis=1)
-
+        within_range_mat = [m for m in mat if np.linalg.norm(m,axis=0) < d_o]
+        #reciprocal_force = -gain*np.sum(mat/np.linalg.norm(mat, axis=0)**3, axis=1)
+        reciprocal_force = -gain*np.sum(mat/np.linalg.norm(mat, axis=0)**3*(1/np.linalg.norm(mat, axis=0) - 1/d_o), axis=1)
         """Quadratic force"""
         quadratic_force = -1*gain/5*np.sum(mat,axis=1)
         # print(f"quad_force: {quadratic_force}")
 
-        return exponential_force#quadratic_force#reciprocal_force#exponential_force#
+        return reciprocal_force#quadratic_force#reciprocal_force#exponential_force#exponential_force
     except:
         e = sys.exc_info()[0]
         # print(f"Error: {e}")

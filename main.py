@@ -44,6 +44,7 @@ def simulate(dt, mins, scs, env):
       b.compute_neighbors(beacons)
     print(f"min {mins[i].ID} landed at pos\t\t\t {mins[i].pos}")
     print(f"min {mins[i].ID} target\t\t\t\t {mins[i].target_pos}")
+    print(f"min {mins[i].ID} neighbors: {[n.ID for n in mins[i].neighbors]}")
     if not mins[i].deployment_strategy.get_target() is None:
           print(f"Its target now has {len(mins[i].deployment_strategy.get_target().neighbors)} neighs\n------------------", )
   print(f"minimum number of neighbors: {min(beacons, key=lambda b: len(b.neighbors))}") 
@@ -87,15 +88,15 @@ if __name__ == "__main__":
   obstacle_corners_2D_1 = [
       np.array([
         [-0.1, -0.1],
-        [-0.1,     10],
-        [10,         10],
-        [10,     -0.1],
+        [-0.1,   20],
+        [20,     20],
+        [20,     -0.1],
       ]),
       # np.array([
-      #   [2.5, 9.98],
-      #   [2.5, -1],
-      #   [3.0, -1],
-      #   [3.0, 9.98]
+      #   [4.5,  5],
+      #   [4.5, -0.1],
+      #   [5.0, -0.1],
+      #   [5.0,  5]
       # ])
     ]
   obstacle_corners_2D_2 = [
@@ -152,11 +153,11 @@ if __name__ == "__main__":
 
 # %%Parameter initialization
   _animate, save_animation, plot_propterties = False, False, False
-  start_animation_from_min_ID = 1
+  start_animation_from_min_ID = 4
 
   max_range = 3 #0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 6  #7#2*5#3
+  N_mins = 3 #7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -195,7 +196,8 @@ if __name__ == "__main__":
       ),
       xi_max=3,
       d_perf=1,
-      d_none=3
+      d_none=3,
+      delta_expl_angle=0#np.pi/4
     ) for i in range(N_mins)
   ]
 

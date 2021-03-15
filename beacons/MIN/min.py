@@ -44,7 +44,7 @@ class Min(Beacon):
     VectorTypes.INTERVAL: "orange"
   }
 
-  def __init__(self, max_range, deployment_strategy, xi_max=5, d_perf=1, d_none=3, k=0, a=0, v=np.zeros((2, ),), K_target=1, target_threshold=0.15):
+  def __init__(self, max_range, deployment_strategy, xi_max=5, d_perf=1, d_none=3, k=0, a=0, v=np.zeros((2, ),), K_target=1, target_threshold=0.15, delta_expl_angle=np.pi/4):
     super().__init__(max_range,xi_max, d_perf, d_none, pos=None)
     self.K_target = K_target
     self.deployment_strategy = deployment_strategy
@@ -52,6 +52,7 @@ class Min(Beacon):
     self.sensors = []
     self.target_pos = np.array([None, None]).reshape(2, )
     self.prev = None
+    self.delta_expl_angle = delta_expl_angle
     self.test = np.zeros(2)
     self.test2 = np.zeros(2)
     for ang in np.arange(0, 360, 90):
@@ -125,10 +126,10 @@ class Min(Beacon):
       """If no obstacles present in range of drone"""
       self.tot_vec = -np.sum(vecs_to_neighs, axis=0).reshape(2, )
 
-    print(f"tot_vec: {self.tot_vec}")
+    # print(f"tot_vec: {self.tot_vec}")
     mid_angle = gva(self.tot_vec) #angle that is "mean" of angle-interval
     # print(f"angle_tot_vec: {mid_angle*180/np.pi}")
-    rand = np.random.uniform(-1,1)*np.pi/4
+    rand = np.random.uniform(-1,1)*self.delta_expl_angle #np.pi/4
     # print(f"rand: {rand*180/np.pi}")
     target_angle = mid_angle + rand#np.random.uniform(-1,1)*np.pi/4
     # print(f"target_angle_deg: {target_angle*180/np.pi}")
@@ -137,10 +138,12 @@ class Min(Beacon):
     # rest = np.array([0,0,0,1])
     # a = np.hstack((Rot_mat,origin_transl))
     # h_trans_mat = np.vstack((a,rest))#np.vstack((np.vstack((Rot_mat,origin_transl)),rest))
-    print(f"mid_angle: {mid_angle}")
-    print(f"rand: {rand}")
-    print(f"target_angle: {target_angle}")
-    target_pos = self.pos + p2v(self.target_r, target_angle)#.reshape((2,)) #R_z(gva(tot_vec))[:2,:2]@p2v(self.target_r,target_angle)
+
+    # print(f"mid_angle: {mid_angle}")
+    # print(f"rand: {rand}")
+    # print(f"target_angle: {target_angle}")
+
+    target_pos = self.pos + p2v(1000, target_angle)#.reshape((2,)) #R_z(gva(tot_vec))[:2,:2]@p2v(self.target_r,target_angle)
 
     # target_pos_tilde = np.hstack((target_pos,0,1)).reshape((4,1))
     # target_pos_world = h_trans_mat @ target_pos_tilde
@@ -172,8 +175,8 @@ class Min(Beacon):
       # self.b = plot_vec(axis, -obs_vec, self.pos, clr=self.vec_clr[VectorTypes.OBSTACLE])
     self.c1 = plot_vec(axis, normalize(self.tot_vec), self.pos, clr=self.vec_clr[VectorTypes.TOTAL] )
     # self.c2 = plot_vec(axis, self.tot_vec, np.zeros(2), clr=self.vec_clr[VectorTypes.TOTAL] )
-    interval_vec_1 = normalize(R_z(np.pi/4)[:2,:2]@self.tot_vec)
-    interval_vec_2 = normalize(R_z(-np.pi/4)[:2,:2]@self.tot_vec)
+    interval_vec_1 = normalize(R_z(self.delta_expl_angle)[:2,:2]@self.tot_vec)
+    interval_vec_2 = normalize(R_z(-self.delta_expl_angle)[:2,:2]@self.tot_vec)
     self.d1 = plot_vec(axis, interval_vec_1, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
     self.d2 = plot_vec(axis, interval_vec_2, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
     #self.e = plot_vec(axis, self.vec_to_prev, self.pos, clr=self.vec_clr[VectorTypes.PREV_MIN])
