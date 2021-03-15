@@ -19,7 +19,7 @@ class AtTargetException(Exception):
 class FollowingStrategy(ABC):
 
     MAX_FOLLOWING_SPEED = 2
-    MIN_RSSI_SWITCH_BEACON = np.exp(-0.1)
+    MIN_RSSI_SWITCH_BEACON = np.exp(-0.28) #HERE
     DEADZONE_RSSI_STRENGTH = np.exp(-0.05)
 
     def __init__(self, same_num_neighs_differentiator, rand_lim = np.pi/4):
@@ -61,9 +61,12 @@ class FollowingStrategy(ABC):
         def func_wrapper(self, MIN, beacons, ENV):
             self.__prev_RSSI = self.__curr_RSSI
             self.__curr_RSSI = MIN.get_RSSI(self.btf)
+            # print(f"self.__curr_RSSI: {self.__curr_RSSI}")
             if self.is_following_target():
-                if self.__curr_RSSI >= FollowingStrategy.DEADZONE_RSSI_STRENGTH:
-                    if np.linalg.norm(MIN.pos - self.target.pos) < 0.15:#(MIN.pos == self.target.pos).all():
+                #HERE
+                if self.__curr_RSSI >= 0.7:#FollowingStrategy.DEADZONE_RSSI_STRENGTH:
+                    # print(f"np.linalg.norm(MIN.pos - self.target.pos): {np.linalg.norm(MIN.pos - self.target.pos)}")
+                    if np.linalg.norm(MIN.pos - self.target.pos) < 0.15:#(MIN.pos == self.target.pos).all(): #HERE
                         raise AtTargetException
                     if self.__deadzone_v is None:
                         """
