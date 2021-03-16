@@ -28,7 +28,6 @@ def simulate(dt, mins, scs, env):
   #scs.generate_target_pos(beacons,env, mins[0])
   mins[0].target_pos = p2v(mins[0].target_r,np.random.uniform(0, np.pi/2))
   mins[0].prev = scs
-  #for m in mins:
   for i in range(len(mins)):
     mins[i].insert_into_environment(env)
     while not mins[i].state == MinState.LANDED:
@@ -93,8 +92,8 @@ if __name__ == "__main__":
         [20,     -0.1],
       ]),
       # np.array([
-      #   [4.5,  5],
-      #   [4.5, -0.1],
+      #   [4.0,  5],
+      #   [4.0, -0.1],
       #   [5.0, -0.1],
       #   [5.0,  5]
       # ])
@@ -153,11 +152,11 @@ if __name__ == "__main__":
 
 # %%Parameter initialization
   _animate, save_animation, plot_propterties = False, False, False
-  start_animation_from_min_ID = 4
+  start_animation_from_min_ID = 7
 
   max_range = 3 #0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 3 #7#2*5#3
+  N_mins = 15 #7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -192,7 +191,7 @@ if __name__ == "__main__":
         #   kind=LineExploreKind.TWO_DIM_LOCAL,
         # )
         NewAttractiveFollow(K_o=1),
-        NewPotentialFieldsExplore()
+        NewPotentialFieldsExplore(K_o=10)
       ),
       xi_max=3,
       d_perf=1,

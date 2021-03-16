@@ -35,9 +35,10 @@ class NewAttractiveFollow(FollowingStrategy):
     def get_following_velocity(self, MIN, beacons, ENV):
         F_o = gof(self.__K_o, MIN, ENV)
         F_btf = MIN.get_vec_to_other(self.btf)
-        F_att = -MIN.K_target * (MIN.pos - MIN.target_pos)
+        F_att = -MIN.K_target * (MIN.pos - self.btf.pos)#-MIN.K_target * (MIN.pos - MIN.target_pos)
         F_btf_aug = self.MAX_FOLLOWING_SPEED*normalize(F_btf) if np.linalg.norm(F_btf) > self.MAX_FOLLOWING_SPEED else F_btf
-        F = F_o + F_btf_aug
+        # F = F_o + F_btf_aug
+        F = F_o + F_att
         """
         TODO: return a non-zero net force when the MIN the deployed MIN is following is the target
         (to ensure than we travel further into the environment)

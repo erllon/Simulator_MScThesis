@@ -143,7 +143,7 @@ class Min(Beacon):
     # print(f"rand: {rand}")
     # print(f"target_angle: {target_angle}")
 
-    target_pos = self.pos + p2v(1000, target_angle)#.reshape((2,)) #R_z(gva(tot_vec))[:2,:2]@p2v(self.target_r,target_angle)
+    target_pos = self.pos + p2v(self.range, target_angle)#p2v(10, target_angle)#.reshape((2,)) #R_z(gva(tot_vec))[:2,:2]@p2v(self.target_r,target_angle)
 
     # target_pos_tilde = np.hstack((target_pos,0,1)).reshape((4,1))
     # target_pos_world = h_trans_mat @ target_pos_tilde
