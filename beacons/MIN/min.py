@@ -88,7 +88,7 @@ class Min(Beacon):
     #As of 21.01 .get_velocity_vector() returns the calculated force, self._force_hist considers the norm of the force
     self._v_traj = np.hstack((self._v_traj, np.linalg.norm(v)))
     #self._xi_traj blir satt i self.deployment_strategy.get_velocity_vector()  
-
+  
   def generate_target_pos(self, beacons, ENV, prev_min, next_min):
     """Generates a target point for next_min
        self calculates the vectors pointing away from obstacles and other drones.
@@ -99,47 +99,17 @@ class Min(Beacon):
     self.compute_neighbors(beacons)
 
     """Computing vectors FROM neighbors TO drone"""
-    vecs_from_neighs = []
-    ang_from_neighs = []
-    for n in self.neighbors:
-      if not (self.get_vec_to_other(n) == 0).all():
-        vec_from_neigh = -self.get_vec_to_other(n).reshape(2, 1)
-        dist = np.linalg.norm(vec_from_neigh)
-        vecs_from_neighs.append((self.range - dist)*normalize(vec_from_neigh))
-        ang_from_neighs.append(gva(vec_from_neigh.reshape(2, )))
+    vecs_from_neighs, ang_from_neighs = Min.get_neigh_vecs_and_angles(self)
     tot_vec_from_neigh = np.sum(vecs_from_neighs,axis=0)
     avg_ang_from_neigh = np.sum(ang_from_neighs, axis=0)/len(ang_from_neighs)
-
-    """Only calculating vector FROM current TO previous drone"""
-    # self.vec_to_prev = self.get_vec_to_other(prev_min).reshape(2, 1)
-    # vec_from_prev = -self.get_vec_to_other(prev_min).reshape(2, 1)
     
     """Calculating vectors FROM drone TO obstacles"""
-    for s in self.sensors:
-      s.sense(ENV)
-
-    vecs_from_obs = []
-    ang_from_obs = []
-
-    for s in self.sensors:
-      if s.measurement.is_valid():
-        """Vector FROM drone TO obstacle in world frame"""
-        vec_from_obs = -(R_z(self.heading)@R_z(s.host_relative_angle)@s.measurement.get_val())[:2]
-        """Scaling the vector that points towards the obstalce
-           so that obstacles that are close to the drone produce larger vectors"""
-        meas_length = np.linalg.norm(vec_from_obs)
-        """Vector FROM drone TO obstacle"""
-
-        vec_from_obs = (self.range - meas_length)*normalize(vec_from_obs)
-        vecs_from_obs.append(vec_from_obs.reshape(2, ))
-        ang_from_obs.append(gva(vec_from_obs.reshape(2, )))
+    vecs_from_obs, ang_from_obs = Min.get_obs_vecs_and_angles(self, ENV)
 
     expl_ang = 0
     ang_tot_vec_from_obs = 0
 
-    if len(vecs_from_obs) != 0:
-      """If obstacles present"""
-
+    if len(vecs_from_obs) != 0: # If obstacles present
       tot_vec_from_obs = np.sum(vecs_from_obs,axis=0)
       ang_tot_vec_from_obs = gva(tot_vec_from_obs)
       self.obs_vec = p2v(1, ang_tot_vec_from_obs)#p2v(1, tot_ang_from_obs)
@@ -149,14 +119,13 @@ class Min(Beacon):
       expl_ang = ang_tot_vec_comb#ang_tot_vec_from_obs #0.5*(ang_tot_vec_from_obs - avg_ang_from_neigh) 
     else:
       """If no obstacles present in range of drone"""
-      # self.tot_vec = np.sum(vecs_from_neighs, axis=0).reshape(2, )
-      # expl_ang = -np.sum(ang_to_neighs,axis=0)/len(ang_to_neighs)
       expl_ang = gva(tot_vec_from_neigh.reshape(2, )) #avg_ang_from_neigh
     
 
     rand = np.random.uniform(-1,1)*self.delta_expl_angle #np.pi/4
     print(f"rand: {rand*180/np.pi}")
-    target_angle = expl_ang + rand 
+    target_angle = expl_ang + rand
+
     self.tot_vec = p2v(1, target_angle)
     
     print(f"ang_tot_vec_from_obs: {ang_tot_vec_from_obs}")
@@ -175,6 +144,38 @@ class Min(Beacon):
     next_min.prev_drone = prev_min
     return target_pos  
   
+  
+  @staticmethod
+  def get_neigh_vecs_and_angles(MIN):
+    vecs_from_neighs, ang_from_neighs = [], []
+    for n in MIN.neighbors:
+      if not (MIN.get_vec_to_other(n) == 0).all():
+        vec_from_neigh = -MIN.get_vec_to_other(n).reshape(2, 1)
+        dist = np.linalg.norm(vec_from_neigh)
+        vecs_from_neighs.append((MIN.range - dist)*normalize(vec_from_neigh))
+        ang_from_neighs.append(gva(vec_from_neigh.reshape(2, )))
+    return vecs_from_neighs, ang_from_neighs
+    
+  @staticmethod
+  def get_obs_vecs_and_angles(MIN, ENV):
+    vecs_from_obs, ang_from_obs = [], []
+    for s in MIN.sensors:
+      s.sense(ENV)  
+    for s in MIN.sensors:
+      if s.measurement.is_valid():
+        """Vector FROM drone TO obstacle in world frame"""
+        vec_from_obs = -(R_z(MIN.heading)@R_z(s.host_relative_angle)@s.measurement.get_val())[:2]
+        """Scaling the vector that points towards the obstalce
+          so that obstacles that are close to the drone produce larger vectors"""
+        meas_length = np.linalg.norm(vec_from_obs)
+        """Vector FROM drone TO obstacle"""
+
+        vec_from_obs = (MIN.range - meas_length)*normalize(vec_from_obs)
+        vecs_from_obs.append(vec_from_obs.reshape(2, ))
+        ang_from_obs.append(gva(vec_from_obs.reshape(2, )))
+
+    return vecs_from_obs, ang_from_obs     
+
   def get_v_traj_length(self):
     return len(self._v_traj)
 
