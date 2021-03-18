@@ -7,16 +7,21 @@ from deployment.deployment_helpers import (
     get_obstacle_forces as gof,
     get_generic_force_vector
 )
-from helpers import normalize, rot_z_mat as R_z
+from helpers import normalize, rot_z_mat as R_z, get_vector_angle as gva
 
 import numpy as np
+from enum import Enum
 
 class NewPotentialFieldsExplore(ExplorationStrategy):
+    class Target(Enum):
+        POINT = 0,
+        LINE  = 1
     
-    def __init__(self, K_n=1, K_o=1, min_force_threshold=0.5):
+    def __init__(self, K_n=1, K_o=1, min_force_threshold=0.5, target_point_or_line=Target.LINE):
         self.__K_n = K_n
         self.__K_o = K_o
-        self.__min_force_threshold = min_force_threshold    
+        self.__min_force_threshold = min_force_threshold
+        self.__point_or_line = target_point_or_line   
 
     def get_exploration_velocity(self, MIN, beacons, ENV):
         MIN.compute_neighbors(beacons)
@@ -34,6 +39,15 @@ class NewPotentialFieldsExplore(ExplorationStrategy):
         a = np.any([MIN.get_RSSI(n) for n in MIN.neighbors] >= self.MIN_RSSI_STRENGTH_BEFORE_LAND)
         b = [MIN.get_RSSI(n) for n in MIN.neighbors] >= self.MIN_RSSI_STRENGTH_BEFORE_LAND
         if np.linalg.norm(F_sum) > self.__min_force_threshold and np.any([MIN.get_RSSI(n) for n in MIN.neighbors] >= self.MIN_RSSI_STRENGTH_BEFORE_LAND):#MIN.get_RSSI(MIN.target_pos) >= self.MIN_RSSI_STRENGTH_BEFORE_LAND:
+            # MIN.generate_virtual_target(gva(MIN.target_pos.reshape(2, ))) 
+            if self.__point_or_line == NewPotentialFieldsExplore.Target.LINE:
+                if np.linalg.norm(F_sum) < self.MAX_EXPLORATION_SPEED:
+                    MIN.generate_virtual_target(F_sum, 0.01)#MIN.target_pos += F_sum
+                else:
+                    MIN.generate_virtual_target(self.MAX_EXPLORATION_SPEED*normalize(F_sum), 0.01)
+                     #MIN.target_pos += self.MAX_EXPLORATION_SPEED*normalize(F_sum)
+                
+                #MIN.generate_virtual_target(gva(MIN.target_pos))
             return F_sum if np.linalg.norm(F_sum) < self.MAX_EXPLORATION_SPEED else self.MAX_EXPLORATION_SPEED*normalize(F_sum)
         else:
             print("Landing due to too small force and satisfactory low RSSI")
