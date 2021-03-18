@@ -154,9 +154,9 @@ class Min(Beacon):
       expl_ang = gva(tot_vec_from_neigh.reshape(2, )) #avg_ang_from_neigh
     
 
-    rand = np.random.uniform(-1,1)*np.pi/4#self.delta_expl_angle #np.pi/4
+    rand = np.random.uniform(-1,1)*self.delta_expl_angle #np.pi/4
     print(f"rand: {rand*180/np.pi}")
-    target_angle = expl_ang + rand #mid_angle + rand#np.random.uniform(-1,1)*np.pi/4
+    target_angle = expl_ang + rand 
     self.tot_vec = p2v(1, target_angle)
     
     print(f"ang_tot_vec_from_obs: {ang_tot_vec_from_obs}")
