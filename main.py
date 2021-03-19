@@ -152,7 +152,7 @@ if __name__ == "__main__":
 
 # %%Parameter initialization
   _animate, save_animation, plot_propterties = False, False, False
-  start_animation_from_min_ID = 1
+  start_animation_from_min_ID = 0
 
   max_range = 3 #0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
@@ -216,7 +216,7 @@ if __name__ == "__main__":
       if plot_propterties:
         mn.plot(ax[0])
         mn.plot_traj_line(ax[0])
-        mn.plot_vectors(mn.prev, env, ax[0])
+        # mn.plot_vectors(mn.prev, env, ax[0])
         mn.plot_force_traj_line(ax[1])
       else:
         mn.plot(ax)
@@ -234,10 +234,10 @@ if __name__ == "__main__":
           artists += mn.plot(ax[0])
           artists += (mn.plot_traj_line(ax[0]), ) #Type: Line2D(_line6)
           artists += (mn.plot_force_traj_line(ax[1]), )
-          artists += (mn.plot_xi_traj_line(ax[2]), )
+          # artists += (mn.plot_xi_traj_line(ax[2]), )
           mn.plot_pos_from_pos_traj_index(0)
           mn.plot_force_from_traj_index(0)
-          mn.plot_xi_from_traj_index(0)
+          # mn.plot_xi_from_traj_index(0)
         if start_animation_from_min_ID == 0:
           ax[1].legend()  
       else:
@@ -255,7 +255,7 @@ if __name__ == "__main__":
         offset[0] += mins[min_counter[0]].get_pos_traj_length()
         min_counter[0] += 1
       plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
-      #plt_force_traj = mins[min_counter[0]].plot_force_from_traj_index(i-offset[0])
+      plt_force_traj = mins[min_counter[0]].plot_force_from_traj_index(i-offset[0])
       #plt_xi_traj = mins[min_counter[0]].plot_xi_from_traj_index(i-offset[0])
       return plt_pos_traj#, plt_force_traj, plt_xi_traj  #mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0]), mins[min_counter[0]].plot_force_from_traj_index(i-offset[0]) #2
 
@@ -276,7 +276,7 @@ if __name__ == "__main__":
         mn.plot_traj_line(ax[0])
         mn.plot_vectors(mn.prev, env, ax[0])
       mn.plot_force_traj_line(ax[1])
-      mn.plot_xi_traj_line(ax[2])
+      # mn.plot_xi_traj_line(ax[2])
     else:
       env.plot(ax)
       scs.plot(ax)
