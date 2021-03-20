@@ -33,10 +33,10 @@ def simulate(dt, mins, scs, env):
     while not mins[i].state == MinState.LANDED:
       mins[i].do_step(beacons, scs, env, dt)
     if i < len(mins)-1: #as long as i is not the index of the last min
-      if i-1 > 0: #"prev_drone" for drone 1 will be the scs
-        mins[i].generate_target_pos(beacons,env,mins[i-1], mins[i+1])
-      else:
-        mins[i].generate_target_pos(beacons,env,scs, mins[i+1])
+      # if i-1 > 0: #"prev_drone" for drone 1 will be the scs
+        # mins[i].generate_target_pos(beacons,env,mins[i-1], mins[i+1])
+      # else:
+        # mins[i].generate_target_pos(beacons,env,scs, mins[i+1])
       mins[i+1].prev = mins[i]
     beacons = np.append(beacons, mins[i])
     for b in beacons:
@@ -192,7 +192,7 @@ if __name__ == "__main__":
         #   kind=LineExploreKind.TWO_DIM_LOCAL,
         # )
         NewAttractiveFollow(K_o=1),
-        NewPotentialFieldsExplore(K_o=10)
+        NewPotentialFieldsExplore(K_o=10, target_point_or_line=NewPotentialFieldsExplore.Target.POINT)
       ),
       xi_max=1,
       d_perf=0.1,
