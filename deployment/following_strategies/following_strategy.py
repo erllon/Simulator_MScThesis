@@ -65,33 +65,37 @@ class FollowingStrategy(ABC):
             if self.is_following_final_target():
                 #HERE
                 if self.__curr_RSSI >= FollowingStrategy.MIN_RSSI_SWITCH_BEACON:
+                    raise AtTargetException
                     # print(f"np.linalg.norm(MIN.pos - self.target.pos): {np.linalg.norm(MIN.pos - self.target.pos)}")
-                    if np.linalg.norm(MIN.pos - self.target.pos) < 0.15:#(MIN.pos == self.target.pos).all(): #HERE
-                        print(f"MIN.pos: {MIN.pos}")
-                        print(f"self.target.pos: {self.target.pos}")
-                        print("--------------------------------")
+                    # if np.linalg.norm(MIN.pos - self.target.pos) < 0.15:#(MIN.pos == self.target.pos).all(): #HERE
+                    #     print(f"MIN.pos: {MIN.pos}")
+                    #     print(f"self.target.pos: {self.target.pos}")
+                    #     print("--------------------------------")
 
-                        raise AtTargetException
-                    if self.__deadzone_v is None:
-                        """
-                        Deadzone reached. Move directly towards target until target is passed
-                        """
-                        self.__deadzone_v = self.MAX_FOLLOWING_SPEED*normalize(MIN.get_vec_to_other(self.target))
-                    if self.__curr_RSSI < self.__prev_RSSI and not self.__moved_past_target:
-                        """
-                        Have now moved beyond target. Move away from target until deadzone is exited
-                        """
-                        vec = self.MAX_FOLLOWING_SPEED*np.append(normalize(-MIN.get_vec_to_other(self.target)), [0]).reshape(3, 1)
-                        self.__deadzone_v = (R_z(np.random.uniform(-self.__rand_lim, self.__rand_lim))@vec)[:2].reshape(2, )
-                        self.__moved_past_target = True
-                    return self.__deadzone_v
-                elif not self.__deadzone_v is None:
-                        raise AtTargetException
+                    #     raise AtTargetException
+
+
+                # TODO: dead_zone_v not used?
+                #     if self.__deadzone_v is None:
+                #         """
+                #         Deadzone reached. Move directly towards target until target is passed
+                #         """
+                #         self.__deadzone_v = self.MAX_FOLLOWING_SPEED*normalize(MIN.get_vec_to_other(self.target))
+                #     if self.__curr_RSSI < self.__prev_RSSI and not self.__moved_past_target:
+                #         """
+                #         Have now moved beyond target. Move away from target until deadzone is exited
+                #         """
+                #         vec = self.MAX_FOLLOWING_SPEED*np.append(normalize(-MIN.get_vec_to_other(self.target)), [0]).reshape(3, 1)
+                #         self.__deadzone_v = (R_z(np.random.uniform(-self.__rand_lim, self.__rand_lim))@vec)[:2].reshape(2, )
+                #         self.__moved_past_target = True
+                #     return self.__deadzone_v
+                # elif not self.__deadzone_v is None:
+                #         raise AtTargetException
 
             if self.__curr_RSSI >= FollowingStrategy.MIN_RSSI_SWITCH_BEACON and not self.is_following_final_target():
-                print(f"self.__curr_RSSI: {self.__curr_RSSI}")
-                print(f"MIN.pos: {MIN.pos}")
-                print(f"self.btf.pos: {self.btf.pos}")
+                # print(f"self.__curr_RSSI: {self.__curr_RSSI}")
+                # print(f"MIN.pos: {MIN.pos}")
+                # print(f"self.btf.pos: {self.btf.pos}")
                 
                 self.compute_next_beacon_to_follow()
             return func(self, MIN, beacons, ENV)
