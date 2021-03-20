@@ -152,12 +152,12 @@ if __name__ == "__main__":
 
 # %%Parameter initializatio
 
-  _animate, save_animation, plot_propterties = True, False, True
-  start_animation_from_min_ID = 1
+  _animate, save_animation, plot_propterties = True, False, False
+  start_animation_from_min_ID = 0
 
   max_range = 3 #0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 2 #7#2*5#3
+  N_mins = 3 #7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -194,16 +194,16 @@ if __name__ == "__main__":
         NewAttractiveFollow(K_o=1),
         NewPotentialFieldsExplore(K_o=10)
       ),
-      xi_max=3,
-      d_perf=1,
-      d_none=3,
+      xi_max=1,
+      d_perf=0.1,
+      d_none=1.6,
       delta_expl_angle=np.pi/4
     ) for i in range(N_mins)
   ]
 
   beacons = simulate(dt, mins, scs, env)
   
-  fig = plt.figure()
+  fig = plt.figure(figsize=(7,7))
   
   if plot_propterties:
     # fig, ax = plt.subplots(nrows=3,ncols=1)
@@ -216,7 +216,8 @@ if __name__ == "__main__":
     
 
   else:
-    fig, ax = plt.subplots(1,1)
+    ax = fig.add_subplot(1,1,1)
+    # fig, ax = plt.subplots(1,1)
     ax.title.set_text("Deployment")
 
   if _animate: # TODO: if _animate: everything in same fig,  else: drones in one fig, "properties" in another fig
@@ -268,10 +269,14 @@ if __name__ == "__main__":
       if i - offset[0] >= mins[min_counter[0]].get_pos_traj_length():
         offset[0] += mins[min_counter[0]].get_pos_traj_length()
         min_counter[0] += 1
-      plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
-      plt_force_traj = mins[min_counter[0]].plot_force_from_traj_index(i-offset[0])
-      plt_xi_traj = mins[min_counter[0]].plot_xi_from_traj_index(i-offset[0])
-      return plt_pos_traj, plt_force_traj, plt_xi_traj  #mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0]), mins[min_counter[0]].plot_force_from_traj_index(i-offset[0]) #2
+      if plot_propterties:
+        plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
+        plt_force_traj = mins[min_counter[0]].plot_force_from_traj_index(i-offset[0])
+        plt_xi_traj = mins[min_counter[0]].plot_xi_from_traj_index(i-offset[0])
+        return plt_pos_traj, plt_force_traj, plt_xi_traj  #mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0]), mins[min_counter[0]].plot_force_from_traj_index(i-offset[0]) #2
+      else:
+        plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
+        return plt_pos_traj
 
     anim = FuncAnimation(fig, animate, init_func=init, interval=2, blit=False)
     

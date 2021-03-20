@@ -47,8 +47,12 @@ class Beacon():
     return dist < self.range and dist < other.range
 
   def compute_neighbors(self, others):
-    self.neighbors = list(filter(lambda other: self.is_within_range(other) and self != other, others))
-    # self.neighbors = list(filter(lambda other: self.get_xi_to_other_from_model(other) > self.RSSI_threshold and self != other, others))
+    # self.neighbors = list(filter(lambda other: self.is_within_range(other) and self != other, others))
+    # self.neighbors = []
+    # for other in others:
+      # if self.get_xi_to_other_from_model(other) > 0.2 and self != other:
+        # self.neighbors.append(other)
+    self.neighbors = list(filter(lambda other: self.get_xi_to_other_from_model(other) > 0.2 and self != other, others))#self.RSSI_threshold and self != other, others))
   
   @abstractmethod
   def generate_target_pos(self, beacons, ENV, next_min):
@@ -59,16 +63,16 @@ class Beacon():
     #Generate target on cirle within interval (angle)
     #Assign generated target to next_min.target_pos    
 
-  def get_RSSI(self, other):
-    return np.exp(-np.linalg.norm(self.pos - other.pos))
+  # def get_RSSI(self, other):
+  #   return np.exp(-np.linalg.norm(self.pos - other.pos))
 
   def get_xi_to_other_from_model(self, other):
     d = np.linalg.norm(self.pos - other.pos)
-    if d < self.d_perf:
+    if d <= self.d_perf:
       return self.xi_max
-    elif self.d_perf <= d and d <= self.d_none:
+    elif self.d_perf < d and d < self.d_none:
       return (self.xi_max/2) * (1 + np.cos(self._omega*d + self._phi))
-    else: #if d_none < d
+    elif self.d_none <= d:#else: #if d_none < d
       return 0
 
   def get_xi_max_decrease(self):

@@ -9,7 +9,7 @@ class AtLandingConditionException(Exception):
 class ExplorationStrategy(ABC):
 
     MAX_EXPLORATION_SPEED = 2
-    MIN_RSSI_STRENGTH_BEFORE_LAND = np.exp(-2.9)
+    MIN_RSSI_STRENGTH_BEFORE_LAND = 0.22 #np.exp(-2.9)
 
     def prepare_exploration(self, target):
         self.target = target

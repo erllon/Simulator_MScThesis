@@ -50,7 +50,10 @@ class NewPotentialFieldsExplore(ExplorationStrategy):
         # print(f"np.linalg.norm(F_sum): {np.linalg.norm(F_sum)}")
         # a = np.any([MIN.get_RSSI(n) for n in MIN.neighbors] >= self.MIN_RSSI_STRENGTH_BEFORE_LAND)
         # b = [MIN.get_RSSI(n) for n in MIN.neighbors] >= self.MIN_RSSI_STRENGTH_BEFORE_LAND
-        if np.linalg.norm(F_sum) > self.__min_force_threshold and np.any([MIN.get_RSSI(n) for n in MIN.neighbors] >= self.MIN_RSSI_STRENGTH_BEFORE_LAND):#MIN.get_RSSI(MIN.target_pos) >= self.MIN_RSSI_STRENGTH_BEFORE_LAND:
+        
+        # if np.linalg.norm(F_sum) > self.__min_force_threshold and np.any([MIN.get_RSSI(n) for n in MIN.neighbors] >= self.MIN_RSSI_STRENGTH_BEFORE_LAND):#MIN.get_RSSI(MIN.target_pos) >= self.MIN_RSSI_STRENGTH_BEFORE_LAND:
+        if np.linalg.norm(F_sum) > self.__min_force_threshold and np.any(np.array([MIN.get_xi_to_other_from_model(n) for n in MIN.neighbors]) >= self.MIN_RSSI_STRENGTH_BEFORE_LAND):#MIN.get_RSSI(MIN.target_pos) >= self.MIN_RSSI_STRENGTH_BEFORE_LAND:
+        
             # MIN.generate_virtual_target(gva(MIN.target_pos.reshape(2, ))) 
             if self.__point_or_line == NewPotentialFieldsExplore.Target.LINE:
                 if np.linalg.norm(F_sum) < self.MAX_EXPLORATION_SPEED:
