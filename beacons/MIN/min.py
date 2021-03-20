@@ -123,12 +123,14 @@ class Min(Beacon):
     
 
     rand = np.random.uniform(-1,1)*self.delta_expl_angle #np.pi/4
-    print(f"rand: {rand*180/np.pi}")
+    print(f"Drone {self.ID} generating target for drone {next_min.ID}")
+    print(f"expl_ang from drone {self.ID}: {expl_ang*180/np.pi}")
+    print(f"rand from drone {self.ID}: {rand*180/np.pi}")
     target_angle = expl_ang + rand
 
-    self.tot_vec = p2v(1, target_angle)
+    self.tot_vec = p2v(1, expl_ang) #p2v(1, target_angle)
     
-    print(f"ang_tot_vec_from_obs: {ang_tot_vec_from_obs}")
+    # print(f"ang_tot_vec_from_obs: {ang_tot_vec_from_obs}")
     self.neigh_vec = p2v(1, avg_ang_from_neigh)#p2v(1, np.sum(ang_from_neighs, axis=0)/len(ang_from_neighs))
     
     # Rot_mat = R_z(gva(self.tot_vec))
@@ -201,17 +203,17 @@ class Min(Beacon):
     interval_vec_2 = normalize(R_z(-self.delta_expl_angle)[:2,:2]@self.tot_vec)
     self.d1 = plot_vec(axis, interval_vec_1, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
     self.d2 = plot_vec(axis, interval_vec_2, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
-
-    if np.linalg.norm(self.obs_vec) != 0: 
-      self.e = plot_vec(axis, self.obs_vec, self.pos, clr="blue")
-    self.f = plot_vec(axis, self.neigh_vec, self.pos, clr="green")
+    # self.martin = plot_vec(axis, p2v(1,gva(self.test)), self.pos, clr="purple")
+    # if np.linalg.norm(self.obs_vec) != 0: 
+      # self.e = plot_vec(axis, self.obs_vec, self.pos, clr="blue")
+    # self.f = plot_vec(axis, self.neigh_vec, self.pos, clr="green")
 
     #self.e = plot_vec(axis, self.vec_to_prev, self.pos, clr=self.vec_clr[VectorTypes.PREV_MIN])
 
     # self.e1 = plot_vec(axis, interval_vec_1, np.zeros(2), clr=self.vec_clr[VectorTypes.INTERVAL])
     # self.e2 = plot_vec(axis, interval_vec_2, np.zeros(2), clr=self.vec_clr[VectorTypes.INTERVAL])
-    # self.test1_1 = axis.plot(*self.test, color="red",marker="o",markersize=8)
-    # axis.annotate(f"{self.ID+1}", self.test)
+    self.test1_1 = axis.plot(*self.test, color="red",marker="o",markersize=8)
+    axis.annotate(f"{self.ID+1}", self.test)
     # self.test2_2 = axis.plot(*self.test2, color="green",marker="o",markersize=8)
     # axis.annotate(f"{self.ID+1}", self.test2)
 
