@@ -205,7 +205,7 @@ if __name__ == "__main__":
 
   beacons = simulate(dt, mins, scs, env)
   
-  fig = plt.figure(figsize=(7,7))
+  fig = plt.figure(figsize=(5,5))
   
   if plot_propterties:
     # fig, ax = plt.subplots(nrows=3,ncols=1)
