@@ -10,4 +10,4 @@ class SCS(Beacon):
         self.path_tree = PathTree(self)
     
     def generate_target_pos(self, beacons, ENV, next_min):
-        return p2v(self.range, np.pi/4)
+        next_min.target_pos = p2v(self.range, np.pi/15)

@@ -26,8 +26,10 @@ def simulate(dt, mins, scs, env):
   beacons = np.array([scs], dtype=object)
 
   #scs.generate_target_pos(beacons,env, mins[0])
-  mins[0].target_pos = p2v(mins[0].target_r,np.random.uniform(0, np.pi/2))
+  # mins[0].target_pos = p2v(mins[0].target_r,np.random.uniform(0, np.pi/2))
+  # mins[0].prev = scs
   mins[0].prev = scs
+  scs.generate_target_pos(beacons, env, mins[0])
   for i in range(len(mins)):
     mins[i].insert_into_environment(env)
     while not mins[i].state == MinState.LANDED:
@@ -91,12 +93,12 @@ if __name__ == "__main__":
         [10,     10],
         [10,     -0.1],
       ]),
-      # np.array([
-      #   [4.0,  5],
-      #   [4.0, -0.1],
-      #   [5.0, -0.1],
-      #   [5.0,  5]
-      # ])
+      np.array([
+        [4.0,  5],
+        [4.0, -0.1],
+        [5.0, -0.1],
+        [5.0,  5]
+      ])
     ]
   obstacle_corners_2D_2 = [
       np.array([
@@ -157,7 +159,7 @@ if __name__ == "__main__":
 
   max_range = 3 #0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 7 #7#2*5#3
+  N_mins = 12 #7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -197,7 +199,7 @@ if __name__ == "__main__":
       xi_max=1,
       d_perf=0.1,
       d_none=1.6,
-      delta_expl_angle=np.pi/4
+      delta_expl_angle=np.pi/4#np.pi/6#0#np.pi/6#np.pi/4 #0
     ) for i in range(N_mins)
   ]
 
