@@ -156,8 +156,12 @@ class Min(Beacon):
     for n in MIN.neighbors:
       if not (MIN.get_vec_to_other(n) == 0).all():
         vec_from_neigh = -MIN.get_vec_to_other(n).reshape(2, 1)
-        dist = np.linalg.norm(vec_from_neigh)
-        vecs_from_neighs.append((MIN.range - dist)*normalize(vec_from_neigh))
+        dist = np.linalg.norm(vec_from_neigh) #when using xi for RSSI, dist will be in the interval (d_perf, d_none)
+        scaling = MIN.d_none - MIN.d_perf
+        # vecs_from_neighs.append((MIN.range - dist)*normalize(vec_from_neigh)) #TODO: When using xi as RSSI, this scaling will not produce perf results
+        vecs_from_neighs.append((scaling)*normalize(vec_from_neigh))
+        
+        
         ang_from_neighs.append(gva(vec_from_neigh.reshape(2, )))
     return vecs_from_neighs, ang_from_neighs
     
@@ -204,16 +208,16 @@ class Min(Beacon):
     self.d1 = plot_vec(axis, interval_vec_1, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
     self.d2 = plot_vec(axis, interval_vec_2, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
     # self.martin = plot_vec(axis, p2v(1,gva(self.test)), self.pos, clr="purple")
-    # if np.linalg.norm(self.obs_vec) != 0: 
-      # self.e = plot_vec(axis, self.obs_vec, self.pos, clr="blue")
+    if np.linalg.norm(self.obs_vec) != 0: 
+      self.e = plot_vec(axis, self.obs_vec, self.pos, clr="blue")
     # self.f = plot_vec(axis, self.neigh_vec, self.pos, clr="green")
 
     #self.e = plot_vec(axis, self.vec_to_prev, self.pos, clr=self.vec_clr[VectorTypes.PREV_MIN])
 
     # self.e1 = plot_vec(axis, interval_vec_1, np.zeros(2), clr=self.vec_clr[VectorTypes.INTERVAL])
     # self.e2 = plot_vec(axis, interval_vec_2, np.zeros(2), clr=self.vec_clr[VectorTypes.INTERVAL])
-    self.test1_1 = axis.plot(*self.test, color="red",marker="o",markersize=8)
-    axis.annotate(f"{self.ID+1}", self.test)
+    # self.test1_1 = axis.plot(*self.test, color="red",marker="o",markersize=8)
+    # axis.annotate(f"{self.ID+1}", self.test)
     # self.test2_2 = axis.plot(*self.test2, color="green",marker="o",markersize=8)
     # axis.annotate(f"{self.ID+1}", self.test2)
 
