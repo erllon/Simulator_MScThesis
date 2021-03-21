@@ -53,8 +53,11 @@ def get_generic_force_vector(vecs, gain, sigma_x=1, sigma_y=1, d_o=1): #TODO: Ad
         """Quadratic force"""
         quadratic_force = -1*gain/5*np.sum(mat,axis=1)
         # print(f"quad_force: {quadratic_force}")
+        # print(f"np.linalg.norm(reciprocal_force): {np.linalg.norm(reciprocal_force)}")
+        # print(f"np.linalg.norm(reciprocal_force_within_range): {np.linalg.norm(reciprocal_force_within_range)}")
+        # print("---------------------------------------------------------------------")
 
-        return reciprocal_force_within_range ##reciprocal_force#quadratic_force#reciprocal_force#exponential_force#exponential_force
+        return reciprocal_force ##reciprocal_force_within_range#quadratic_force#reciprocal_force#exponential_force#exponential_force
     except:
         e = sys.exc_info()[0]
         # print(f"Error: {e}")

@@ -46,7 +46,7 @@ class NewPotentialFieldsExplore(ExplorationStrategy):
         #     print(f"np.linalg.norm(F_att): {np.linalg.norm(F_att)}")
         #     print(f"np.linalg.norm(F_rep): {np.linalg.norm(F_rep)}")
 
-        F_sum = F_att + 5*F_rep
+        F_sum = F_att + 10*F_rep#5*F_rep
         # print(f"np.linalg.norm(F_sum): {np.linalg.norm(F_sum)}")
         # a = np.any([MIN.get_RSSI(n) for n in MIN.neighbors] >= self.MIN_RSSI_STRENGTH_BEFORE_LAND)
         # b = [MIN.get_RSSI(n) for n in MIN.neighbors] >= self.MIN_RSSI_STRENGTH_BEFORE_LAND
