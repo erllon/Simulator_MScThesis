@@ -24,6 +24,8 @@ class Beacon():
     self.range = range
     self.target_r = range #TODO: Scale this down, so that the target is not generated at border?
     self.pos = pos
+    self.prev_pos = None
+    self.delta_pos = None
     self.ID = self.get_ID()
     self.neighbors = []
     """ STUFF FOR XI MODEL """
@@ -52,7 +54,7 @@ class Beacon():
     # for other in others:
       # if self.get_xi_to_other_from_model(other) > 0.2 and self != other:
         # self.neighbors.append(other)
-    self.neighbors = list(filter(lambda other: self.get_xi_to_other_from_model(other) > 0.2 and self != other, others))#self.RSSI_threshold and self != other, others))
+    self.neighbors = list(filter(lambda other: self.get_xi_to_other_from_model(other) > 0.2*self.xi_max and self != other, others))#self.RSSI_threshold and self != other, others))
   
   @abstractmethod
   def generate_target_pos(self, beacons, ENV, next_min):
@@ -95,12 +97,12 @@ class Beacon():
     self.point = axis.plot(*self.pos, color=clr, marker="o", markersize=8)[0]
     self.annotation = axis.annotate(self.ID, xy=(self.pos[0], self.pos[1]), fontsize=14)
     theta = np.linspace(0, 2*np.pi)
-    self.radius = axis.plot(
-      self.pos[0] + self.range*np.cos(theta), self.pos[1] + self.range*np.sin(theta),
-      linestyle="dashed",
-      color="black",
-      alpha=0.3
-    )[0]
+    # self.radius = axis.plot(
+    #   self.pos[0] + self.range*np.cos(theta), self.pos[1] + self.range*np.sin(theta),
+    #   linestyle="dashed",
+    #   color="black",
+    #   alpha=0.3
+    # )[0]
     # self.radius2 = axis.plot(
     #   self.pos[0] + self.d_perf*np.cos(theta), self.pos[1] + self.d_perf*np.sin(theta),
     #   linestyle="dashed",
@@ -108,6 +110,6 @@ class Beacon():
     #   alpha=0.3
     # )[0]
 
-    return self.point, self.annotation, self.radius#, self.radius2
+    return self.point, self.annotation#, self.radius#, self.radius2
 
 

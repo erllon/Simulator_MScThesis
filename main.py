@@ -194,7 +194,7 @@ if __name__ == "__main__":
         #   kind=LineExploreKind.TWO_DIM_LOCAL,
         # )
         NewAttractiveFollow(K_o=1),
-        NewPotentialFieldsExplore(K_o=10, target_point_or_line=NewPotentialFieldsExplore.Target.POINT)
+        NewPotentialFieldsExplore(K_o=10, target_point_or_line=NewPotentialFieldsExplore.Target.LINE)
       ),
       xi_max=1,
       d_perf=0.2,

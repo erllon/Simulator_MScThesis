@@ -2,6 +2,7 @@ from beacons.beacon import Beacon
 from beacons.SCS.path_tree import PathTree
 import numpy as np
 from helpers import polar_to_vec as p2v
+from copy import deepcopy
 
 class SCS(Beacon):
 
@@ -10,4 +11,7 @@ class SCS(Beacon):
         self.path_tree = PathTree(self)
     
     def generate_target_pos(self, beacons, ENV, next_min):
-        next_min.target_pos = p2v(self.range, np.pi/15)
+        angle = np.pi/15
+        next_min.target_pos = p2v(self.range, angle)
+        next_min.target_angle = angle
+        next_min.first_target_pos = deepcopy(next_min.target_pos)

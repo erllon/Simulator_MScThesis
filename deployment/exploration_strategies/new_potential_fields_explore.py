@@ -28,41 +28,35 @@ class NewPotentialFieldsExplore(ExplorationStrategy):
         xi_is = np.array([])
         xi_is = np.array([MIN.get_xi_to_other_from_model(b) for b in beacons])
 
-        neigh_indices, =  np.where(xi_is > 0.2)#np.where(RSSIs_all <= MIN.range) #np.where(xi_is > self.RSSI_threshold)
+        neigh_indices, =  np.where(xi_is > self.__RSSI_threshold)#np.where(RSSIs_all <= MIN.range) #np.where(xi_is > self.RSSI_threshold)
         xi_is_neigh = xi_is[neigh_indices]
         
         MIN._xi_traj = np.column_stack((MIN._xi_traj, xi_is)) #np.max(xi_is) #axis=0, but should be 1D...
         MIN.compute_neighbors(beacons)
 
-        MIN.neighbors = list(filter(lambda other: MIN.get_xi_to_other_from_model(other) > self.__RSSI_threshold and MIN != other, beacons))
+        if np.any(MIN.prev_pos != None):
+            MIN.delta_pos = MIN.pos - MIN.prev_pos
 
-
-        # RSSIs = [MIN.get_RSSI(n) for n in MIN.neighbors]
         F_att = NewPotentialFieldsExplore.get_attractive_force(self.__K_n, MIN)
         F_rep = NewPotentialFieldsExplore.get_repulsive_force(self.__K_n, self.__K_o, MIN, ENV)
-        # if np.linalg.norm(F_rep) != 0 and MIN.ID ==8:
-            # print(f"MIN.pos: {MIN.pos}")
-        # if MIN.ID == 8 or MIN.ID ==1:
-        #     print(f"np.linalg.norm(F_att): {np.linalg.norm(F_att)}")
-        #     print(f"np.linalg.norm(F_rep): {np.linalg.norm(F_rep)}")
-
+        
         F_sum = F_att + 10*F_rep#5*F_rep
-        # print(f"np.linalg.norm(F_sum): {np.linalg.norm(F_sum)}")
-        # a = np.any([MIN.get_RSSI(n) for n in MIN.neighbors] >= self.MIN_RSSI_STRENGTH_BEFORE_LAND)
-        # b = [MIN.get_RSSI(n) for n in MIN.neighbors] >= self.MIN_RSSI_STRENGTH_BEFORE_LAND
         
         # if np.linalg.norm(F_sum) > self.__min_force_threshold and np.any([MIN.get_RSSI(n) for n in MIN.neighbors] >= self.MIN_RSSI_STRENGTH_BEFORE_LAND):#MIN.get_RSSI(MIN.target_pos) >= self.MIN_RSSI_STRENGTH_BEFORE_LAND:
         if np.linalg.norm(F_sum) > self.__min_force_threshold and np.any(np.array([MIN.get_xi_to_other_from_model(n) for n in MIN.neighbors]) >= self.MIN_RSSI_STRENGTH_BEFORE_LAND):#MIN.get_RSSI(MIN.target_pos) >= self.MIN_RSSI_STRENGTH_BEFORE_LAND:
-        
+            if MIN.ID == 2:
+                a = 2
             # MIN.generate_virtual_target(gva(MIN.target_pos.reshape(2, ))) 
-            if self.__point_or_line == NewPotentialFieldsExplore.Target.LINE:
-                if np.linalg.norm(F_sum) < self.MAX_EXPLORATION_SPEED:
-                    MIN.generate_virtual_target(F_sum, 0.01)#MIN.target_pos += F_sum
-                else:
-                    MIN.generate_virtual_target(self.MAX_EXPLORATION_SPEED*normalize(F_sum), 0.01)
-                     #MIN.target_pos += self.MAX_EXPLORATION_SPEED*normalize(F_sum)
+            if self.__point_or_line == NewPotentialFieldsExplore.Target.LINE and np.any(MIN.delta_pos != None):
+                MIN.generate_virtual_target()
+                # if np.linalg.norm(F_sum) < self.MAX_EXPLORATION_SPEED:
+                #     MIN.generate_virtual_target(F_sum, 0.01)#MIN.target_pos += F_sum
+                # else:
+                #     MIN.generate_virtual_target(self.MAX_EXPLORATION_SPEED*normalize(F_sum), 0.01)
+                #      #MIN.target_pos += self.MAX_EXPLORATION_SPEED*normalize(F_sum)
                 
                 #MIN.generate_virtual_target(gva(MIN.target_pos))
+            MIN.prev_pos = MIN.pos
             return F_sum if np.linalg.norm(F_sum) < self.MAX_EXPLORATION_SPEED else self.MAX_EXPLORATION_SPEED*normalize(F_sum)
         else:
             print("Landing due to too small force and satisfactory low RSSI")

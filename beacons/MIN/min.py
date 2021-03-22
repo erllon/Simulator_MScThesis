@@ -9,6 +9,7 @@ from helpers import (
   plot_vec,
   rot_z_mat as R_z
 )
+from copy import deepcopy
 
 import numpy as np
 from enum import Enum
@@ -63,6 +64,9 @@ class Min(Beacon):
     self.vec_to_prev = np.zeros(2)
     self.obs_vec = np.zeros(2)
     self.neigh_vec = np.zeros(2)
+
+    self.first_target_pos = None
+    self.final_target_pos = None
 
 
   def insert_into_environment(self, env):
@@ -146,6 +150,9 @@ class Min(Beacon):
     # target_pos_tilde = np.hstack((target_pos,0,1)).reshape((4,1))
     # target_pos_world = h_trans_mat @ target_pos_tilde
     # self.test = target_pos.reshape(2, ) + self.pos.reshape(2, ) #+ self.pos.reshape(2, )#target_pos.reshape(2, ) + self.pos.reshape(2, )
+    if next_min.first_target_pos == None:
+      next_min.first_target_pos = deepcopy(target_pos.reshape(2, )) #b#target_pos.reshape(2, )
+    
     next_min.target_pos = target_pos
     next_min.prev_drone = prev_min
     self.next = next_min
@@ -153,8 +160,8 @@ class Min(Beacon):
   
   def generate_virtual_target(self): #(self, F, dt):    
     # self.target_pos = euler_int(self.target_pos.reshape(2, ), F, dt).reshape(2, )
-    self.target_pos += p2v(self.delta_pos, self.target_angle)
-
+    self.target_pos += p2v(np.linalg.norm(self.delta_pos), self.target_angle)
+    self.final_target_pos = deepcopy(self.target_pos)
   @staticmethod
   def get_neigh_vecs_and_angles(MIN):
     vecs_from_neighs, ang_from_neighs = [], []
@@ -211,14 +218,23 @@ class Min(Beacon):
     plot_vec(axis, interval_vec_1, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
     plot_vec(axis, interval_vec_2, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
 
-    if np.linalg.norm(self.obs_vec) != 0: 
-      plot_vec(axis, self.obs_vec, self.pos, clr="blue")
+    # if np.linalg.norm(self.obs_vec) != 0: 
+    #   plot_vec(axis, self.obs_vec, self.pos, clr="blue")
       
-    if self.next:
-      plot_vec(axis, self.next.target_pos-self.pos, self.pos, clr="red") #This should ALWAYS be in the given "target interval"
+    # if self.next:
+    #   plot_vec(axis, self.next.first_target_pos-self.pos, self.pos, clr="red") #This should ALWAYS be in the given "target interval"
+    #   plot_vec(axis, self.next.final_target_pos-self.pos, self.pos, clr="green") #This should ALWAYS be in the given "target interval"
+      
 
-    axis.plot(*(self.target_pos), color="red",marker="o",markersize=8)
-    axis.annotate(f"{self.ID}", (self.target_pos))
+      # plot_vec(axis, self.next.target_pos-self.pos, self.pos, clr="red") #This should ALWAYS be in the given "target interval"
+
+    # axis.plot(*(self.target_pos), color="red",marker="o",markersize=8)
+    # axis.plot(*(self.first_target_pos), color="red",marker="o",markersize=8)
+    # axis.plot(*(self.final_target_pos), color="green",marker="o",markersize=8)
+
+    # axis.annotate(f"{self.ID}", (self.first_target_pos))
+    # axis.annotate(f"{self.ID}", (self.final_target_pos))
+    # axis.annotate(f"{self.ID}", (self.target_pos))
 
 
   def plot_traj_line(self, axis):
@@ -246,11 +262,11 @@ class Min(Beacon):
     self.annotation.set_x(new_pos[0])
     self.annotation.set_y(new_pos[1])
     theta = np.linspace(0, 2*np.pi)
-    self.radius.set_data(new_pos.reshape(2, 1) + p2v(self.range, theta))
+    # self.radius.set_data(new_pos.reshape(2, 1) + p2v(self.range, theta))
     # self.radius2.set_data(new_pos.reshape(2, 1) + p2v(self.d_perf, theta))
     self.traj_line.set_data(self._pos_traj[:, :index])
     self.heading_arrow.set_data(*np.hstack((new_pos.reshape(2, 1), new_pos.reshape(2, 1) + p2v(1, self._heading_traj[index]).reshape(2, 1))))
-    return self.point, self.annotation, self.radius, self.traj_line, self.heading_arrow #,self.radius2 
+    return self.point, self.annotation, self.traj_line, self.heading_arrow #self.radius,,self.radius2 
 
   def plot_force_from_traj_index(self, index):
     new_force = self._v_traj[:index]
