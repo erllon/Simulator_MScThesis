@@ -51,10 +51,10 @@ class Min(Beacon):
     self.target_threshold = target_threshold
     self.sensors = []
     self.target_pos = np.array([None, None]).reshape(2, )
+    self.target_angle = None
     self.prev = None
+    self.next = None
     self.delta_expl_angle = delta_expl_angle
-    self.test = np.zeros(2)
-    self.test2 = np.zeros(2)
     for ang in np.arange(0, 360, 90):
       r = RangeSensor(max_range)
       r.mount(self, ang)
@@ -75,9 +75,13 @@ class Min(Beacon):
     self._v_traj = np.array([0])
     self._xi_traj = np.zeros((self.ID,1)) #xi for all prev drones
 
+
   def do_step(self, beacons, SCS, ENV, dt):
     v = self.deployment_strategy.get_velocity_vector(self, beacons, SCS, ENV)
+    self.prev_pos = self.pos
     self.pos = euler_int(self.pos.reshape(2, ), v, dt).reshape(2, )
+    if (self.prev_pos != None).any():
+      self.delta_pos = self.pos - self.prev_pos
     psi_ref = gva(v)
     tau = 0.1
     self.heading = euler_int(self.heading, (1/tau)*(ssa(psi_ref - self.heading)), dt)
@@ -126,11 +130,10 @@ class Min(Beacon):
     print(f"Drone {self.ID} generating target for drone {next_min.ID}")
     print(f"expl_ang from drone {self.ID}: {expl_ang*180/np.pi}")
     print(f"rand from drone {self.ID}: {rand*180/np.pi}")
-    target_angle = expl_ang + rand
+    next_min.target_angle = expl_ang + rand
 
     self.tot_vec = p2v(1, expl_ang) #p2v(1, target_angle)
     
-    # print(f"ang_tot_vec_from_obs: {ang_tot_vec_from_obs}")
     self.neigh_vec = p2v(1, avg_ang_from_neigh)#p2v(1, np.sum(ang_from_neighs, axis=0)/len(ang_from_neighs))
     
     # Rot_mat = R_z(gva(self.tot_vec))
@@ -139,17 +142,19 @@ class Min(Beacon):
     # a = np.hstack((Rot_mat,origin_transl))
     # h_trans_mat = np.vstack((a,rest))#np.vstack((np.vstack((Rot_mat,origin_transl)),rest))
 
-    target_pos = self.pos + p2v(self.range, target_angle)#p2v(10, target_angle)#.reshape((2,)) #R_z(gva(tot_vec))[:2,:2]@p2v(self.target_r,target_angle)
+    target_pos = self.pos + p2v(self.range, next_min.target_angle)#+ p2v(self.range, self.target_angle)#p2v(10, target_angle)#.reshape((2,)) #R_z(gva(tot_vec))[:2,:2]@p2v(self.target_r,target_angle)
     # target_pos_tilde = np.hstack((target_pos,0,1)).reshape((4,1))
     # target_pos_world = h_trans_mat @ target_pos_tilde
-    self.test = target_pos
+    # self.test = target_pos.reshape(2, ) + self.pos.reshape(2, ) #+ self.pos.reshape(2, )#target_pos.reshape(2, ) + self.pos.reshape(2, )
     next_min.target_pos = target_pos
     next_min.prev_drone = prev_min
+    self.next = next_min
     return target_pos  
   
-  def generate_virtual_target(self, F, dt):
-    self.target_pos = euler_int(self.target_pos.reshape(2, ), F, dt).reshape(2, )
-  
+  def generate_virtual_target(self): #(self, F, dt):    
+    # self.target_pos = euler_int(self.target_pos.reshape(2, ), F, dt).reshape(2, )
+    self.target_pos += p2v(self.delta_pos, self.target_angle)
+
   @staticmethod
   def get_neigh_vecs_and_angles(MIN):
     vecs_from_neighs, ang_from_neighs = [], []
@@ -159,7 +164,7 @@ class Min(Beacon):
         dist = np.linalg.norm(vec_from_neigh) #when using xi for RSSI, dist will be in the interval (d_perf, d_none)
         scaling = MIN.d_none - MIN.d_perf
         # vecs_from_neighs.append((MIN.range - dist)*normalize(vec_from_neigh)) #TODO: When using xi as RSSI, this scaling will not produce perf results
-        vecs_from_neighs.append((scaling)*normalize(vec_from_neigh))
+        vecs_from_neighs.append((scaling-dist)*normalize(vec_from_neigh))
         
         
         ang_from_neighs.append(gva(vec_from_neigh.reshape(2, )))
@@ -199,27 +204,21 @@ class Min(Beacon):
     return super().plot(axis, clr=self.clr[self.state]) + (self.heading_arrow, )
   
   def plot_vectors(self, prev_drone, ENV, axis):
-    # for obs_vec in self.vecs_to_obs:
-      # self.b = plot_vec(axis, -obs_vec, self.pos, clr=self.vec_clr[VectorTypes.OBSTACLE])
-    self.c1 = plot_vec(axis, normalize(self.tot_vec), self.pos, clr=self.vec_clr[VectorTypes.TOTAL] )
-    # self.c2 = plot_vec(axis, self.tot_vec, np.zeros(2), clr=self.vec_clr[VectorTypes.TOTAL] )
+
+    plot_vec(axis, normalize(self.tot_vec), self.pos, clr=self.vec_clr[VectorTypes.TOTAL] )
     interval_vec_1 = normalize(R_z(self.delta_expl_angle)[:2,:2]@self.tot_vec)
     interval_vec_2 = normalize(R_z(-self.delta_expl_angle)[:2,:2]@self.tot_vec)
-    self.d1 = plot_vec(axis, interval_vec_1, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
-    self.d2 = plot_vec(axis, interval_vec_2, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
-    # self.martin = plot_vec(axis, p2v(1,gva(self.test)), self.pos, clr="purple")
+    plot_vec(axis, interval_vec_1, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
+    plot_vec(axis, interval_vec_2, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
+
     if np.linalg.norm(self.obs_vec) != 0: 
-      self.e = plot_vec(axis, self.obs_vec, self.pos, clr="blue")
-    # self.f = plot_vec(axis, self.neigh_vec, self.pos, clr="green")
+      plot_vec(axis, self.obs_vec, self.pos, clr="blue")
+      
+    if self.next:
+      plot_vec(axis, self.next.target_pos-self.pos, self.pos, clr="red") #This should ALWAYS be in the given "target interval"
 
-    #self.e = plot_vec(axis, self.vec_to_prev, self.pos, clr=self.vec_clr[VectorTypes.PREV_MIN])
-
-    # self.e1 = plot_vec(axis, interval_vec_1, np.zeros(2), clr=self.vec_clr[VectorTypes.INTERVAL])
-    # self.e2 = plot_vec(axis, interval_vec_2, np.zeros(2), clr=self.vec_clr[VectorTypes.INTERVAL])
-    # self.test1_1 = axis.plot(*self.test, color="red",marker="o",markersize=8)
-    # axis.annotate(f"{self.ID+1}", self.test)
-    # self.test2_2 = axis.plot(*self.test2, color="green",marker="o",markersize=8)
-    # axis.annotate(f"{self.ID+1}", self.test2)
+    axis.plot(*(self.target_pos), color="red",marker="o",markersize=8)
+    axis.annotate(f"{self.ID}", (self.target_pos))
 
 
   def plot_traj_line(self, axis):

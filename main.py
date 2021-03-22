@@ -90,15 +90,21 @@ if __name__ == "__main__":
       np.array([
         [-0.1, -0.1],
         [-0.1,   10],
-        [10,     10],
-        [10,     -0.1],
+        [15,     10],
+        [15,     -0.1],
       ]),
-      np.array([
-        [4.0,  5],
-        [4.0, -0.1],
-        [5.0, -0.1],
-        [5.0,  5]
-      ])
+      # np.array([
+      #   [4.0,  5],
+      #   [4.0, -0.1],
+      #   [5, -0.1],
+      #   [5,  5]
+      # ]),
+      # np.array([
+      #   [9.0,  10],
+      #   [9.0, 4.9],
+      #   [10.0, 4.9],
+      #   [10.0,  10]
+      # ])
     ]
   obstacle_corners_2D_2 = [
       np.array([
@@ -122,24 +128,18 @@ if __name__ == "__main__":
     ]
 
   obstacle_corners_2D_3 = [
-      # np.array([
-      #   [3,  -2],
-      #   [3,  2],
-      #   [7,  2],
-      #   [7, -2],
-      # ]),
       np.array([
-        [3, -6],
-        [3,  6],
-        [7,  6],
-        [7, -6],
+        [-0.1, -0.1],
+        [-0.1,   10],
+        [10,     10],
+        [10,     -0.1],
       ]),
-      # np.array([
-      #   [-0.5, -0.5],
-      #   [ 0.5, -0.5],
-      #   [ 0.5, 0.5],
-      #   [-0.5, 0.5],
-      # ])
+      np.array([
+        [3, 3],
+        [3, 7],
+        [7, 7],
+        [7, 3]
+      ])      
     ]
 
   env = Env(
@@ -155,11 +155,11 @@ if __name__ == "__main__":
 # %%Parameter initializatio
 
   _animate, save_animation, plot_propterties = False, False, False
-  start_animation_from_min_ID = 0
+  start_animation_from_min_ID = 1
 
   max_range = 3 #0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 12 #7#2*5#3
+  N_mins = 5#18#7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -197,8 +197,8 @@ if __name__ == "__main__":
         NewPotentialFieldsExplore(K_o=10, target_point_or_line=NewPotentialFieldsExplore.Target.POINT)
       ),
       xi_max=1,
-      d_perf=0.1,
-      d_none=1.6,
+      d_perf=0.2,
+      d_none=2.5,
       delta_expl_angle=np.pi/4#np.pi/6#0#np.pi/6#np.pi/4 #0
     ) for i in range(N_mins)
   ]
