@@ -59,7 +59,11 @@ class NewPotentialFieldsExplore(ExplorationStrategy):
             MIN.prev_pos = MIN.pos
             return F_sum if np.linalg.norm(F_sum) < self.MAX_EXPLORATION_SPEED else self.MAX_EXPLORATION_SPEED*normalize(F_sum)
         else:
-            print("Landing due to too small force and satisfactory low RSSI")
+            if np.linalg.norm(F_sum) <= self.__min_force_threshold:
+                print("Too small force")
+            if np.any(np.array([MIN.get_xi_to_other_from_model(n) for n in MIN.neighbors]) < self.MIN_RSSI_STRENGTH_BEFORE_LAND*MIN.xi_max):
+                print("Too low RSSI")
+            # print("Landing due to too small force and satisfactory low RSSI")
             raise AtLandingConditionException
 
     
