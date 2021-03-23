@@ -67,6 +67,7 @@ class Min(Beacon):
 
     self.first_target_pos = None
     self.final_target_pos = None
+    self.vecs_from_obs = []
 
 
   def insert_into_environment(self, env):
@@ -117,6 +118,7 @@ class Min(Beacon):
     expl_ang = 0
     ang_tot_vec_from_obs = 0
 
+    self.vecs_from_obs = vecs_from_obs
     if len(vecs_from_obs) != 0: # If obstacles present
       tot_vec_from_obs = np.sum(vecs_from_obs,axis=0)
       ang_tot_vec_from_obs = gva(tot_vec_from_obs)
@@ -212,14 +214,17 @@ class Min(Beacon):
   
   def plot_vectors(self, prev_drone, ENV, axis):
 
-    plot_vec(axis, normalize(self.tot_vec), self.pos, clr=self.vec_clr[VectorTypes.TOTAL] )
-    interval_vec_1 = normalize(R_z(self.delta_expl_angle)[:2,:2]@self.tot_vec)
-    interval_vec_2 = normalize(R_z(-self.delta_expl_angle)[:2,:2]@self.tot_vec)
-    plot_vec(axis, interval_vec_1, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
-    plot_vec(axis, interval_vec_2, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
+    # plot_vec(axis, normalize(self.tot_vec), self.pos, clr=self.vec_clr[VectorTypes.TOTAL] )
+    # interval_vec_1 = normalize(R_z(self.delta_expl_angle)[:2,:2]@self.tot_vec)
+    # interval_vec_2 = normalize(R_z(-self.delta_expl_angle)[:2,:2]@self.tot_vec)
+    # plot_vec(axis, interval_vec_1, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
+    # plot_vec(axis, interval_vec_2, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
+
 
     # if np.linalg.norm(self.obs_vec) != 0: 
     #   plot_vec(axis, self.obs_vec, self.pos, clr="blue")
+    for vec in self.vecs_from_obs:
+      plot_vec(axis, vec, self.pos, clr="blue")
       
     # if self.next:
     #   plot_vec(axis, self.next.first_target_pos-self.pos, self.pos, clr="red") #This should ALWAYS be in the given "target interval"
@@ -262,11 +267,11 @@ class Min(Beacon):
     self.annotation.set_x(new_pos[0])
     self.annotation.set_y(new_pos[1])
     theta = np.linspace(0, 2*np.pi)
-    # self.radius.set_data(new_pos.reshape(2, 1) + p2v(self.range, theta))
+    self.radius.set_data(new_pos.reshape(2, 1) + p2v(self.range, theta))
     # self.radius2.set_data(new_pos.reshape(2, 1) + p2v(self.d_perf, theta))
     self.traj_line.set_data(self._pos_traj[:, :index])
     self.heading_arrow.set_data(*np.hstack((new_pos.reshape(2, 1), new_pos.reshape(2, 1) + p2v(1, self._heading_traj[index]).reshape(2, 1))))
-    return self.point, self.annotation, self.traj_line, self.heading_arrow #self.radius,,self.radius2 
+    return self.point, self.annotation, self.traj_line, self.heading_arrow, self.radius,#,self.radius2 
 
   def plot_force_from_traj_index(self, index):
     new_force = self._v_traj[:index]
