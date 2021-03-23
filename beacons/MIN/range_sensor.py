@@ -51,6 +51,8 @@ class RangeSensor():
         Returns:
             float: distance along sensor-frame x-axis to nearest obstacle (inf if no obstacle is within range)
         """
+        #TODO: This only returns the shortes distance along the x-axis in the sensor-frame
+        #      Add "correct" angle for Crazyflies? 26 or 27 degrees?
         valid_crossings = np.array([np.inf])
         closed_corners = np.vstack((corners, corners[0, :]))
         A_1 = p2v(1, self.host_relative_angle + self.host.heading).reshape(2, 1)
@@ -67,4 +69,5 @@ class RangeSensor():
                     valid_crossings = np.hstack((valid_crossings, t[0]))
             except np.linalg.LinAlgError:
                 pass
+        # print(valid_crossings)
         return valid_crossings
