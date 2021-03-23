@@ -28,7 +28,7 @@ class NewPotentialFieldsExplore(ExplorationStrategy):
         xi_is = np.array([])
         xi_is = np.array([MIN.get_xi_to_other_from_model(b) for b in beacons])
 
-        neigh_indices, =  np.where(xi_is > self.__RSSI_threshold)#np.where(RSSIs_all <= MIN.range) #np.where(xi_is > self.RSSI_threshold)
+        neigh_indices, =  np.where(xi_is > self.__RSSI_threshold*MIN.xi_max)#np.where(RSSIs_all <= MIN.range) #np.where(xi_is > self.RSSI_threshold)
         xi_is_neigh = xi_is[neigh_indices]
         
         MIN._xi_traj = np.column_stack((MIN._xi_traj, xi_is)) #np.max(xi_is) #axis=0, but should be 1D...
@@ -43,7 +43,7 @@ class NewPotentialFieldsExplore(ExplorationStrategy):
         F_sum = F_att + 10*F_rep#5*F_rep
         
         # if np.linalg.norm(F_sum) > self.__min_force_threshold and np.any([MIN.get_RSSI(n) for n in MIN.neighbors] >= self.MIN_RSSI_STRENGTH_BEFORE_LAND):#MIN.get_RSSI(MIN.target_pos) >= self.MIN_RSSI_STRENGTH_BEFORE_LAND:
-        if np.linalg.norm(F_sum) > self.__min_force_threshold and np.any(np.array([MIN.get_xi_to_other_from_model(n) for n in MIN.neighbors]) >= self.MIN_RSSI_STRENGTH_BEFORE_LAND):#MIN.get_RSSI(MIN.target_pos) >= self.MIN_RSSI_STRENGTH_BEFORE_LAND:
+        if np.linalg.norm(F_sum) > self.__min_force_threshold and np.any(np.array([MIN.get_xi_to_other_from_model(n) for n in MIN.neighbors]) >= self.MIN_RSSI_STRENGTH_BEFORE_LAND*MIN.xi_max):#MIN.get_RSSI(MIN.target_pos) >= self.MIN_RSSI_STRENGTH_BEFORE_LAND:
             # if MIN.ID == 2:
             #     a = 2
             # MIN.generate_virtual_target(gva(MIN.target_pos.reshape(2, ))) 

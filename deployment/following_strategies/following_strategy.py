@@ -64,7 +64,7 @@ class FollowingStrategy(ABC):
             # print(f"self.__curr_RSSI: {self.__curr_RSSI}")
             if self.is_following_final_target():
                 #HERE
-                if self.__curr_RSSI >= FollowingStrategy.MIN_RSSI_SWITCH_BEACON:
+                if self.__curr_RSSI >= FollowingStrategy.MIN_RSSI_SWITCH_BEACON*MIN.xi_max:
                     raise AtTargetException
                     # print(f"np.linalg.norm(MIN.pos - self.target.pos): {np.linalg.norm(MIN.pos - self.target.pos)}")
                     # if np.linalg.norm(MIN.pos - self.target.pos) < 0.15:#(MIN.pos == self.target.pos).all(): #HERE
@@ -92,7 +92,7 @@ class FollowingStrategy(ABC):
                 # elif not self.__deadzone_v is None:
                 #         raise AtTargetException
 
-            if self.__curr_RSSI >= FollowingStrategy.MIN_RSSI_SWITCH_BEACON and not self.is_following_final_target():
+            if self.__curr_RSSI >= FollowingStrategy.MIN_RSSI_SWITCH_BEACON*MIN.xi_max and not self.is_following_final_target():
                 # print(f"self.__curr_RSSI: {self.__curr_RSSI}")
                 # print(f"MIN.pos: {MIN.pos}")
                 # print(f"self.btf.pos: {self.btf.pos}")
