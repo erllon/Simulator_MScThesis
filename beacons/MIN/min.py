@@ -214,17 +214,17 @@ class Min(Beacon):
   
   def plot_vectors(self, prev_drone, ENV, axis):
 
-    # plot_vec(axis, normalize(self.tot_vec), self.pos, clr=self.vec_clr[VectorTypes.TOTAL] )
-    # interval_vec_1 = normalize(R_z(self.delta_expl_angle)[:2,:2]@self.tot_vec)
-    # interval_vec_2 = normalize(R_z(-self.delta_expl_angle)[:2,:2]@self.tot_vec)
-    # plot_vec(axis, interval_vec_1, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
-    # plot_vec(axis, interval_vec_2, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
+    plot_vec(axis, normalize(self.tot_vec), self.pos, clr=self.vec_clr[VectorTypes.TOTAL] )
+    interval_vec_1 = normalize(R_z(self.delta_expl_angle)[:2,:2]@self.tot_vec)
+    interval_vec_2 = normalize(R_z(-self.delta_expl_angle)[:2,:2]@self.tot_vec)
+    plot_vec(axis, interval_vec_1, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
+    plot_vec(axis, interval_vec_2, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
 
 
-    # if np.linalg.norm(self.obs_vec) != 0: 
-    #   plot_vec(axis, self.obs_vec, self.pos, clr="blue")
-    for vec in self.vecs_from_obs:
-      plot_vec(axis, vec, self.pos, clr="blue")
+    if np.linalg.norm(self.obs_vec) != 0: 
+      plot_vec(axis, self.obs_vec, self.pos, clr="blue")
+    # for vec in self.vecs_from_obs:
+    #   plot_vec(axis, vec, self.pos, clr="blue")
       
     # if self.next:
     #   plot_vec(axis, self.next.first_target_pos-self.pos, self.pos, clr="red") #This should ALWAYS be in the given "target interval"

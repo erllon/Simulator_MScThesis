@@ -154,12 +154,12 @@ if __name__ == "__main__":
 
 # %%Parameter initializatio
 
-  _animate, save_animation, plot_propterties = False, False, False
-  start_animation_from_min_ID = 1
+  _animate, save_animation, plot_propterties = False, False, True
+  start_animation_from_min_ID = 0
 
   max_range = 3 #0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 5#18#7#2*5#3
+  N_mins = 7#18#7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -225,11 +225,11 @@ if __name__ == "__main__":
   if _animate: # TODO: if _animate: everything in same fig,  else: drones in one fig, "properties" in another fig
     for mn in mins[:start_animation_from_min_ID]:
       if plot_propterties:
-        # mn.plot(ax[0])
-        # mn.plot_traj_line(ax[0])
-        # # mn.plot_vectors(mn.prev, env, ax[0])
-        # mn.plot_force_traj_line(ax[1])
-        # mn.plot_xi_traj_line(ax[2])
+        mn.plot(ax1)
+        mn.plot_traj_line(ax1)
+        # mn.plot_vectors(mn.prev, env, ax[0])
+        mn.plot_force_traj_line(ax2)
+        mn.plot_xi_traj_line(ax3)
         mn.plot(ax1)
         mn.plot_traj_line(ax1)
         # mn.plot_vectors(mn.prev, env, ax[0])
@@ -252,7 +252,7 @@ if __name__ == "__main__":
           artists += (mn.plot_traj_line(ax1), ) #Type: Line2D(_line6)
           artists += (mn.plot_force_traj_line(ax2), )
           artists += (mn.plot_xi_traj_line(ax3), )
-          # mn.plot_pos_from_pos_traj_index(0)
+          mn.plot_pos_from_pos_traj_index(0)
           mn.plot_force_from_traj_index(0)
           mn.plot_xi_from_traj_index(0)
         if start_animation_from_min_ID == 0:
@@ -264,7 +264,7 @@ if __name__ == "__main__":
         for mn in mins:
           artists += mn.plot(ax)
           artists += (mn.plot_traj_line(ax), )
-          # mn.plot_pos_from_pos_traj_index(0)
+          mn.plot_pos_from_pos_traj_index(0)
       return artists
 
     def animate(i):
@@ -272,14 +272,13 @@ if __name__ == "__main__":
         offset[0] += mins[min_counter[0]].get_pos_traj_length()
         min_counter[0] += 1
       if plot_propterties:
-        # plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
+        plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
         plt_force_traj = mins[min_counter[0]].plot_force_from_traj_index(i-offset[0])
         plt_xi_traj = mins[min_counter[0]].plot_xi_from_traj_index(i-offset[0])
-        return  plt_force_traj, plt_xi_traj  #plt_pos_traj,mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0]), mins[min_counter[0]].plot_force_from_traj_index(i-offset[0]) #2
+        return  plt_force_traj, plt_xi_traj, plt_pos_traj #,mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0]), mins[min_counter[0]].plot_force_from_traj_index(i-offset[0]) #2
       else:
-        pass
-        # plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
-        # return plt_pos_traj
+        plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
+        return plt_pos_traj
 
     anim = FuncAnimation(fig, animate, init_func=init, interval=2, blit=False)
     
@@ -291,20 +290,20 @@ if __name__ == "__main__":
 
   else:
     if plot_propterties:
-      env.plot(ax[0])
-      scs.plot(ax[0])
+      env.plot(ax1)
+      scs.plot(ax1)
       for mn in mins:
-        mn.plot(ax[0])
-        # mn.plot_traj_line(ax[0])
-        mn.plot_vectors(mn.prev, env, ax[0])
-      mn.plot_force_traj_line(ax[1])
-      mn.plot_xi_traj_line(ax[2])
+        mn.plot(ax1)
+        mn.plot_traj_line(ax1)
+        mn.plot_vectors(mn.prev, env, ax1)
+      mn.plot_force_traj_line(ax2)
+      mn.plot_xi_traj_line(ax3)
     else:
       env.plot(ax)
       scs.plot(ax)
       for j in range(len(mins)):#mn in mins:
         mins[j].plot(ax)
-        # mins[j].plot_traj_line(ax)
+        mins[j].plot_traj_line(ax)
         if j == 0:
           mins[j].plot_vectors(scs,env,ax)
         else:
