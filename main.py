@@ -90,41 +90,29 @@ if __name__ == "__main__":
       np.array([
         [-0.1, -0.1],
         [-0.1,   10],
-        [10,     10],
-        [10,     -0.1],
+        [15,     10],
+        [15,     -0.1],
       ]),
-      # np.array([
-      #   [4.0,  5],
-      #   [4.0, -0.1],
-      #   [5, -0.1],
-      #   [5,  5]
-      # ]),
-      # np.array([
-      #   [9.0,  10],
-      #   [9.0, 4.9],
-      #   [10.0, 4.9],
-      #   [10.0,  10]
-      # ])
+      np.array([
+        [4.0,  5],
+        [4.0, -0.1],
+        [5, -0.1],
+        [5,  5]
+      ]),
+      np.array([
+        [9.0,  10],
+        [9.0, 4.9],
+        [10.0, 4.9],
+        [10.0,  10]
+      ])
     ]
   obstacle_corners_2D_2 = [
       np.array([
-        [-10, -10],
-        [ -10, -9],
-        [ 10,  -9],
-        [10,  -10],
+        [-0.1, -0.1],
+        [-0.1,   5],
+        [5,      5],
+        [5,     -0.1],
       ]),
-      np.array([
-        [-9.99, -9.01],
-        [-9.99, -9.5],
-        [-8, -9.5],
-        [-8, -9.01],
-      ]),
-      np.array([
-        [-7 ,-9.99],
-        [-6, -9.99],
-        [-6, -9.8],
-        [-7, -9.8]
-      ])
     ]
 
   obstacle_corners_2D_3 = [
@@ -154,12 +142,12 @@ if __name__ == "__main__":
 
 # %%Parameter initializatio
 
-  _animate, save_animation, plot_propterties = False, False, True
-  start_animation_from_min_ID = 0
+  _animate, save_animation, plot_propterties = False, False, False
+  start_animation_from_min_ID = 3
 
   max_range = 3 #0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 7#18#7#2*5#3
+  N_mins = 5#18#7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -194,7 +182,7 @@ if __name__ == "__main__":
         #   kind=LineExploreKind.TWO_DIM_LOCAL,
         # )
         NewAttractiveFollow(K_o=1),
-        NewPotentialFieldsExplore(K_o=10, target_point_or_line=NewPotentialFieldsExplore.Target.LINE)
+        NewPotentialFieldsExplore(K_o=20, target_point_or_line=NewPotentialFieldsExplore.Target.LINE)
       ),
       xi_max=1,
       d_perf=0.1,
