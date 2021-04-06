@@ -44,18 +44,10 @@ class NewPotentialFieldsExplore(ExplorationStrategy):
         
         # if np.linalg.norm(F_sum) > self.__min_force_threshold and np.any([MIN.get_RSSI(n) for n in MIN.neighbors] >= self.MIN_RSSI_STRENGTH_BEFORE_LAND):#MIN.get_RSSI(MIN.target_pos) >= self.MIN_RSSI_STRENGTH_BEFORE_LAND:
         if np.linalg.norm(F_sum) > self.__min_force_threshold and np.any(np.array([MIN.get_xi_to_other_from_model(n) for n in MIN.neighbors]) >= self.MIN_RSSI_STRENGTH_BEFORE_LAND*MIN.xi_max):#MIN.get_RSSI(MIN.target_pos) >= self.MIN_RSSI_STRENGTH_BEFORE_LAND:
-            # if MIN.ID == 2:
-            #     a = 2
-            # MIN.generate_virtual_target(gva(MIN.target_pos.reshape(2, ))) 
+
             if self.__point_or_line == NewPotentialFieldsExplore.Target.LINE and np.any(MIN.delta_pos != None):
                 MIN.generate_virtual_target()
-                # if np.linalg.norm(F_sum) < self.MAX_EXPLORATION_SPEED:
-                #     MIN.generate_virtual_target(F_sum, 0.01)#MIN.target_pos += F_sum
-                # else:
-                #     MIN.generate_virtual_target(self.MAX_EXPLORATION_SPEED*normalize(F_sum), 0.01)
-                #      #MIN.target_pos += self.MAX_EXPLORATION_SPEED*normalize(F_sum)
                 
-                #MIN.generate_virtual_target(gva(MIN.target_pos))
             MIN.prev_pos = MIN.pos
             return F_sum if np.linalg.norm(F_sum) < self.MAX_EXPLORATION_SPEED else self.MAX_EXPLORATION_SPEED*normalize(F_sum)
         else:
