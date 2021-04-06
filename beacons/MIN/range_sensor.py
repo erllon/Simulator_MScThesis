@@ -5,24 +5,29 @@ from helpers import (
     )
 
 class RangeReading():
-    def __init__(self, measured_range):
+    def __init__(self, measured_range, measured_angle=None):
         self.__measured_range = measured_range
+        self.__measured_angle = measured_angle
         self.__is_valid = measured_range != np.inf
     
     def get_val(self):
         return np.array([self.__measured_range, 0, 0]).reshape(3, 1)
     
+    def get_angle(self):
+        return self.__measured_angle
+
     def is_valid(self):
         return self.__is_valid
 
     def __str__(self):
-        return f"Range reading: {self.__measured_range} [m]"
+        return f"Range reading: {self.__measured_range} [m], angle: {self.__measured_angle}"
 
 class RangeSensor():
 
     def __init__(self, max_range):
         self.max_range = max_range
-        self.measurement = None
+        self.measurement_dist = None
+        self.measurement_angle = None
 
     def mount(self, host, angle_deg):
         self.host = host
@@ -32,14 +37,23 @@ class RangeSensor():
 
     def sense(self, environment):
         if environment.obstacle_corners == []:
-          self.measurement = RangeReading(np.inf)
+            self.measurement = RangeReading(np.inf)
         else:
-          self.measurement = RangeReading(
-              np.min(np.concatenate(
-                      [self.__sense_aux(corners) for corners in environment.obstacle_corners]
-                  )
-              )
-          )
+            a = [np.array(self.__sense_aux(corners)) for corners in environment.obstacle_corners]
+            if len(a) > 1:
+                t = 2
+            
+            g = min(a, key=lambda x:x[0])
+            self.measurement = RangeReading(g[0], g[1])
+            #     np.min(np.concatenate(
+            #             [np.array(self.__sense_aux(corners)) for corners in environment.obstacle_corners]
+            #         )
+            #     )
+            # )
+            # print(f"self.measurement: {self.measurement}")
+            # print("*******************************")
+            b=2
+
 
     def __sense_aux(self, corners):
         """Computes the distance to an obstacle
@@ -52,22 +66,49 @@ class RangeSensor():
             float: distance along sensor-frame x-axis to nearest obstacle (inf if no obstacle is within range)
         """
         #TODO: This only returns the shortes distance along the x-axis in the sensor-frame
-        #      Add "correct" angle for Crazyflies? 26 or 27 degrees?
+        #      Add "correct" angle for Crazyflies? 27 degrees
+        valid_crossings_dict = {
+            "lengths" : np.array([]),
+            "angles"  : np.array([])
+        }
         valid_crossings = np.array([np.inf])
-        closed_corners = np.vstack((corners, corners[0, :]))
-        A_1 = p2v(1, self.host_relative_angle + self.host.heading).reshape(2, 1)
-        max_t = np.array([self.max_range, 1])
-        for i in np.arange(corners.shape[0]):
-            x1, x2 = closed_corners[i, :], closed_corners[i+1, :]
+        closed_corners = np.vstack((corners, corners[0, :])) #Inneholder alle linjestykkene i en obstacle
 
-            A = np.hstack((A_1, (x1-x2).reshape(2, 1)))
+        num_of_rays = 11 #11 rays total, 5 pairs + "0-angle"
+        fov_angle = np.deg2rad(27) #total field-of-view
+        start_ang = -fov_angle/2.0
+        delta_ang = fov_angle/(num_of_rays-1)
+        
+        for i in range(num_of_rays):
+            current_ray_angle = start_ang + i*delta_ang
+            A_1 = p2v(1, self.host_relative_angle + self.host.heading + current_ray_angle).reshape(2, 1)
+            max_t = np.array([self.max_range, 1])
+            
+            test = np.rad2deg(start_ang + i*delta_ang)
+            test2 = 2
 
-            b = x1 - self.host.pos
-            try:
-                t = np.linalg.solve(A, b)
-                if (t >= 0).all() and (t <= max_t).all():
-                    valid_crossings = np.hstack((valid_crossings, t[0]))
-            except np.linalg.LinAlgError:
-                pass
-        # print(valid_crossings)
-        return valid_crossings
+            for j in np.arange(corners.shape[0]):
+                x1, x2 = closed_corners[j, :], closed_corners[j+1, :]
+
+                A = np.hstack((A_1, (x1-x2).reshape(2, 1)))
+
+                b = x1 - self.host.pos
+                try:
+                    t = np.linalg.solve(A, b)
+                    if (t >= 0).all() and (t <= max_t).all():
+                        valid_crossings = np.hstack((valid_crossings, np.linalg.norm(t)))#np.hstack((valid_crossings, t[0]))
+                        valid_crossings_dict["lengths"] = np.hstack((valid_crossings_dict["lengths"], np.linalg.norm(t)))
+                        valid_crossings_dict["angles"] = np.hstack((valid_crossings_dict["angles"], self.host.heading + self.host_relative_angle + current_ray_angle))
+                        e = 2
+                except np.linalg.LinAlgError:
+                    pass
+        
+        if len(valid_crossings_dict['lengths']) > 0:
+            length = min(valid_crossings_dict['lengths'])
+            index = np.argmin((valid_crossings_dict['lengths']))
+            angle = valid_crossings_dict['angles'][index]
+        else:
+            length = np.inf
+            angle = None
+        return length, angle
+        # return valid_crossings_dict #valid_crossings

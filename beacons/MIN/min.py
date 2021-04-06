@@ -63,6 +63,7 @@ class Min(Beacon):
     self.vecs_to_obs = []
     self.vec_to_prev = np.zeros(2)
     self.obs_vec = np.zeros(2)
+    self.closest_obs_vec = np.zeros(2)
     self.neigh_vec = np.zeros(2)
 
     self.first_target_pos = None
@@ -117,6 +118,7 @@ class Min(Beacon):
 
     expl_ang = 0
     ang_tot_vec_from_obs = 0
+    ang_closest_obs = 0
 
     self.vecs_from_obs = vecs_from_obs
     if len(vecs_from_obs) != 0: # If obstacles present
@@ -148,7 +150,7 @@ class Min(Beacon):
     # a = np.hstack((Rot_mat,origin_transl))
     # h_trans_mat = np.vstack((a,rest))#np.vstack((np.vstack((Rot_mat,origin_transl)),rest))
 
-    target_pos = self.pos + p2v(self.range, next_min.target_angle)#+ p2v(self.range, self.target_angle)#p2v(10, target_angle)#.reshape((2,)) #R_z(gva(tot_vec))[:2,:2]@p2v(self.target_r,target_angle)
+    target_pos = self.pos + p2v(1, next_min.target_angle)#p2v(self.range, next_min.target_angle)#+ p2v(self.range, self.target_angle)#p2v(10, target_angle)#.reshape((2,)) #R_z(gva(tot_vec))[:2,:2]@p2v(self.target_r,target_angle)
     # target_pos_tilde = np.hstack((target_pos,0,1)).reshape((4,1))
     # target_pos_world = h_trans_mat @ target_pos_tilde
     # self.test = target_pos.reshape(2, ) + self.pos.reshape(2, ) #+ self.pos.reshape(2, )#target_pos.reshape(2, ) + self.pos.reshape(2, )
@@ -220,9 +222,33 @@ class Min(Beacon):
     plot_vec(axis, interval_vec_1, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
     plot_vec(axis, interval_vec_2, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
 
+    if self.ID != 0:
+      heading2 = normalize(R_z(np.pi/2)[:2,:2]@p2v(1, self.heading))
+      heading3 = normalize(R_z(2*np.pi/2)[:2,:2]@p2v(1, self.heading))
+      heading4 = normalize(R_z(3*np.pi/2)[:2,:2]@p2v(1, self.heading))
+      plot_vec(axis,heading2, self.pos)
+      plot_vec(axis,heading3, self.pos)
+      plot_vec(axis,heading4, self.pos)
+
+
+
+    vec_counter = 0
+    for s in self.sensors:
+      # sensor_vec1 = p2v(3, self.heading + s.host_relative_angle - np.deg2rad(27)/2.0)
+      # sensor_vec2 = p2v(3, self.heading + s.host_relative_angle + np.deg2rad(27)/2.0)
+      # sensor_vec1 = normalize(R_z(np.deg2rad(27/2.0))[:2,:2]@p2v(1,self.heading + s.host_relative_angle))
+      # sensor_vec2 = normalize(R_z(-np.deg2rad(27/2.0))[:2,:2]@p2v(1,self.heading + s.host_relative_angle))
+
+      # plot_vec(axis, sensor_vec1, self.pos, clr="green")
+      # plot_vec(axis, sensor_vec2, self.pos, clr="green")
+      if s.measurement.is_valid():# and self.ID > 3:
+        meas_vec = normalize(p2v(3-s.measurement.get_val()[0], s.measurement.get_angle()))
+        plot_vec(axis, meas_vec, self.pos, clr="red")
+        vec_counter += 1
 
     if np.linalg.norm(self.obs_vec) != 0: 
       plot_vec(axis, self.obs_vec, self.pos, clr="blue")
+    print(f"A total of {vec_counter} obstacle vectors")
     # for vec in self.vecs_from_obs:
     #   plot_vec(axis, vec, self.pos, clr="blue")
       
