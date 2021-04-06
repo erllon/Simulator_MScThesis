@@ -29,8 +29,11 @@ def simulate(dt, mins, scs, env):
   # mins[0].target_pos = p2v(mins[0].target_r,np.random.uniform(0, np.pi/2))
   # mins[0].prev = scs
   mins[0].prev = scs
-  scs.generate_target_pos(beacons, env, mins[0])
+  scs.generate_target_pos(beacons, env, mins[0])  
   for i in range(len(mins)):
+  # i=0
+  # max_neigh = 0
+  # while max_neigh < 5:
     mins[i].insert_into_environment(env)
     while not mins[i].state == MinState.LANDED:
       mins[i].do_step(beacons, scs, env, dt)
@@ -40,7 +43,7 @@ def simulate(dt, mins, scs, env):
       # else:
         # mins[i].generate_target_pos(beacons,env,scs, mins[i+1])
       mins[i+1].prev = mins[i]
-    beacons = np.append(beacons, mins[i])
+    beacons = np.append(beacons, mins[i])    
     for b in beacons:
       b.compute_neighbors(beacons)
     print(f"min {mins[i].ID} landed at pos\t\t\t {mins[i].pos}")
@@ -48,7 +51,11 @@ def simulate(dt, mins, scs, env):
     print(f"min {mins[i].ID} neighbors: {[n.ID for n in mins[i].neighbors]}")
     if not mins[i].deployment_strategy.get_target() is None:
           print(f"Its target now has {len(mins[i].deployment_strategy.get_target().neighbors)} neighs\n------------------", )
-  print(f"minimum number of neighbors: {min(beacons, key=lambda b: len(b.neighbors))}") 
+    # i += 1
+    # max_neigh = len(max(beacons, key=lambda b: len(b.neighbors)).neighbors)
+  print(f"minimum number of neighbors: {min(beacons, key=lambda b: len(b.neighbors))}")
+  print(f"maximum number of neighbors: {max(beacons, key=lambda b: len(b.neighbors))}")
+
   return beacons   
 
 if __name__ == "__main__":
@@ -86,7 +93,7 @@ if __name__ == "__main__":
       ]),
     ]
 
-  obstacle_corners_2D_1 = [
+  obs_zig_zag = [
       np.array([
         [-0.1, -0.1],
         [-0.1,   10],
@@ -106,7 +113,7 @@ if __name__ == "__main__":
         [10.0,  10]
       ])
     ]
-  obstacle_corners_2D_2 = [
+  open_small = [
       np.array([
         [-0.1, -0.1],
         [-0.1,   5],
@@ -114,19 +121,28 @@ if __name__ == "__main__":
         [5,     -0.1],
       ]),
     ]
-
-  obstacle_corners_2D_3 = [
+  
+  open_large = [
       np.array([
         [-0.1, -0.1],
         [-0.1,   10],
-        [10,     10],
+        [10,      10],
         [10,     -0.1],
       ]),
+    ]
+
+  open_w_sq_obs = [
       np.array([
-        [3, 3],
-        [3, 7],
-        [7, 7],
-        [7, 3]
+        [-0.1, -0.1],
+        [-0.1,   12],
+        [12,     12],
+        [12,     -0.1],
+      ]),
+      np.array([
+        [3.5, 2.0],
+        [3.5, 8.5],
+        [8.5, 8.5],
+        [8.5, 2.0]
       ])      
     ]
 
@@ -137,17 +153,17 @@ if __name__ == "__main__":
     np.array([
       0, 0
     ]),
-    obstacle_corners = obstacle_corners_2D_1#[]#obstacle_corners_2D_1 #[]
+    obstacle_corners = open_small#open_w_sq_obs#open_large##open_small#obs_zig_zag#[]#obs_zig_zag #[]
   )
 
-# %%Parameter initializatio
+# %%Parameter initialization
 
   _animate, save_animation, plot_propterties = False, False, False
   start_animation_from_min_ID = 3
 
   max_range = 3 #0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 5#18#7#2*5#3
+  N_mins = 1#18#7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -187,7 +203,7 @@ if __name__ == "__main__":
       xi_max=1,
       d_perf=0.1,
       d_none=2.5,#2.1,
-      delta_expl_angle=np.pi/4#np.pi/6#0#np.pi/6#np.pi/4 #0
+      delta_expl_angle=0#np.pi/4#np.pi/6#0#np.pi/6#np.pi/4 #0
     ) for i in range(N_mins)
   ]
 
@@ -289,7 +305,7 @@ if __name__ == "__main__":
     else:
       env.plot(ax)
       scs.plot(ax)
-      for j in range(len(mins)):#mn in mins:
+      for j in range(len(mins)): #for j in range(len(beacons)-1):#mn in mins:
         mins[j].plot(ax)
         mins[j].plot_traj_line(ax)
         if j == 0:
