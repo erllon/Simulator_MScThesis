@@ -41,7 +41,7 @@ class Min(Beacon):
   vec_clr = {
     VectorTypes.OBSTACLE: "blue",
     VectorTypes.PREV_MIN: "green",
-    VectorTypes.TOTAL:    "red",
+    VectorTypes.TOTAL:    "cyan", #"red",
     VectorTypes.INTERVAL: "orange"
   }
 
@@ -84,6 +84,7 @@ class Min(Beacon):
 
   def do_step(self, beacons, SCS, ENV, dt):
     v = self.deployment_strategy.get_velocity_vector(self, beacons, SCS, ENV)
+    # print(self.target_angle)
     self.prev_pos = self.pos
     self.pos = euler_int(self.pos.reshape(2, ), v, dt).reshape(2, )
     if (self.prev_pos != None).any():
@@ -158,6 +159,7 @@ class Min(Beacon):
     # self.test = target_pos.reshape(2, ) + self.pos.reshape(2, ) #+ self.pos.reshape(2, )#target_pos.reshape(2, ) + self.pos.reshape(2, )
     if next_min.first_target_pos == None:
       next_min.first_target_pos = deepcopy(target_pos.reshape(2, )) #b#target_pos.reshape(2, )
+      print(f"first_target: {next_min.first_target_pos}")
     
     next_min.target_pos = target_pos
     next_min.prev_drone = prev_min
@@ -187,11 +189,16 @@ class Min(Beacon):
   def get_obs_vecs_and_angles(MIN, ENV):
     vecs_from_obs, ang_from_obs = [], []
     for s in MIN.sensors:
-      s.sense(ENV)  
+      s.sense(ENV)  #Each sensor will now have/know the smallest distance to an obstacle and at what angle the obstacle is
     for s in MIN.sensors:
       if s.measurement.is_valid():
         """Vector FROM drone TO obstacle in world frame"""
-        vec_from_obs = -(R_z(MIN.heading)@R_z(s.host_relative_angle)@s.measurement.get_val())[:2]
+        # vec_from_obs = -((R_z(MIN.heading)@R_z(s.host_relative_angle))[:2,:2]@p2v(s.measurement.get_val(), s.measurement.get_angle()))#[:2]
+        
+        length = s.measurement.get_val()
+        angle = s.measurement.get_angle()
+        vec_from_obs = -p2v(length, angle)
+        # vec_from_obs = -p2v(MIN.range - s.measurement.get_val(), s.measurement.get_angle())
         """Scaling the vector that points towards the obstalce
           so that obstacles that are close to the drone produce larger vectors"""
         meas_length = np.linalg.norm(vec_from_obs)
@@ -224,23 +231,23 @@ class Min(Beacon):
     plot_vec(axis, interval_vec_1, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
     plot_vec(axis, interval_vec_2, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
 
-    if self.ID != 0:
-      heading2 = normalize(R_z(np.pi/2)[:2,:2]@p2v(1, self.heading))
-      heading3 = normalize(R_z(2*np.pi/2)[:2,:2]@p2v(1, self.heading))
-      heading4 = normalize(R_z(3*np.pi/2)[:2,:2]@p2v(1, self.heading))
-      plot_vec(axis,heading2, self.pos)
-      plot_vec(axis,heading3, self.pos)
-      plot_vec(axis,heading4, self.pos)
+    # if self.ID != 0:
+    #   heading2 = normalize(R_z(np.pi/2)[:2,:2]@p2v(1, self.heading))
+    #   heading3 = normalize(R_z(2*np.pi/2)[:2,:2]@p2v(1, self.heading))
+    #   heading4 = normalize(R_z(3*np.pi/2)[:2,:2]@p2v(1, self.heading))
+    #   plot_vec(axis,heading2, self.pos)
+    #   plot_vec(axis,heading3, self.pos)
+    #   plot_vec(axis,heading4, self.pos)
 
 
 
     vec_counter = 0
     for s in self.sensors:
-      sensor_vec1 = p2v(1, self.heading + s.host_relative_angle - np.deg2rad(27)/2.0)
-      sensor_vec2 = p2v(1, self.heading + s.host_relative_angle + np.deg2rad(27)/2.0)
+      # sensor_vec1 = p2v(1, self.heading + s.host_relative_angle - np.deg2rad(27)/2.0)
+      # sensor_vec2 = p2v(1, self.heading + s.host_relative_angle + np.deg2rad(27)/2.0)
 
-      plot_vec(axis, sensor_vec1, self.pos, clr="green")
-      plot_vec(axis, sensor_vec2, self.pos, clr="green")
+      # plot_vec(axis, sensor_vec1, self.pos, clr="green")
+      # plot_vec(axis, sensor_vec2, self.pos, clr="green")
       if s.measurement.is_valid():# and self.ID > 3:
         meas_vec = R_z(s.measurement.get_angle())[:2,:2]@p2v(1,0)
         plot_vec(axis, meas_vec, self.pos, clr="red")

@@ -11,7 +11,7 @@ class RangeReading():
         self.__is_valid = measured_range != np.inf
     
     def get_val(self):
-        return np.array([self.__measured_range, 0, 0]).reshape(3, 1)
+        return self.__measured_range#np.array([self.__measured_range, 0, 0]).reshape(3, 1)
     
     def get_angle(self):
         return self.__measured_angle
@@ -36,6 +36,8 @@ class RangeSensor():
         self.rot_mat = R_z(angle_deg)
 
     def sense(self, environment):
+        # if self.host.ID == 2:
+        #     print(self.host.pos)
         if environment.obstacle_corners == []:
             self.measurement = RangeReading(np.inf)
         else:
@@ -77,10 +79,13 @@ class RangeSensor():
         num_of_rays = 11 #11 rays total, 5 pairs + "0-angle"
         fov_angle = np.deg2rad(27) #total field-of-view
         start_ang = -fov_angle/2.0
+        # print(f"start_ang: {np.rad2deg(start_ang)}")
         delta_ang = fov_angle/(num_of_rays-1)
         
         for i in range(num_of_rays):
             current_ray_angle = start_ang + i*delta_ang
+            if abs(np.rad2deg(current_ray_angle)) > 13.5:
+                print("FEIL")
             A_1 = p2v(1, self.host_relative_angle + self.host.heading + current_ray_angle).reshape(2, 1)
             max_t = np.array([self.max_range, 1])
             
@@ -99,6 +104,11 @@ class RangeSensor():
                         valid_crossings = np.hstack((valid_crossings, np.linalg.norm(t)))#np.hstack((valid_crossings, t[0]))
                         valid_crossings_dict["lengths"] = np.hstack((valid_crossings_dict["lengths"], np.linalg.norm(t)))
                         valid_crossings_dict["angles"] = np.hstack((valid_crossings_dict["angles"], self.host.heading + self.host_relative_angle + current_ray_angle))
+                        e = np.rad2deg(self.host.heading + self.host_relative_angle + current_ray_angle)
+                        r = np.rad2deg(current_ray_angle)
+                        y = 4
+                        if self.host.ID == 2 and np.abs(np.rad2deg(current_ray_angle)) > 13.5:
+                            print(f"current_ray_angle: {np.rad2deg(current_ray_angle)}")
                 except np.linalg.LinAlgError:
                     pass
         

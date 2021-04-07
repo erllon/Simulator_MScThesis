@@ -7,7 +7,7 @@ from deployment.deployment_helpers import (
     get_obstacle_forces as gof,
     get_generic_force_vector
 )
-from helpers import normalize, rot_z_mat as R_z, get_vector_angle as gva
+from helpers import normalize, rot_z_mat as R_z, get_vector_angle as gva, polar_to_vec as p2v
 
 import numpy as np
 from enum import Enum
@@ -68,7 +68,7 @@ class NewPotentialFieldsExplore(ExplorationStrategy):
         for s in MIN.sensors:
             s.sense(ENV)
         vecs_to_obs = [
-            (R_z(MIN.heading)@R_z(s.host_relative_angle)@s.measurement.get_val())[:2]
+            (R_z(MIN.heading)@R_z(s.host_relative_angle))[:2,:2]@p2v(s.measurement.get_val(), s.measurement.get_angle())
             for s in MIN.sensors if s.measurement.is_valid()
         ]
 

@@ -153,7 +153,7 @@ if __name__ == "__main__":
     np.array([
       0, 0
     ]),
-    obstacle_corners = open_small#open_w_sq_obs#open_large##open_small#obs_zig_zag#[]#obs_zig_zag #[]
+    obstacle_corners = obs_zig_zag#open_large#open_w_sq_obs#open_large##open_small#[]#obs_zig_zag #[]
   )
 
 # %%Parameter initialization
@@ -163,7 +163,7 @@ if __name__ == "__main__":
 
   max_range = 3 #0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 3#18#7#2*5#3
+  N_mins = 4#18#7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -203,7 +203,7 @@ if __name__ == "__main__":
       xi_max=1,
       d_perf=0.1,
       d_none=2.5,#2.1,
-      delta_expl_angle=0#np.pi/4#np.pi/6#0#np.pi/6#np.pi/4 #0
+      delta_expl_angle=0#np.pi/4#0#np.pi/4#np.pi/6#0#np.pi/6#np.pi/4 #0
     ) for i in range(N_mins)
   ]
 
