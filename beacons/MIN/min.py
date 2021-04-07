@@ -98,6 +98,8 @@ class Min(Beacon):
     #As of 21.01 .get_velocity_vector() returns the calculated force, self._force_hist considers the norm of the force
     self._v_traj = np.hstack((self._v_traj, np.linalg.norm(v)))
     #self._xi_traj blir satt i self.deployment_strategy.get_velocity_vector()  
+    for s in self.sensors:
+      s.sense(ENV)
   
   def generate_target_pos(self, beacons, ENV, prev_min, next_min):
     """Generates a target point for next_min
@@ -234,15 +236,13 @@ class Min(Beacon):
 
     vec_counter = 0
     for s in self.sensors:
-      # sensor_vec1 = p2v(3, self.heading + s.host_relative_angle - np.deg2rad(27)/2.0)
-      # sensor_vec2 = p2v(3, self.heading + s.host_relative_angle + np.deg2rad(27)/2.0)
-      # sensor_vec1 = normalize(R_z(np.deg2rad(27/2.0))[:2,:2]@p2v(1,self.heading + s.host_relative_angle))
-      # sensor_vec2 = normalize(R_z(-np.deg2rad(27/2.0))[:2,:2]@p2v(1,self.heading + s.host_relative_angle))
+      sensor_vec1 = p2v(1, self.heading + s.host_relative_angle - np.deg2rad(27)/2.0)
+      sensor_vec2 = p2v(1, self.heading + s.host_relative_angle + np.deg2rad(27)/2.0)
 
-      # plot_vec(axis, sensor_vec1, self.pos, clr="green")
-      # plot_vec(axis, sensor_vec2, self.pos, clr="green")
+      plot_vec(axis, sensor_vec1, self.pos, clr="green")
+      plot_vec(axis, sensor_vec2, self.pos, clr="green")
       if s.measurement.is_valid():# and self.ID > 3:
-        meas_vec = normalize(p2v(3-s.measurement.get_val()[0], s.measurement.get_angle()))
+        meas_vec = R_z(s.measurement.get_angle())[:2,:2]@p2v(1,0)
         plot_vec(axis, meas_vec, self.pos, clr="red")
         vec_counter += 1
 

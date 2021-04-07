@@ -163,7 +163,7 @@ if __name__ == "__main__":
 
   max_range = 3 #0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 1#18#7#2*5#3
+  N_mins = 3#18#7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
