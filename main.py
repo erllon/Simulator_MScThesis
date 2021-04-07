@@ -21,6 +21,9 @@ from matplotlib.animation import FuncAnimation
 
 from helpers import polar_to_vec as p2v
 
+import timeit
+
+
 def simulate(dt, mins, scs, env):
   scs.insert_into_environment(env)
   beacons = np.array([scs], dtype=object)
@@ -30,6 +33,7 @@ def simulate(dt, mins, scs, env):
   # mins[0].prev = scs
   mins[0].prev = scs
   scs.generate_target_pos(beacons, env, mins[0])  
+  tic = timeit.default_timer()
   for i in range(len(mins)):
   # i=0
   # max_neigh = 0
@@ -53,9 +57,12 @@ def simulate(dt, mins, scs, env):
           print(f"Its target now has {len(mins[i].deployment_strategy.get_target().neighbors)} neighs\n------------------", )
     # i += 1
     # max_neigh = len(max(beacons, key=lambda b: len(b.neighbors)).neighbors)
+  toc = timeit.default_timer()
+  tot_time = toc-tic
+  
   print(f"minimum number of neighbors: {min(beacons, key=lambda b: len(b.neighbors))}")
   print(f"maximum number of neighbors: {max(beacons, key=lambda b: len(b.neighbors))}")
-
+  print(f"Running time: {tot_time}")
   return beacons   
 
 if __name__ == "__main__":
@@ -153,7 +160,7 @@ if __name__ == "__main__":
     np.array([
       0, 0
     ]),
-    obstacle_corners = obs_zig_zag#open_large#open_w_sq_obs#open_large##open_small#[]#obs_zig_zag #[]
+    obstacle_corners = open_large#obs_zig_zag#open_w_sq_obs#open_large##open_small#[]#obs_zig_zag #[]
   )
 
 # %%Parameter initialization
