@@ -15,6 +15,7 @@ import numpy as np
 from enum import Enum
 import matplotlib.pyplot as plt
 
+
 class MinState(Enum):
   SPAWNED   = 0,
   FOLLOWING = 1,
@@ -99,9 +100,9 @@ class Min(Beacon):
     #As of 21.01 .get_velocity_vector() returns the calculated force, self._force_hist considers the norm of the force
     self._v_traj = np.hstack((self._v_traj, np.linalg.norm(v)))
     #self._xi_traj blir satt i self.deployment_strategy.get_velocity_vector()  
-    for s in self.sensors:
-      s.sense(ENV)
-  
+    # for s in self.sensors:
+    #   s.sense(ENV)
+    
   def generate_target_pos(self, beacons, ENV, prev_min, next_min):
     """Generates a target point for next_min
        self calculates the vectors pointing away from obstacles and other drones.
@@ -188,9 +189,11 @@ class Min(Beacon):
   @staticmethod
   def get_obs_vecs_and_angles(MIN, ENV):
     vecs_from_obs, ang_from_obs = [], []
+    # for s in MIN.sensors:
+    #   s.sense(ENV)  #Each sensor will now have/know the smallest distance to an obstacle and at what angle the obstacle is
+      #HERE
     for s in MIN.sensors:
       s.sense(ENV)  #Each sensor will now have/know the smallest distance to an obstacle and at what angle the obstacle is
-    for s in MIN.sensors:
       if s.measurement.is_valid():
         """Vector FROM drone TO obstacle in world frame"""
         # vec_from_obs = -((R_z(MIN.heading)@R_z(s.host_relative_angle))[:2,:2]@p2v(s.measurement.get_val(), s.measurement.get_angle()))#[:2]
