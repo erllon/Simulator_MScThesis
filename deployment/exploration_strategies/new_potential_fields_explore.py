@@ -40,8 +40,8 @@ class NewPotentialFieldsExplore(ExplorationStrategy):
         F_att = NewPotentialFieldsExplore.get_attractive_force(self.__K_n, MIN)
         F_rep = NewPotentialFieldsExplore.get_repulsive_force(self.__K_n, self.__K_o, MIN, ENV)
         
-        F_sum = F_att + 10*F_rep#5*F_rep
-        
+
+        F_sum = F_att + F_rep#10*F_rep#5*F_rep
         # if np.linalg.norm(F_sum) > self.__min_force_threshold and np.any([MIN.get_RSSI(n) for n in MIN.neighbors] >= self.MIN_RSSI_STRENGTH_BEFORE_LAND):#MIN.get_RSSI(MIN.target_pos) >= self.MIN_RSSI_STRENGTH_BEFORE_LAND:
         if np.linalg.norm(F_sum) > self.__min_force_threshold and np.any(np.array([MIN.get_xi_to_other_from_model(n) for n in MIN.neighbors]) >= self.MIN_RSSI_STRENGTH_BEFORE_LAND*MIN.xi_max):#MIN.get_RSSI(MIN.target_pos) >= self.MIN_RSSI_STRENGTH_BEFORE_LAND:
 
@@ -67,11 +67,15 @@ class NewPotentialFieldsExplore(ExplorationStrategy):
 
         for s in MIN.sensors:
             s.sense(ENV)
+        # vecs_to_obs = [
+        #     (R_z(MIN.heading)@R_z(s.host_relative_angle))[:2,:2]@p2v(s.measurement.get_val(), s.measurement.get_angle()).reshape(2,)
+        #     for s in MIN.sensors if s.measurement.is_valid()
+        # ]
         vecs_to_obs = [
-            (R_z(MIN.heading)@R_z(s.host_relative_angle))[:2,:2]@p2v(s.measurement.get_val(), s.measurement.get_angle())
+            p2v(s.measurement.get_val(), s.measurement.get_angle()).reshape(2,)
             for s in MIN.sensors if s.measurement.is_valid()
         ]
-
+        
         return get_generic_force_vector(vecs_to_obs, K_o, d_o=MIN.range) #+ get_generic_force_vector(vecs_to_neighs, K_n, d_o=MIN.range)
 
     # return get_generic_force_vector(vecs_to_obs, K_n)

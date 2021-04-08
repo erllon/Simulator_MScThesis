@@ -35,9 +35,6 @@ def simulate(dt, mins, scs, env):
   scs.generate_target_pos(beacons, env, mins[0])  
   tic = timeit.default_timer()
   for i in range(len(mins)):
-  # i=0
-  # max_neigh = 0
-  # while max_neigh < 5:
     mins[i].insert_into_environment(env)
     while not mins[i].state == MinState.LANDED:
       mins[i].do_step(beacons, scs, env, dt)
@@ -55,14 +52,10 @@ def simulate(dt, mins, scs, env):
     print(f"min {mins[i].ID} neighbors: {[n.ID for n in mins[i].neighbors]}")
     if not mins[i].deployment_strategy.get_target() is None:
           print(f"Its target now has {len(mins[i].deployment_strategy.get_target().neighbors)} neighs\n------------------", )
-    # i += 1
-    # max_neigh = len(max(beacons, key=lambda b: len(b.neighbors)).neighbors)
   toc = timeit.default_timer()
-  tot_time = toc-tic
-  
-  print(f"minimum number of neighbors: {min(beacons, key=lambda b: len(b.neighbors))}")
-  print(f"maximum number of neighbors: {max(beacons, key=lambda b: len(b.neighbors))}")
-  print(f"Running time: {tot_time}")
+  tot = toc - tic
+  print(f"minimum number of neighbors: {min(beacons, key=lambda b: len(b.neighbors))}") 
+  print(f"Total elapsed time for simulation: {tot}")
   return beacons   
 
 if __name__ == "__main__":
@@ -102,15 +95,15 @@ if __name__ == "__main__":
 
   obs_zig_zag = [
       np.array([
-        [-0.1, -0.1],
-        [-0.1,   10],
+        [-0.5, -0.5],
+        [-0.5,   10],
         [15,     10],
-        [15,     -0.1],
+        [15,     -0.5],
       ]),
       np.array([
         [4.0,  5],
-        [4.0, -0.1],
-        [5, -0.1],
+        [4.0, -0.5],
+        [5, -0.5],
         [5,  5]
       ]),
       np.array([
@@ -122,28 +115,28 @@ if __name__ == "__main__":
     ]
   open_small = [
       np.array([
-        [-0.1, -0.1],
-        [-0.1,   5],
+        [-0.5, -0.5],
+        [-0.5,   5],
         [5,      5],
-        [5,     -0.1],
+        [5,     -0.5],
       ]),
     ]
   
   open_large = [
       np.array([
-        [-0.1, -0.1],
-        [-0.1,   10],
-        [10,      10],
-        [10,     -0.1],
+        [-0.5, -0.5],
+        [-0.5,   7],
+        [7,      7],
+        [7,     -0.5],
       ]),
     ]
 
   open_w_sq_obs = [
       np.array([
-        [-0.1, -0.1],
-        [-0.1,   12],
+        [-0.5, -0.5],
+        [-0.5,   12],
         [12,     12],
-        [12,     -0.1],
+        [12,     -0.5],
       ]),
       np.array([
         [3.5, 2.0],
@@ -160,17 +153,16 @@ if __name__ == "__main__":
     np.array([
       0, 0
     ]),
-    obstacle_corners = open_large#obs_zig_zag#open_w_sq_obs#open_large##open_small#[]#obs_zig_zag #[]
+    obstacle_corners = open_large#obs_zig_zag#open_small#obs_zig_zag#open_w_sq_obs#open_large##open_small#[]#obs_zig_zag #[]
   )
 
 # %%Parameter initialization
-
-  _animate, save_animation, plot_propterties = False, False, False
-  start_animation_from_min_ID = 3
+  _animate, save_animation, plot_propterties = False, False, True
+  start_animation_from_min_ID = 0
 
   max_range = 3 #0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 4#18#7#2*5#3
+  N_mins = 7#18#7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -204,13 +196,13 @@ if __name__ == "__main__":
         #   K_o= 5*1*(i+1),#30,# 12 0.1,#0.01, #12 works somewhat with TWO_DIM_LOCAL, else much lower (0.4-ish)
         #   kind=LineExploreKind.TWO_DIM_LOCAL,
         # )
-        NewAttractiveFollow(K_o=1),
-        NewPotentialFieldsExplore(K_o=20, target_point_or_line=NewPotentialFieldsExplore.Target.LINE)
+        NewAttractiveFollow(K_o=0.1),
+        NewPotentialFieldsExplore(K_o=0.1, target_point_or_line=NewPotentialFieldsExplore.Target.LINE)
       ),
       xi_max=1,
       d_perf=0.1,
       d_none=2.5,#2.1,
-      delta_expl_angle=0#np.pi/4#0#np.pi/4#np.pi/6#0#np.pi/6#np.pi/4 #0
+      delta_expl_angle=0#np.pi/6#0#np.pi/4#np.pi/6#0#np.pi/6#np.pi/4 #0
     ) for i in range(N_mins)
   ]
 
@@ -219,55 +211,63 @@ if __name__ == "__main__":
   fig = plt.figure(figsize=(5,5))
   
   if plot_propterties:
-    # fig, ax = plt.subplots(nrows=3,ncols=1)
-    ax1 = fig.add_subplot(3,1,1)
-    ax2 = fig.add_subplot(3,1,2)
-    ax3 = fig.add_subplot(3,1,3, sharex=ax2)
-    ax1.title.set_text("Deployment")
-    ax2.title.set_text(r"$\left\|\| F_{applied} \right\|\|$") #Set title
-    ax3.title.set_text(r"$\xi$ from neighbors")               #Set title
-    
+    if _animate:
+      # fig, ax = plt.subplots(nrows=3,ncols=1)
+      ax1_1 = fig.add_subplot(3,1,1)
+      ax1_2 = fig.add_subplot(3,1,2)
+      ax1_3 = fig.add_subplot(3,1,3, sharex=ax1_2)
+      ax1_1.title.set_text("Deployment")
+      ax1_2.title.set_text(r"$\left\|\| F_{applied} \right\|\|$") #Set title
+      ax1_3.title.set_text(r"$\xi$ from neighbors")               #Set title
+    else:
+      fig2 = plt.figure(figsize=(5,5))
+      ax1_1 = fig.add_subplot(1,1,1)
+      ax2_1 = fig2.add_subplot(2,1,1)
+      ax2_2 = fig2.add_subplot(2,1,2)
 
+      ax1_1.title.set_text("Deployment")
+      ax2_1.title.set_text(r"$\left\|\| F_{applied} \right\|\|$") #Set title
+      ax2_2.title.set_text(r"$\xi$ from neighbors")               #Set title2
   else:
     ax = fig.add_subplot(1,1,1)
     # fig, ax = plt.subplots(1,1)
     ax.title.set_text("Deployment")
 
-  if _animate: # TODO: if _animate: everything in same fig,  else: drones in one fig, "properties" in another fig
+
+  if _animate:
     for mn in mins[:start_animation_from_min_ID]:
       if plot_propterties:
-        mn.plot(ax1)
-        mn.plot_traj_line(ax1)
+        mn.plot(ax1_1)
+        mn.plot_traj_line(ax1_1)
         # mn.plot_vectors(mn.prev, env, ax[0])
-        mn.plot_force_traj_line(ax2)
-        mn.plot_xi_traj_line(ax3)
-        mn.plot(ax1)
-        mn.plot_traj_line(ax1)
+        mn.plot_force_traj_line(ax1_2)
+        mn.plot_xi_traj_line(ax1_3)
+        mn.plot(ax1_1)
+        mn.plot_traj_line(ax1_1)
         # mn.plot_vectors(mn.prev, env, ax[0])
-        mn.plot_force_traj_line(ax2)
-        mn.plot_xi_traj_line(ax3)
+        mn.plot_force_traj_line(ax1_2)
+        mn.plot_xi_traj_line(ax1_3)
       else:
         mn.plot(ax)
-        mn.plot_vectors(mn.prev, env, ax)      
-
+        mn.plot_vectors(mn.prev, env, ax)
 
     offset, min_counter = [0], [start_animation_from_min_ID]
 
     def init():
       if plot_propterties:
-        scs.plot(ax1)
-        env.plot(ax1)
+        scs.plot(ax1_1)
+        env.plot(ax1_1)
         artists = []
         for mn in mins:
-          artists += mn.plot(ax1)
-          artists += (mn.plot_traj_line(ax1), ) #Type: Line2D(_line6)
-          artists += (mn.plot_force_traj_line(ax2), )
-          artists += (mn.plot_xi_traj_line(ax3), )
+          artists += mn.plot(ax1_1)
+          artists += (mn.plot_traj_line(ax1_1), ) #Type: Line2D(_line6)
+          artists += (mn.plot_force_traj_line(ax1_2), )
+          artists += (mn.plot_xi_traj_line(ax1_3), )
           mn.plot_pos_from_pos_traj_index(0)
           mn.plot_force_from_traj_index(0)
           mn.plot_xi_from_traj_index(0)
         if start_animation_from_min_ID == 0:
-          ax2.legend()  
+          ax1_2.legend()  
       else:
         scs.plot(ax)
         env.plot(ax)
@@ -298,21 +298,22 @@ if __name__ == "__main__":
       print("Saving animation")
       anim.save(animation_name)
       print(f"Animation saved to {animation_name}")
-
   else:
     if plot_propterties:
-      env.plot(ax1)
-      scs.plot(ax1)
+      env.plot(ax1_1)
+      scs.plot(ax1_1)
       for mn in mins:
-        mn.plot(ax1)
-        mn.plot_traj_line(ax1)
-        mn.plot_vectors(mn.prev, env, ax1)
-      mn.plot_force_traj_line(ax2)
-      mn.plot_xi_traj_line(ax3)
+        mn.plot(ax1_1)
+        mn.plot_traj_line(ax1_1)
+        mn.plot_vectors(mn.prev, env, ax1_1)
+        mn.plot_force_traj_line(ax2_1)
+        mn.plot_xi_traj_line(ax2_2)
+      ax2_1.legend()
+
     else:
       env.plot(ax)
       scs.plot(ax)
-      for j in range(len(mins)): #for j in range(len(beacons)-1):#mn in mins:
+      for j in range(len(mins)):#mn in mins:
         mins[j].plot(ax)
         mins[j].plot_traj_line(ax)
         if j == 0:
