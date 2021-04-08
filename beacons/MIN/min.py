@@ -244,21 +244,21 @@ class Min(Beacon):
 
 
 
-    vec_counter = 0
-    for s in self.sensors:
+    # vec_counter = 0
+    # for s in self.sensors:
       # sensor_vec1 = p2v(1, self.heading + s.host_relative_angle - np.deg2rad(27)/2.0)
       # sensor_vec2 = p2v(1, self.heading + s.host_relative_angle + np.deg2rad(27)/2.0)
 
       # plot_vec(axis, sensor_vec1, self.pos, clr="green")
       # plot_vec(axis, sensor_vec2, self.pos, clr="green")
-      if s.measurement.is_valid():# and self.ID > 3:
-        meas_vec = R_z(s.measurement.get_angle())[:2,:2]@p2v(1,0)
-        plot_vec(axis, meas_vec, self.pos, clr="red")
-        vec_counter += 1
-
+      # if s.measurement.is_valid():# and self.ID > 3:
+      #   meas_vec = R_z(s.measurement.get_angle())[:2,:2]@p2v(1,0)
+      #   plot_vec(axis, meas_vec, self.pos, clr="red")
+      #   vec_counter += 1
+    # print(f"A total of {vec_counter} obstacle vectors")
     if np.linalg.norm(self.obs_vec) != 0: 
       plot_vec(axis, self.obs_vec, self.pos, clr="blue")
-    print(f"A total of {vec_counter} obstacle vectors")
+    
     # for vec in self.vecs_from_obs:
     #   plot_vec(axis, vec, self.pos, clr="blue")
       
