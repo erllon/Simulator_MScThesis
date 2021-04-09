@@ -226,15 +226,15 @@ class Min(Beacon):
     self.heading_arrow = plot_vec(axis, p2v(1, self.heading), self.pos)
     self.point = axis.plot(*self.pos, color=self.clr[self.state], marker="o", markersize=8)[0]
     self.annotation = axis.annotate(self.ID, xy=(self.pos[0], self.pos[1]), fontsize=14)
-    theta = np.linspace(0, 2*np.pi)
-    self.radius = axis.plot(
-      self.pos[0] + self.range*np.cos(theta), self.pos[1] + self.range*np.sin(theta),
-      linestyle="dashed",
-      color="black",
-      alpha=0.3
-    )[0]
+    # theta = np.linspace(0, 2*np.pi)
+    # self.radius = axis.plot(
+    #   self.pos[0] + self.range*np.cos(theta), self.pos[1] + self.range*np.sin(theta),
+    #   linestyle="dashed",
+    #   color="black",
+    #   alpha=0.3
+    # )[0]
 
-    return self.point, self.annotation, self.radius
+    return self.point, self.annotation#, self.radius
   
   def plot_vectors(self, prev_drone, ENV, axis):
 
