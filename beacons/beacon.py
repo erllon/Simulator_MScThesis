@@ -93,23 +93,7 @@ class Beacon():
   """""
   PLOTTING STUFF
   """""
+  @abstractmethod
   def plot(self, axis, clr="green"):
-    self.point = axis.plot(*self.pos, color=clr, marker="o", markersize=8)[0]
-    self.annotation = axis.annotate(self.ID, xy=(self.pos[0], self.pos[1]), fontsize=14)
-    theta = np.linspace(0, 2*np.pi)
-    self.radius = axis.plot(
-      self.pos[0] + self.range*np.cos(theta), self.pos[1] + self.range*np.sin(theta),
-      linestyle="dashed",
-      color="black",
-      alpha=0.3
-    )[0]
-    # self.radius2 = axis.plot(
-    #   self.pos[0] + self.d_perf*np.cos(theta), self.pos[1] + self.d_perf*np.sin(theta),
-    #   linestyle="dashed",
-    #   color="black",
-    #   alpha=0.3
-    # )[0]
-
-    return self.point, self.annotation, self.radius#, self.radius2
-
-
+    pass
+  

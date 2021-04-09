@@ -224,7 +224,17 @@ class Min(Beacon):
   """""
   def plot(self, axis):
     self.heading_arrow = plot_vec(axis, p2v(1, self.heading), self.pos)
-    return super().plot(axis, clr=self.clr[self.state]) + (self.heading_arrow, )
+    self.point = axis.plot(*self.pos, color=self.clr[self.state], marker="o", markersize=8)[0]
+    self.annotation = axis.annotate(self.ID, xy=(self.pos[0], self.pos[1]), fontsize=14)
+    theta = np.linspace(0, 2*np.pi)
+    self.radius = axis.plot(
+      self.pos[0] + self.range*np.cos(theta), self.pos[1] + self.range*np.sin(theta),
+      linestyle="dashed",
+      color="black",
+      alpha=0.3
+    )[0]
+
+    return self.point, self.annotation, self.radius
   
   def plot_vectors(self, prev_drone, ENV, axis):
 
@@ -245,12 +255,12 @@ class Min(Beacon):
 
 
     # vec_counter = 0
-    # for s in self.sensors:
-      # sensor_vec1 = p2v(1, self.heading + s.host_relative_angle - np.deg2rad(27)/2.0)
-      # sensor_vec2 = p2v(1, self.heading + s.host_relative_angle + np.deg2rad(27)/2.0)
+    for s in self.sensors:
+      sensor_vec1 = p2v(self.range, self.heading + s.host_relative_angle - np.deg2rad(27)/2.0)
+      sensor_vec2 = p2v(self.range, self.heading + s.host_relative_angle + np.deg2rad(27)/2.0)
 
-      # plot_vec(axis, sensor_vec1, self.pos, clr="green")
-      # plot_vec(axis, sensor_vec2, self.pos, clr="green")
+      plot_vec(axis, sensor_vec1, self.pos, clr="green")
+      plot_vec(axis, sensor_vec2, self.pos, clr="green")
       # if s.measurement.is_valid():# and self.ID > 3:
       #   meas_vec = R_z(s.measurement.get_angle())[:2,:2]@p2v(1,0)
       #   plot_vec(axis, meas_vec, self.pos, clr="red")
