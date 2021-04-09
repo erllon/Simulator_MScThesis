@@ -22,9 +22,13 @@ from matplotlib.animation import FuncAnimation
 from helpers import polar_to_vec as p2v
 
 import timeit
+import cProfile, pstats, io
+from pstats import SortKey
 
 
 def simulate(dt, mins, scs, env):
+  pr = cProfile.Profile()
+  pr.enable()
   scs.insert_into_environment(env)
   beacons = np.array([scs], dtype=object)
 
@@ -52,10 +56,17 @@ def simulate(dt, mins, scs, env):
     print(f"min {mins[i].ID} neighbors: {[n.ID for n in mins[i].neighbors]}")
     if not mins[i].deployment_strategy.get_target() is None:
           print(f"Its target now has {len(mins[i].deployment_strategy.get_target().neighbors)} neighs\n------------------", )
+  pr.disable()
   toc = timeit.default_timer()
   tot = toc - tic
   print(f"minimum number of neighbors: {min(beacons, key=lambda b: len(b.neighbors))}") 
   print(f"Total elapsed time for simulation: {tot}")
+
+  s = io.StringIO()
+  sortby = SortKey.CUMULATIVE
+  ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+  ps.print_stats()
+  print(s.getvalue())
   return beacons   
 
 if __name__ == "__main__":
@@ -162,7 +173,7 @@ if __name__ == "__main__":
 
   max_range = 3 #0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 10#18#7#2*5#3
+  N_mins = 5#18#7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
