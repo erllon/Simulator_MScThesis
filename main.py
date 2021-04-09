@@ -106,15 +106,15 @@ if __name__ == "__main__":
 
   obs_zig_zag = [
       np.array([
-        [-0.5, -0.5],
-        [-0.5,   10],
+        [-1, -1],
+        [-1,   10],
         [15,     10],
-        [15,     -0.5],
+        [15,     -1],
       ]),
       np.array([
         [4.0,  5],
-        [4.0, -0.5],
-        [5, -0.5],
+        [4.0, -1],
+        [5, -1],
         [5,  5]
       ]),
       np.array([
@@ -126,34 +126,34 @@ if __name__ == "__main__":
     ]
   open_small = [
       np.array([
-        [-0.5, -0.5],
-        [-0.5,   5],
+        [-1, -1],
+        [-1,   5],
         [5,      5],
-        [5,     -0.5],
+        [5,     -1],
       ]),
     ]
   
   open_large = [
       np.array([
-        [-0.5, -0.5],
-        [-0.5,   7],
-        [7,      7],
-        [7,     -0.5],
+        [-1, -1],
+        [-1,   10],
+        [10,      10],
+        [10,     -1],
       ]),
     ]
 
   open_w_sq_obs = [
       np.array([
-        [-0.5, -0.5],
-        [-0.5,   12],
+        [-1, -1],
+        [-1,   12],
         [12,     12],
-        [12,     -0.5],
+        [12,     -1],
       ]),
       np.array([
-        [2.5, 2.5],
-        [2.5, 9.5],
-        [9.5, 9.5],
-        [9.5, 2.5]
+        [2, 2],
+        [2, 9],
+        [9, 9],
+        [9, 2]
       ])      
     ]
 
@@ -164,16 +164,16 @@ if __name__ == "__main__":
     np.array([
       0, 0
     ]),
-    obstacle_corners = open_large#open_w_sq_obs#obs_zig_zag#open_small#obs_zig_zag#open_w_sq_obs#open_large##open_small#[]#obs_zig_zag #[]
+    obstacle_corners = open_large#open_w_sq_obs #open_large#open_small#obs_zig_zag#open_w_sq_obs#open_large##open_small#[]#obs_zig_zag #[]
   )
 
 # %%Parameter initialization
-  _animate, save_animation, plot_propterties = False, False, False
+  _animate, save_animation, plot_propterties = True, False, False
   start_animation_from_min_ID = 0
 
   max_range = 3 #0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 5#18#7#2*5#3
+  N_mins = 3#18#7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -207,13 +207,13 @@ if __name__ == "__main__":
         #   K_o= 5*1*(i+1),#30,# 12 0.1,#0.01, #12 works somewhat with TWO_DIM_LOCAL, else much lower (0.4-ish)
         #   kind=LineExploreKind.TWO_DIM_LOCAL,
         # )
-        NewAttractiveFollow(K_o=.2),
-        NewPotentialFieldsExplore(K_o=.2, target_point_or_line=NewPotentialFieldsExplore.Target.LINE)
+        NewAttractiveFollow(K_o=.3),
+        NewPotentialFieldsExplore(K_o=.3, target_point_or_line=NewPotentialFieldsExplore.Target.LINE)
       ),
       xi_max=1,
       d_perf=0.1,
       d_none=2.5,#2.1,
-      delta_expl_angle=np.pi/6#0#np.pi/4#np.pi/6#0#np.pi/6#np.pi/4 #0
+      delta_expl_angle=np.pi/4#0#np.pi/4#np.pi/6#0#np.pi/6#np.pi/4 #0
     ) for i in range(N_mins)
   ]
 

@@ -255,19 +255,19 @@ class Min(Beacon):
 
 
     # vec_counter = 0
-    for s in self.sensors:
-      sensor_vec1 = p2v(self.range, self.heading + s.host_relative_angle - np.deg2rad(27)/2.0)
-      sensor_vec2 = p2v(self.range, self.heading + s.host_relative_angle + np.deg2rad(27)/2.0)
+    # for s in self.sensors:
+    #   sensor_vec1 = p2v(self.range, self.heading + s.host_relative_angle - np.deg2rad(27)/2.0)
+    #   sensor_vec2 = p2v(self.range, self.heading + s.host_relative_angle + np.deg2rad(27)/2.0)
 
-      plot_vec(axis, sensor_vec1, self.pos, clr="green")
-      plot_vec(axis, sensor_vec2, self.pos, clr="green")
-      # if s.measurement.is_valid():# and self.ID > 3:
-      #   meas_vec = R_z(s.measurement.get_angle())[:2,:2]@p2v(1,0)
-      #   plot_vec(axis, meas_vec, self.pos, clr="red")
-      #   vec_counter += 1
-    # print(f"A total of {vec_counter} obstacle vectors")
-    if np.linalg.norm(self.obs_vec) != 0: 
-      plot_vec(axis, self.obs_vec, self.pos, clr="blue")
+    #   plot_vec(axis, sensor_vec1, self.pos, clr="green")
+    #   plot_vec(axis, sensor_vec2, self.pos, clr="green")
+    #   # if s.measurement.is_valid():# and self.ID > 3:
+    #   #   meas_vec = R_z(s.measurement.get_angle())[:2,:2]@p2v(1,0)
+    #   #   plot_vec(axis, meas_vec, self.pos, clr="red")
+    #   #   vec_counter += 1
+    # # print(f"A total of {vec_counter} obstacle vectors")
+    # if np.linalg.norm(self.obs_vec) != 0: 
+    #   plot_vec(axis, self.obs_vec, self.pos, clr="blue")
     
     # for vec in self.vecs_from_obs:
     #   plot_vec(axis, vec, self.pos, clr="blue")
@@ -313,11 +313,11 @@ class Min(Beacon):
     self.annotation.set_x(new_pos[0])
     self.annotation.set_y(new_pos[1])
     theta = np.linspace(0, 2*np.pi)
-    self.radius.set_data(new_pos.reshape(2, 1) + p2v(self.range, theta))
+    # self.radius.set_data(new_pos.reshape(2, 1) + p2v(self.range, theta))
     # self.radius2.set_data(new_pos.reshape(2, 1) + p2v(self.d_perf, theta))
     self.traj_line.set_data(self._pos_traj[:, :index])
     self.heading_arrow.set_data(*np.hstack((new_pos.reshape(2, 1), new_pos.reshape(2, 1) + p2v(1, self._heading_traj[index]).reshape(2, 1))))
-    return self.point, self.annotation, self.traj_line, self.heading_arrow, self.radius,#,self.radius2 
+    return self.point, self.annotation, self.traj_line, self.heading_arrow#, self.radius,#,self.radius2 
 
   def plot_force_from_traj_index(self, index):
     new_force = self._v_traj[:index]
