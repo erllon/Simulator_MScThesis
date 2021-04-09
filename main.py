@@ -139,10 +139,10 @@ if __name__ == "__main__":
         [12,     -0.5],
       ]),
       np.array([
-        [3.5, 2.0],
-        [3.5, 8.5],
-        [8.5, 8.5],
-        [8.5, 2.0]
+        [2.5, 2.5],
+        [2.5, 9.5],
+        [9.5, 9.5],
+        [9.5, 2.5]
       ])      
     ]
 
@@ -153,16 +153,16 @@ if __name__ == "__main__":
     np.array([
       0, 0
     ]),
-    obstacle_corners = open_large#obs_zig_zag#open_small#obs_zig_zag#open_w_sq_obs#open_large##open_small#[]#obs_zig_zag #[]
+    obstacle_corners = open_large#open_w_sq_obs#obs_zig_zag#open_small#obs_zig_zag#open_w_sq_obs#open_large##open_small#[]#obs_zig_zag #[]
   )
 
 # %%Parameter initialization
-  _animate, save_animation, plot_propterties = False, False, True
+  _animate, save_animation, plot_propterties = False, False, False
   start_animation_from_min_ID = 0
 
   max_range = 3 #0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 7#18#7#2*5#3
+  N_mins = 10#18#7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -196,13 +196,13 @@ if __name__ == "__main__":
         #   K_o= 5*1*(i+1),#30,# 12 0.1,#0.01, #12 works somewhat with TWO_DIM_LOCAL, else much lower (0.4-ish)
         #   kind=LineExploreKind.TWO_DIM_LOCAL,
         # )
-        NewAttractiveFollow(K_o=0.1),
-        NewPotentialFieldsExplore(K_o=0.1, target_point_or_line=NewPotentialFieldsExplore.Target.LINE)
+        NewAttractiveFollow(K_o=.2),
+        NewPotentialFieldsExplore(K_o=.2, target_point_or_line=NewPotentialFieldsExplore.Target.LINE)
       ),
       xi_max=1,
       d_perf=0.1,
       d_none=2.5,#2.1,
-      delta_expl_angle=0#np.pi/6#0#np.pi/4#np.pi/6#0#np.pi/6#np.pi/4 #0
+      delta_expl_angle=np.pi/6#0#np.pi/4#np.pi/6#0#np.pi/6#np.pi/4 #0
     ) for i in range(N_mins)
   ]
 
