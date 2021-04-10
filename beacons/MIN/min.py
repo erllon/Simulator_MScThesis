@@ -330,3 +330,22 @@ class Min(Beacon):
       for j in range(len(new_xi)):      
         self.xi_traj_line[j].set_data(np.linspace(0,index,num=new_xi.shape[1]), new_xi[j])
       return self.xi_traj_line
+
+  def toJson(self): 
+    jsonDict = {
+        'Type': 'MIN',
+        'ID': self.ID,
+        'Neighbor IDs': [neigh.ID for neigh in self.neighbors],
+        # 'Pathtree': self.,
+        'pos_traj': self._pos_traj.tolist(),#,np.array([3,4]).reshape(2,1)])).to_json(orient='values')#,
+        'force_traj': self._v_traj.tolist(),#np.array([np.array([7,8]).reshape(2,1),np.array([9,10]).reshape(2,1)]).tolist(),
+        'heading_traj': self._heading_traj.tolist(),#np.array([np.array([5,5]).reshape(2,1),np.array([6,6]).reshape(2,1)]).tolist(),
+        'xi_traj': self._xi_traj.tolist()##np.array([1,2,3,4,5,6]).tolist()
+    }
+    return jsonDict#json.dumps(self, default=lambda o: o.__dict__)
+
+  # def dumper(obj):
+  #   try:
+  #       return obj.toJSON()
+  #   except:
+  #       return obj.__dict__

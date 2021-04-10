@@ -23,3 +23,16 @@ class SCS(Beacon):
         self.point = axis.plot(*self.pos, color="black", marker="o", markersize=8)[0]
         self.annotation = axis.annotate(self.ID, xy=(self.pos[0], self.pos[1]), fontsize=14)
         return self.point, self.annotation
+    
+    def toJson(self):
+        jsonDict = {
+        'Type': 'SCS',
+        'ID': self.ID#,
+        # 'Neighbors': [neigh.toJson() for neigh in self.neighbors],
+        # 'Pathtree': self.,
+        # 'pos_traj': self._pos_traj.tolist(),#,np.array([3,4]).reshape(2,1)])).to_json(orient='values')#,
+        # 'force_traj': self._v_traj.tolist(),#np.array([np.array([7,8]).reshape(2,1),np.array([9,10]).reshape(2,1)]).tolist(),
+        # 'heading_traj': self._heading_traj.tolist(),#np.array([np.array([5,5]).reshape(2,1),np.array([6,6]).reshape(2,1)]).tolist(),
+        # 'xi_traj': self._xi_traj.tolist()##np.array([1,2,3,4,5,6]).tolist()
+        }
+        return jsonDict

@@ -24,13 +24,29 @@ from helpers import polar_to_vec as p2v
 import timeit
 import cProfile, pstats, io
 from pstats import SortKey
+import json, codecs
+import jsons
 
 
 def simulate(dt, mins, scs, env):
   pr = cProfile.Profile()
   pr.enable()
+
+  data = {}
+  data['beacons'] = []
+
   scs.insert_into_environment(env)
   beacons = np.array([scs], dtype=object)
+  data['beacons'].append({
+        'Type': 'SCS',
+        'ID': '0',
+        # 'Pathtree': [0],
+        'pos_traj': np.array([0,0]).reshape(2,1).tolist(),
+        'force_traj': np.array([0,0]).reshape(2,1).tolist(),
+        'heading_traj': np.array([0,0]).reshape(2,1).tolist(),
+        'xi_traj': np.array([0]).tolist(),
+        #Vectors and stuff
+    })
 
   #scs.generate_target_pos(beacons,env, mins[0])
   # mins[0].target_pos = p2v(mins[0].target_r,np.random.uniform(0, np.pi/2))
@@ -48,7 +64,21 @@ def simulate(dt, mins, scs, env):
       # else:
         # mins[i].generate_target_pos(beacons,env,scs, mins[i+1])
       mins[i+1].prev = mins[i]
-    beacons = np.append(beacons, mins[i])    
+    beacons = np.append(beacons, mins[i])
+    # jsons_test = jsons.dump(mins[i])
+
+    data['beacons'].append({
+        'Type': 'MIN',
+        'ID': mins[i].ID,
+        # 'Pathtree': mins[i].pa,
+        'pos_traj': mins[i]._pos_traj.tolist(),#np.array([np.array([1,2]).reshape(2,1),np.array([3,4]).reshape(2,1)]).tolist(),
+        'force_traj': mins[i]._v_traj.tolist(),#np.array([np.array([7,8]).reshape(2,1),np.array([9,10]).reshape(2,1)]).tolist(),
+        'heading_traj': mins[i]._heading_traj.tolist(),#np.array([np.array([5,5]).reshape(2,1),np.array([6,6]).reshape(2,1)]).tolist(),
+        'xi_traj': mins[i]._xi_traj.tolist(),#np.array([1,2,3,4,5,6]).tolist()
+        #Vectors and stuff
+    })
+
+
     for b in beacons:
       b.compute_neighbors(beacons)
     print(f"min {mins[i].ID} landed at pos\t\t\t {mins[i].pos}")
@@ -61,12 +91,23 @@ def simulate(dt, mins, scs, env):
   tot = toc - tic
   print(f"minimum number of neighbors: {min(beacons, key=lambda b: len(b.neighbors))}") 
   print(f"Total elapsed time for simulation: {tot}")
-
-  s = io.StringIO()
-  sortby = SortKey.CUMULATIVE
-  ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-  ps.print_stats()
-  print(s.getvalue())
+  file_path = 'data_1.json'
+  data = {}
+  data['beacons'] = []
+  for i in range(len(beacons)):
+    data['beacons'].append(beacons[i].toJson())
+  # with open('data_1.json', 'w') as outfile:
+    # json.dump(scs.toJson(), outfile, separators=(',', ':'), sort_keys=True, indent=2)
+  for i in range(len(beacons)):
+    json.dump(data, codecs.open(file_path, 'w', encoding='utf-8'), separators=(',', ':'), sort_keys=True, indent=2)
+    # jsons.dump(beacons,outfile)
+  obj_text = codecs.open(file_path, 'r', encoding='utf-8').read()
+  b_new = json.loads(obj_text)
+  # s = io.StringIO()
+  # sortby = SortKey.CUMULATIVE
+  # ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+  # ps.print_stats()
+  # print(s.getvalue())
   return beacons   
 
 if __name__ == "__main__":
@@ -168,12 +209,12 @@ if __name__ == "__main__":
   )
 
 # %%Parameter initialization
-  _animate, save_animation, plot_propterties = False, False, False
+  _animate, save_animation, plot_propterties, replay = False, False, False, True
   start_animation_from_min_ID = 0
 
   max_range = 3 #0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 3#18#7#2*5#3
+  N_mins = 2#18#7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -301,7 +342,7 @@ if __name__ == "__main__":
       else:
         plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
         return plt_pos_traj
-
+  
     anim = FuncAnimation(fig, animate, init_func=init, interval=2, blit=False)
     
     if save_animation:
@@ -335,3 +376,4 @@ if __name__ == "__main__":
       ax.axis('equal')
 
   plt.show()
+
