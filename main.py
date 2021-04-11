@@ -221,7 +221,7 @@ if __name__ == "__main__":
 
   max_range = 3 #0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
 
-  N_mins = 1#18#7#2*5#3
+  N_mins = 6#18#7#2*5#3
   dt = 0.01#0.01
 
   scs = SCS(max_range)
@@ -397,9 +397,21 @@ if __name__ == "__main__":
 
   if replay:
     obj_text = codecs.open('data_1.json', 'r', encoding='utf-8').read()
-    b_new = json.loads(obj_text)  
+    b_new = json.loads(obj_text)
 
-    mins = [
+    obstacle_corners2 = [np.array(corner) for corner in b_new['environment'][0]['Obstacle_corners']]
+    entrance_point2 = np.array(b_new['environment'][0]['Entrance_point'])
+    
+    env2 = Env(
+      entrance_point2,
+      obstacle_corners = obstacle_corners2
+    )
+
+    max_range2 = b_new['parameters']['Max_range']
+    scs2 = SCS(max_range2)
+    scs2.insert_into_environment(env2)
+
+    mins2 = [
       Min(
         max_range,
         DeploymentFSM(
@@ -420,27 +432,29 @@ if __name__ == "__main__":
     ]
 
     for e in range(len(mins)):
-      mins[e]._pos_traj = np.array(b_new['beacons'][e+1]['pos_traj'])
-      mins[e]._v_traj = np.array(b_new['beacons'][e+1]['force_traj'])
-      mins[e]._heading_traj = np.array(b_new['beacons'][e+1]['heading_traj'])
-      mins[e]._xi_traj = np.array(b_new['beacons'][e+1]['xi_traj'])
-      mins[e].state_traj = np.array(b_new['beacons'][e+1]['state_traj'])
+      mins2[e]._pos_traj = np.array(b_new['beacons'][e+1]['pos_traj'])
+      mins2[e]._v_traj = np.array(b_new['beacons'][e+1]['force_traj'])
+      mins2[e]._heading_traj = np.array(b_new['beacons'][e+1]['heading_traj'])
+      mins2[e]._xi_traj = np.array(b_new['beacons'][e+1]['xi_traj'])
+      mins2[e].state_traj = np.array(b_new['beacons'][e+1]['state_traj'])
 
-      mins[e].heading = mins[e]._heading_traj[-1]
-      mins[e].pos = np.array([mins[e]._pos_traj[0][-1], mins[e]._pos_traj[1][-1]])
-      mins[e].state = MinState(mins[e].state_traj[-1])
-    fig3 = plt.figure()
+      mins2[e].heading = mins2[e]._heading_traj[-1]
+      mins2[e].pos = np.array([mins2[e]._pos_traj[0][-1], mins2[e]._pos_traj[1][-1]])
+      mins2[e].state = MinState(mins2[e].state_traj[-1])
+
+
+    fig3 = plt.figure(figsize=(5,5))
     ax3 = fig3.add_subplot(1,1,1)
-    scs.plot(ax3)
-    env.plot(ax3)
-    for j in range(len(mins)):#mn in mins:
+    scs2.plot(ax3)
+    env2.plot(ax3)
+    for j in range(len(mins2)):#mn in mins:
       
-      mins[j].plot(ax3)
-      mins[j].plot_traj_line(ax3)
+      mins2[j].plot(ax3)
+      mins2[j].plot_traj_line(ax3)
       if j == 0:
-        mins[j].plot_vectors(scs,env,ax3)
+        mins[j].plot_vectors(scs,env2,ax3)
       else:
-        mins[j].plot_vectors(mins[j-1],env,ax3)
+        mins2[j].plot_vectors(mins2[j-1],env,ax3)
     ax3.legend()
     ax3.axis('equal')
   test = 2
