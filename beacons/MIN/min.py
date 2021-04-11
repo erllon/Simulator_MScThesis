@@ -46,8 +46,8 @@ class Min(Beacon):
     VectorTypes.INTERVAL: "orange"
   }
 
-  def __init__(self, max_range, deployment_strategy, xi_max=5, d_perf=1, d_none=3, k=0, a=0, v=np.zeros((2, ),), K_target=1, target_threshold=0.15, delta_expl_angle=np.pi/4):
-    super().__init__(max_range,xi_max, d_perf, d_none, pos=None)
+  def __init__(self, min_id, max_range, deployment_strategy, xi_max=5, d_perf=1, d_none=3, k=0, a=0, v=np.zeros((2, ),), K_target=1, target_threshold=0.15, delta_expl_angle=np.pi/4):
+    super().__init__(min_id, max_range,xi_max, d_perf, d_none, pos=None)
     self.K_target = K_target
     self.deployment_strategy = deployment_strategy
     self.target_threshold = target_threshold

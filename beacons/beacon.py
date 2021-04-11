@@ -20,13 +20,13 @@ class Beacon():
     Beacon.ID_counter += 1
     return ret
 
-  def __init__(self, range, xi_max, d_perf, d_none, k=0, a=0, v=np.zeros((2, )), pos=None):
+  def __init__(self, b_id, range, xi_max, d_perf, d_none, k=0, a=0, v=np.zeros((2, )), pos=None):
     self.range = range
     self.target_r = range #TODO: Scale this down, so that the target is not generated at border?
     self.pos = pos
     self.prev_pos = None
     self.delta_pos = None
-    self.ID = self.get_ID()
+    self.ID = b_id#self.get_ID()
     self.neighbors = []
     """ STUFF FOR XI MODEL """
     self.xi_max = xi_max
