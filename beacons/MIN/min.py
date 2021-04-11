@@ -17,16 +17,16 @@ import matplotlib.pyplot as plt
 
 
 class MinState(Enum):
-  SPAWNED   = 0,
-  FOLLOWING = 1,
-  EXPLORING = 2,
+  SPAWNED   = 0
+  FOLLOWING = 1
+  EXPLORING = 2
   LANDED    = 3
   NEIGHBOR  = 4
 
 class VectorTypes(Enum):
-  OBSTACLE = 0,
-  PREV_MIN = 1,
-  TOTAL    = 2,
+  OBSTACLE = 0
+  PREV_MIN = 1
+  TOTAL    = 2
   INTERVAL = 3
 
 class Min(Beacon):
