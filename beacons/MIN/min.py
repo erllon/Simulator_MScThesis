@@ -340,12 +340,11 @@ class Min(Beacon):
         'pos_traj': self._pos_traj.tolist(),#,np.array([3,4]).reshape(2,1)])).to_json(orient='values')#,
         'force_traj': self._v_traj.tolist(),#np.array([np.array([7,8]).reshape(2,1),np.array([9,10]).reshape(2,1)]).tolist(),
         'heading_traj': self._heading_traj.tolist(),#np.array([np.array([5,5]).reshape(2,1),np.array([6,6]).reshape(2,1)]).tolist(),
-        'xi_traj': self._xi_traj.tolist()##np.array([1,2,3,4,5,6]).tolist()
+        'xi_traj': self._xi_traj.tolist(),#,##np.array([1,2,3,4,5,6]).tolist()
+        'state_traj': [state.value for state in self.state_traj]
     }
     return jsonDict#json.dumps(self, default=lambda o: o.__dict__)
 
-  # def dumper(obj):
-  #   try:
-  #       return obj.toJSON()
-  #   except:
-  #       return obj.__dict__
+  @staticmethod
+  def plot_from_json():
+    pass

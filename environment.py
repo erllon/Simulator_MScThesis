@@ -20,3 +20,11 @@ class Env():
   def plot(self, axis):
     for i in range(len(self.obstacle_corners)):
       axis.add_patch(Polygon(self.obstacle_corners[i], fill=False))
+    
+  
+  def toJson(self):
+    jsonDict = {
+      'Obstacle_corners': [obstacle_corner.tolist() for obstacle_corner in self.obstacle_corners],
+      'Entrance_point': self.entrance_point.tolist()
+    }
+    return jsonDict
