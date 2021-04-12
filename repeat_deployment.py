@@ -44,7 +44,7 @@ if not _animate:
                 "legend.numpoints": 1,
             }
         )
-file_path = r'json_files/data_from_deployment_5.json'
+file_path = r'json_files/stresstest_20_drones_45_rand_4.json'
 obj_text = codecs.open(file_path, 'r', encoding='utf-8').read()
 json_data = json.loads(obj_text)
 
@@ -95,6 +95,7 @@ for e in range(len(mins2)):
 mins_to_plot = deepcopy(mins2[:stop_min_ID])
 
 fig = plt.figure(figsize=(5,5))
+fig.canvas.set_window_title('Replay')
 
 if plot_propterties:
     if _animate:
