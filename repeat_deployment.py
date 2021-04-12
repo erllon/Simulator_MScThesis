@@ -86,7 +86,7 @@ for e in range(len(mins2)):
     mins2[e]._v_traj = np.array(json_data['beacons'][e+1]['force_traj'])
     mins2[e]._heading_traj = np.array(json_data['beacons'][e+1]['heading_traj'])
     mins2[e]._xi_traj = np.array(json_data['beacons'][e+1]['xi_traj'])
-    mins2[e].state_traj = [MinState(state[0]) if type(state)==list else MinState(state) for state in json_data['beacons'][e+1]['state_traj']]#np.array(json_data['beacons'][e+1]['state_traj'])#[MinState(mstate_int[0]) for mstate_int in np.array(json_data['beacons'][e+1]['state_traj'])]#np.array(json_data['beacons'][e+1]['state_traj'])
+    mins2[e].state_traj = [MinState(state[0]) if type(state)==list else MinState(state) for state in json_data['beacons'][e+1]['state_traj']]
 
     mins2[e].heading = mins2[e]._heading_traj[-1]
     mins2[e].pos = np.array([mins2[e]._pos_traj[0][-1], mins2[e]._pos_traj[1][-1]])
@@ -123,7 +123,7 @@ else:
 
 
 if _animate:
-    for mn in mins_to_plot[:start_animation_from_min_ID]:#mins2[:start_animation_from_min_ID]:
+    for mn in mins_to_plot[:start_animation_from_min_ID]:
         if plot_propterties:
             mn.plot(ax1_1)
             mn.plot_traj_line(ax1_1)
@@ -146,9 +146,9 @@ if _animate:
             scs_from_json.plot(ax1_1)
             env_from_json.plot(ax1_1)
             artists = []
-            for mn in mins_to_plot:#mins2:
+            for mn in mins_to_plot:
                 artists += mn.plot(ax1_1)
-                artists += (mn.plot_traj_line(ax1_1), ) #Type: Line2D(_line6)
+                artists += (mn.plot_traj_line(ax1_1), )
                 artists += (mn.plot_force_traj_line(ax1_2), )
                 artists += (mn.plot_xi_traj_line(ax1_3), )
                 mn.plot_pos_from_pos_traj_index(0)
@@ -160,23 +160,23 @@ if _animate:
             scs_from_json.plot(ax)
             env_from_json.plot(ax)
             artists = []
-            for mn in mins_to_plot:#mins2:
+            for mn in mins_to_plot:
                 artists += mn.plot(ax)
                 artists += (mn.plot_traj_line(ax), )
                 mn.plot_pos_from_pos_traj_index(0)
             return artists
 
     def animate(i):
-        if i - offset[0] >= mins_to_plot[min_counter[0]].get_pos_traj_length(): #mins2[min_counter[0]].get_pos_traj_length():
-            offset[0] += mins_to_plot[min_counter[0]].get_pos_traj_length()#mins2[min_counter[0]].get_pos_traj_length()
+        if i - offset[0] >= mins_to_plot[min_counter[0]].get_pos_traj_length():
+            offset[0] += mins_to_plot[min_counter[0]].get_pos_traj_length()
             min_counter[0] += 1
         if plot_propterties:
-            plt_pos_traj = mins_to_plot[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])#mins2[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
-            plt_force_traj = mins_to_plot[min_counter[0]].plot_force_from_traj_index(i-offset[0])#mins2[min_counter[0]].plot_force_from_traj_index(i-offset[0])
-            plt_xi_traj = mins_to_plot[min_counter[0]].plot_xi_from_traj_index(i-offset[0])#mins2[min_counter[0]].plot_xi_from_traj_index(i-offset[0])
-            return  plt_force_traj, plt_xi_traj, plt_pos_traj #,mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0]), mins[min_counter[0]].plot_force_from_traj_index(i-offset[0]) #2
+            plt_pos_traj = mins_to_plot[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0]
+            plt_force_traj = mins_to_plot[min_counter[0]].plot_force_from_traj_index(i-offset[0])
+            plt_xi_traj = mins_to_plot[min_counter[0]].plot_xi_from_traj_index(i-offset[0])
+            return  plt_force_traj, plt_xi_traj, plt_pos_traj
         else:
-            plt_pos_traj =  mins_to_plot[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])#mins2[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
+            plt_pos_traj =  mins_to_plot[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
             return plt_pos_traj
 
     anim = FuncAnimation(fig, animate, init_func=init, interval=2, blit=False)
@@ -190,7 +190,7 @@ else:
     if plot_propterties:
         env_from_json.plot(ax1_1)
         scs_from_json.plot(ax1_1)
-        for mn in mins_to_plot:#mins2:
+        for mn in mins_to_plot:
             mn.plot(ax1_1)
             mn.plot_traj_line(ax1_1)
             mn.plot_vectors(mn.prev, env_from_json, ax1_1)
@@ -201,13 +201,13 @@ else:
         env_from_json.plot(ax)
         scs_from_json.plot(ax)
         
-        for j in range(len(mins_to_plot)):#range(len(mins2)):#mn in mins:
-            mins_to_plot[j].plot(ax) # mins2[j].plot(ax)
-            mins_to_plot[j].plot_traj_line(ax) # mins2[j].plot_traj_line(ax)
+        for j in range(len(mins_to_plot)):
+            mins_to_plot[j].plot(ax)
+            mins_to_plot[j].plot_traj_line(ax
         if j == 0:
-            mins_to_plot[j].plot_vectors(scs_from_json,env_from_json,ax) #mins2[j].plot_vectors(scs_from_json,env_from_json,ax)
+            mins_to_plot[j].plot_vectors(scs_from_json,env_from_json,ax)
         else:
-            mins_to_plot[j].plot_vectors(mins_to_plot[j-1],env_from_json,ax) #mins2[j].plot_vectors(mins2[j-1],env_from_json,ax)
+            mins_to_plot[j].plot_vectors(mins_to_plot[j-1],env_from_json,ax)
         ax.legend()
         ax.axis('equal')
 
