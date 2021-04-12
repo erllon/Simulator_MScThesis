@@ -45,7 +45,16 @@ def simulate(dt, mins, scs, env):
   mins[0].prev = scs
   scs.generate_target_pos(beacons, env, mins[0])
   uniformity_list.append(np.sum([beacon.calc_uniformity() for beacon in beacons]))
+
+  # If we deploy drones until some condition on the uniformity is fulfilled
+  delta_uniformity = 0
+  delta_limit = 0.5
+  limit = 0.05
+  i = 0
+
   tic = timeit.default_timer()
+
+  # while uniformity_list[-1] < limit:#delta_uniformity <= limit:
   for i in range(len(mins)):
     mins[i].insert_into_environment(env)
     while not mins[i].state == MinState.LANDED:
@@ -57,13 +66,16 @@ def simulate(dt, mins, scs, env):
     for b in beacons:
       b.compute_neighbors(beacons)
 
-    uniformity_list.append(np.sum([beacon.calc_uniformity() for beacon in beacons]))   
+    uniformity_list.append(np.sum([beacon.calc_uniformity() for beacon in beacons]))
+    delta_uniformity = uniformity_list[-1] - uniformity_list[-2]
+    
     
     print(f"min {mins[i].ID} landed at pos\t\t\t {mins[i].pos}")
     print(f"min {mins[i].ID} target\t\t\t\t {mins[i].target_pos}")
     print(f"min {mins[i].ID} neighbors: {[n.ID for n in mins[i].neighbors]}")
     if not mins[i].deployment_strategy.get_target() is None:
           print(f"Its target now has {len(mins[i].deployment_strategy.get_target().neighbors)} neighs\n------------------", )
+    # i += 1
   pr.disable()
   toc = timeit.default_timer()
   tot = toc - tic
@@ -189,7 +201,7 @@ if __name__ == "__main__":
 # %%Parameter initialization
   max_range = 3
 
-  N_mins = 16
+  N_mins = 10
   dt = 0.01
 
   scs = SCS(Beacon.get_ID(), max_range)
@@ -352,7 +364,8 @@ if __name__ == "__main__":
     else:
       env.plot(ax)
       scs.plot(ax)
-      for j in range(len(mins)):
+      for j in range(len(beacons)-1):
+      # len(beacons)-1 so that it works when deploying unknown number of mins
         mins[j].plot(ax)
         mins[j].plot_traj_line(ax)
         if j == 0:
