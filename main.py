@@ -161,8 +161,8 @@ if __name__ == "__main__":
       np.array([
         [-1, -1],
         [-1,   5],
-        [5,      5],
-        [5,     -1],
+        [5,      5],#[7,    7],
+        [5,     -1],#[7,    -1],#,
       ]),
     ]
   
@@ -200,8 +200,13 @@ if __name__ == "__main__":
 
 # %%Parameter initialization
   max_range = 3
+  _xi_max = 1
+  _d_perf = 0.1
+  _d_none = 2.5
+  _delta_expl_angle = np.pi/4 #np.pi/6
+  _K_o = 0.4
 
-  N_mins = 10
+  N_mins = 2
   dt = 0.01
 
   scs = SCS(Beacon.get_ID(), max_range)
@@ -236,24 +241,24 @@ if __name__ == "__main__":
         #   K_o= 5*1*(i+1),#30,# 12 0.1,#0.01, #12 works somewhat with TWO_DIM_LOCAL, else much lower (0.4-ish)
         #   kind=LineExploreKind.TWO_DIM_LOCAL,
         # )
-        NewAttractiveFollow(K_o=.3),
-        NewPotentialFieldsExplore(K_o=.3, target_point_or_line=NewPotentialFieldsExplore.Target.LINE)
+        NewAttractiveFollow(K_o=_K_o),
+        NewPotentialFieldsExplore(K_o=_K_o, target_point_or_line=NewPotentialFieldsExplore.Target.LINE)
       ),
-      xi_max=1,
-      d_perf=0.1,
-      d_none=2.5,
-      delta_expl_angle=np.pi/4#0 np.pi/6
+      xi_max=_xi_max,
+      d_perf=_d_perf,
+      d_none=_d_none,
+      delta_expl_angle=_delta_expl_angle
     ) for i in range(N_mins)
   ]
 
   data['parameters'] = {
     'N_mins': N_mins,
     'Max_range' : max_range,
-    'K_o': 0.3,
-    'xi_max': 1,
-    'd_perf': 0.1,
-    'd_none': 2.5,
-    'delta_expl_angle': np.pi/4
+    'K_o': _K_o,
+    'xi_max': _xi_max,
+    'd_perf': _d_perf,
+    'd_none': _d_none,
+    'delta_expl_angle': _delta_expl_angle
   }
 
   beacons = simulate(dt, mins, scs, env)
