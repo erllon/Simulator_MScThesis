@@ -171,7 +171,7 @@ if _animate:
             offset[0] += mins_to_plot[min_counter[0]].get_pos_traj_length()
             min_counter[0] += 1
         if plot_propterties:
-            plt_pos_traj = mins_to_plot[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0]
+            plt_pos_traj = mins_to_plot[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
             plt_force_traj = mins_to_plot[min_counter[0]].plot_force_from_traj_index(i-offset[0])
             plt_xi_traj = mins_to_plot[min_counter[0]].plot_xi_from_traj_index(i-offset[0])
             return  plt_force_traj, plt_xi_traj, plt_pos_traj
@@ -203,7 +203,7 @@ else:
         
         for j in range(len(mins_to_plot)):
             mins_to_plot[j].plot(ax)
-            mins_to_plot[j].plot_traj_line(ax
+            mins_to_plot[j].plot_traj_line(ax)
         if j == 0:
             mins_to_plot[j].plot_vectors(scs_from_json,env_from_json,ax)
         else:
