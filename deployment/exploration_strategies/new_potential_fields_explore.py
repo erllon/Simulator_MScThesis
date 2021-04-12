@@ -41,9 +41,8 @@ class NewPotentialFieldsExplore(ExplorationStrategy):
         F_rep = NewPotentialFieldsExplore.get_repulsive_force(self.__K_n, self.__K_o, MIN, ENV)
         
 
-        F_sum = F_att + F_rep#10*F_rep#5*F_rep
-        # if np.linalg.norm(F_sum) > self.__min_force_threshold and np.any([MIN.get_RSSI(n) for n in MIN.neighbors] >= self.MIN_RSSI_STRENGTH_BEFORE_LAND):#MIN.get_RSSI(MIN.target_pos) >= self.MIN_RSSI_STRENGTH_BEFORE_LAND:
-        if np.linalg.norm(F_sum) > self.__min_force_threshold and np.any(np.array([MIN.get_xi_to_other_from_model(n) for n in MIN.neighbors]) >= self.MIN_RSSI_STRENGTH_BEFORE_LAND*MIN.xi_max):#MIN.get_RSSI(MIN.target_pos) >= self.MIN_RSSI_STRENGTH_BEFORE_LAND:
+        F_sum = F_att + F_rep
+        if np.linalg.norm(F_sum) > self.__min_force_threshold and np.any(np.array([MIN.get_xi_to_other_from_model(n) for n in MIN.neighbors]) >= self.MIN_RSSI_STRENGTH_BEFORE_LAND*MIN.xi_max):
 
             if self.__point_or_line == NewPotentialFieldsExplore.Target.LINE and np.any(MIN.delta_pos != None):
                 MIN.generate_virtual_target()
@@ -55,7 +54,6 @@ class NewPotentialFieldsExplore(ExplorationStrategy):
                 print("Too small force")
             if np.any(np.array([MIN.get_xi_to_other_from_model(n) for n in MIN.neighbors]) < self.MIN_RSSI_STRENGTH_BEFORE_LAND*MIN.xi_max):
                 print("Too low RSSI")
-            # print("Landing due to too small force and satisfactory low RSSI")
             raise AtLandingConditionException
 
     
@@ -76,9 +74,7 @@ class NewPotentialFieldsExplore(ExplorationStrategy):
             for s in MIN.sensors if s.measurement.is_valid()
         ]
         
-        return get_generic_force_vector(vecs_to_obs, K_o, d_o=MIN.range) #+ get_generic_force_vector(vecs_to_neighs, K_n, d_o=MIN.range)
-
-    # return get_generic_force_vector(vecs_to_obs, K_n)
+        return get_generic_force_vector(vecs_to_obs, K_o, d_o=MIN.range)
     
     @staticmethod
     def get_attractive_force(K_target, MIN):

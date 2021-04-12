@@ -42,7 +42,7 @@ class Min(Beacon):
   vec_clr = {
     VectorTypes.OBSTACLE: "blue",
     VectorTypes.PREV_MIN: "green",
-    VectorTypes.TOTAL:    "cyan", #"red",
+    VectorTypes.TOTAL:    "red",
     VectorTypes.INTERVAL: "orange"
   }
 
@@ -80,12 +80,11 @@ class Min(Beacon):
     self._heading_traj = np.array([self.heading])
     self.state_traj = np.array([self.state], dtype=object)
     self._v_traj = np.array([0])
-    self._xi_traj = np.zeros((self.ID,1)) #xi for all prev drones
+    self._xi_traj = np.zeros((self.ID,1)) #xi to/for all prev drones
 
 
   def do_step(self, beacons, SCS, ENV, dt):
     v = self.deployment_strategy.get_velocity_vector(self, beacons, SCS, ENV)
-    # print(self.target_angle)
     self.prev_pos = self.pos
     self.pos = euler_int(self.pos.reshape(2, ), v, dt).reshape(2, )
     if (self.prev_pos != None).any():
@@ -99,9 +98,7 @@ class Min(Beacon):
 
     #As of 21.01 .get_velocity_vector() returns the calculated force, self._force_hist considers the norm of the force
     self._v_traj = np.hstack((self._v_traj, np.linalg.norm(v)))
-    #self._xi_traj blir satt i self.deployment_strategy.get_velocity_vector()  
-    # for s in self.sensors:
-    #   s.sense(ENV)
+    #self._xi_traj gets set in self.deployment_strategy.get_velocity_vector()
     
   def generate_target_pos(self, beacons, ENV, prev_min, next_min):
     """Generates a target point for next_min
@@ -128,25 +125,25 @@ class Min(Beacon):
     if len(vecs_from_obs) != 0: # If obstacles present
       tot_vec_from_obs = np.sum(vecs_from_obs,axis=0)
       ang_tot_vec_from_obs = gva(tot_vec_from_obs)
-      self.obs_vec = p2v(1, ang_tot_vec_from_obs)#p2v(1, tot_ang_from_obs)
+      self.obs_vec = p2v(1, ang_tot_vec_from_obs)
 
       tot_vec_comb = tot_vec_from_obs.reshape(2, ) + tot_vec_from_neigh.reshape(2, )
       ang_tot_vec_comb = gva(tot_vec_comb)
-      expl_ang = ang_tot_vec_comb#ang_tot_vec_from_obs #0.5*(ang_tot_vec_from_obs - avg_ang_from_neigh) 
+      expl_ang = ang_tot_vec_comb 
     else:
       """If no obstacles present in range of drone"""
-      expl_ang = gva(tot_vec_from_neigh.reshape(2, )) #avg_ang_from_neigh
+      expl_ang = gva(tot_vec_from_neigh.reshape(2, ))
     
 
-    rand = np.random.uniform(-1,1)*self.delta_expl_angle #np.pi/4
+    rand = np.random.uniform(-1,1)*self.delta_expl_angle
     print(f"Drone {self.ID} generating target for drone {next_min.ID}")
-    print(f"expl_ang from drone {self.ID}: {expl_ang*180/np.pi}")
-    print(f"rand from drone {self.ID}: {rand*180/np.pi}")
+    print(f"expl_ang from drone {self.ID}: {np.rad2deg(expl_ang)}")
+    print(f"rand from drone {self.ID}: {np.rad2deg(rand)}")
     next_min.target_angle = expl_ang + rand
 
-    self.tot_vec = p2v(1, expl_ang) #p2v(1, target_angle)
+    self.tot_vec = p2v(1, expl_ang)
     
-    self.neigh_vec = p2v(1, avg_ang_from_neigh)#p2v(1, np.sum(ang_from_neighs, axis=0)/len(ang_from_neighs))
+    self.neigh_vec = p2v(1, avg_ang_from_neigh)
     
     # Rot_mat = R_z(gva(self.tot_vec))
     # origin_transl = np.hstack((self.pos,0)).reshape((3,1))
@@ -159,7 +156,7 @@ class Min(Beacon):
     # target_pos_world = h_trans_mat @ target_pos_tilde
     # self.test = target_pos.reshape(2, ) + self.pos.reshape(2, ) #+ self.pos.reshape(2, )#target_pos.reshape(2, ) + self.pos.reshape(2, )
     if next_min.first_target_pos == None:
-      next_min.first_target_pos = deepcopy(target_pos.reshape(2, )) #b#target_pos.reshape(2, )
+      next_min.first_target_pos = deepcopy(target_pos.reshape(2, ))
       print(f"first_target: {next_min.first_target_pos}")
     
     next_min.target_pos = target_pos
@@ -167,10 +164,10 @@ class Min(Beacon):
     self.next = next_min
     return target_pos  
   
-  def generate_virtual_target(self): #(self, F, dt):    
-    # self.target_pos = euler_int(self.target_pos.reshape(2, ), F, dt).reshape(2, )
+  def generate_virtual_target(self):
     self.target_pos += p2v(np.linalg.norm(self.delta_pos), self.target_angle)
     self.final_target_pos = deepcopy(self.target_pos)
+
   @staticmethod
   def get_neigh_vecs_and_angles(MIN):
     vecs_from_neighs, ang_from_neighs = [], []
@@ -180,8 +177,7 @@ class Min(Beacon):
         dist = np.linalg.norm(vec_from_neigh) #when using xi for RSSI, dist will be in the interval (d_perf, d_none)
         scaling = MIN.d_none - MIN.d_perf
         # vecs_from_neighs.append((MIN.range - dist)*normalize(vec_from_neigh)) #TODO: When using xi as RSSI, this scaling will not produce perf results
-        vecs_from_neighs.append((scaling-dist)*normalize(vec_from_neigh))
-        
+        vecs_from_neighs.append((scaling-dist)*normalize(vec_from_neigh))        
         
         ang_from_neighs.append(gva(vec_from_neigh.reshape(2, )))
     return vecs_from_neighs, ang_from_neighs
@@ -189,19 +185,14 @@ class Min(Beacon):
   @staticmethod
   def get_obs_vecs_and_angles(MIN, ENV):
     vecs_from_obs, ang_from_obs = [], []
-    # for s in MIN.sensors:
-    #   s.sense(ENV)  #Each sensor will now have/know the smallest distance to an obstacle and at what angle the obstacle is
-      #HERE
     for s in MIN.sensors:
       s.sense(ENV)  #Each sensor will now have/know the smallest distance to an obstacle and at what angle the obstacle is
       if s.measurement.is_valid():
         """Vector FROM drone TO obstacle in world frame"""
-        # vec_from_obs = -((R_z(MIN.heading)@R_z(s.host_relative_angle))[:2,:2]@p2v(s.measurement.get_val(), s.measurement.get_angle()))#[:2]
         
         length = s.measurement.get_val()
         angle = s.measurement.get_angle()
         vec_from_obs = -p2v(length, angle)
-        # vec_from_obs = -p2v(MIN.range - s.measurement.get_val(), s.measurement.get_angle())
         """Scaling the vector that points towards the obstalce
           so that obstacles that are close to the drone produce larger vectors"""
         meas_length = np.linalg.norm(vec_from_obs)
@@ -299,10 +290,8 @@ class Min(Beacon):
   def plot_xi_traj_line(self, axis):    
     self.xi_traj_line = np.array([])
     for i in range(self._xi_traj.shape[0]):
-#     if np.array(neigh_indices != self.prev_neigh_indices).all():      
       if np.array(self._xi_traj[i,:] != 0).any():
-        # self.xi_traj_line, = axis.plot(np.linspace(start=0, stop=len(self._xi_traj[i,:]),num=len(self._xi_traj[i,:])), self._xi_traj[i], label=f"Drone {i}")
-        tmp, = axis.plot(np.linspace(start=0, stop=len(self._xi_traj[i,:]),num=len(self._xi_traj[i,:])), self._xi_traj[i])#, label=f"Drone {i}")
+        tmp, = axis.plot(np.linspace(start=0, stop=len(self._xi_traj[i,:]),num=len(self._xi_traj[i,:])), self._xi_traj[i])
         self.xi_traj_line = np.append(self.xi_traj_line, tmp)
     return self.xi_traj_line
 
@@ -314,10 +303,9 @@ class Min(Beacon):
     self.annotation.set_y(new_pos[1])
     theta = np.linspace(0, 2*np.pi)
     # self.radius.set_data(new_pos.reshape(2, 1) + p2v(self.range, theta))
-    # self.radius2.set_data(new_pos.reshape(2, 1) + p2v(self.d_perf, theta))
     self.traj_line.set_data(self._pos_traj[:, :index])
     self.heading_arrow.set_data(*np.hstack((new_pos.reshape(2, 1), new_pos.reshape(2, 1) + p2v(1, self._heading_traj[index]).reshape(2, 1))))
-    return self.point, self.annotation, self.traj_line, self.heading_arrow#, self.radius,#,self.radius2 
+    return self.point, self.annotation, self.traj_line, self.heading_arrow#, self.radius
 
   def plot_force_from_traj_index(self, index):
     new_force = self._v_traj[:index]
@@ -336,15 +324,11 @@ class Min(Beacon):
         'Type': 'MIN',
         'ID': self.ID,
         'Neighbor IDs': [neigh.ID for neigh in self.neighbors],
-        # 'Pathtree': self.,
-        'pos_traj': self._pos_traj.tolist(),#,np.array([3,4]).reshape(2,1)])).to_json(orient='values')#,
-        'force_traj': self._v_traj.tolist(),#np.array([np.array([7,8]).reshape(2,1),np.array([9,10]).reshape(2,1)]).tolist(),
-        'heading_traj': self._heading_traj.tolist(),#np.array([np.array([5,5]).reshape(2,1),np.array([6,6]).reshape(2,1)]).tolist(),
-        'xi_traj': self._xi_traj.tolist(),#,##np.array([1,2,3,4,5,6]).tolist()
+        'pos_traj': self._pos_traj.tolist(),
+        'force_traj': self._v_traj.tolist(),
+        'heading_traj': self._heading_traj.tolist(),
+        'xi_traj': self._xi_traj.tolist(),
         'state_traj': [state.value for state in self.state_traj]
     }
-    return jsonDict#json.dumps(self, default=lambda o: o.__dict__)
-
-  @staticmethod
-  def plot_from_json():
-    pass
+    return jsonDict
+    

@@ -47,7 +47,7 @@ def simulate(dt, mins, scs, env):
     mins[i].insert_into_environment(env)
     while not mins[i].state == MinState.LANDED:
       mins[i].do_step(beacons, scs, env, dt)
-    if i < len(mins)-1: #as long as i is not the index of the last min
+    if i < len(mins)-1: #If i is not the index of the last min
       mins[i+1].prev = mins[i]
     beacons = np.append(beacons, mins[i])
     data['beacons'].append(mins[i].toJson())
@@ -66,9 +66,7 @@ def simulate(dt, mins, scs, env):
   print(f"Total elapsed time for simulation: {tot}")  
   file_path = r'json_files\data_from_deployment_4.json'
   write_to_file(file_path, data)
-
-  # with open(file_path, 'w') as outfile:
-  #   json.dump(data, outfile, separators=(',', ':'), sort_keys=True, indent=2)
+  
   # s = io.StringIO()
   # sortby = SortKey.CUMULATIVE
   # ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
@@ -82,7 +80,7 @@ def write_to_file(file_path, data_to_write):
 
 
 if __name__ == "__main__":
-  _animate, save_animation, plot_propterties = False, False, False
+  _animate, save_animation, plot_propterties = True, False, True
   start_animation_from_min_ID = 0
 
 # %% Plotting styles
@@ -176,13 +174,10 @@ if __name__ == "__main__":
     ]
 
   env = Env(
-    # np.array([
-    #   -9.8, -5.2
-    # ]),
     np.array([
       0, 0
     ]),
-    obstacle_corners = open_large#open_w_sq_obs #open_large#open_small#obs_zig_zag#open_w_sq_obs#open_large##open_small#[]#obs_zig_zag #[]
+    obstacle_corners = open_large #open_w_sq_obs #open_large#open_small#obs_zig_zag#[]#
   )
   data['environment'].append(env.toJson())
 
@@ -229,7 +224,7 @@ if __name__ == "__main__":
       ),
       xi_max=1,
       d_perf=0.1,
-      d_none=2.5,#2.1,
+      d_none=2.5,
       delta_expl_angle=np.pi/4#0 np.pi/6
     ) for i in range(N_mins)
   ]
@@ -251,13 +246,12 @@ if __name__ == "__main__":
   
   if plot_propterties:
     if _animate:
-      # fig, ax = plt.subplots(nrows=3,ncols=1)
       ax1_1 = fig.add_subplot(3,1,1)
       ax1_2 = fig.add_subplot(3,1,2)
       ax1_3 = fig.add_subplot(3,1,3, sharex=ax1_2)
       ax1_1.title.set_text("Deployment")
-      ax1_2.title.set_text(r"$\left\|\| F_{applied} \right\|\|$") #Set title
-      ax1_3.title.set_text(r"$\xi$ from neighbors")               #Set title
+      ax1_2.title.set_text(r"$\left\|\| F_{applied} \right\|\|$")
+      ax1_3.title.set_text(r"$\xi$ from neighbors")
     else:
       fig2 = plt.figure(figsize=(5,5))
       ax1_1 = fig.add_subplot(1,1,1)
@@ -265,8 +259,8 @@ if __name__ == "__main__":
       ax2_2 = fig2.add_subplot(2,1,2)
 
       ax1_1.title.set_text("Deployment")
-      ax2_1.title.set_text(r"$\left\|\| F_{applied} \right\|\|$") #Set title
-      ax2_2.title.set_text(r"$\xi$ from neighbors")               #Set title2
+      ax2_1.title.set_text(r"$\left\|\| F_{applied} \right\|\|$")
+      ax2_2.title.set_text(r"$\xi$ from neighbors")
   else:
     ax = fig.add_subplot(1,1,1)
     # fig, ax = plt.subplots(1,1)
