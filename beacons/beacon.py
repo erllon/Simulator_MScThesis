@@ -84,3 +84,26 @@ class Beacon():
   def plot(self, axis, clr="green"):
     pass
   
+    
+  def calc_uniformity(self):
+    """
+    A smaller "uniformity"-value means that nodes are
+    more uniformly distributed
+    """
+    if len(self.neighbors) != 0:
+      D_ij = [np.linalg.norm(self.get_vec_to_other(neigh)) for neigh in self.neighbors]
+      M_ij = np.sum(D_ij)/len(D_ij)
+      K_i = len(self.neighbors)
+
+      test = [(d - M_ij)**2 for d in D_ij]
+      sum_test = np.sum(test)
+      within_parenthesis = 1/K_i * sum_test
+
+      U_i = np.sqrt(within_parenthesis)
+      return U_i
+    else:
+      return 0
+      
+
+
+  

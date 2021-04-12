@@ -32,6 +32,8 @@ data['parameters'] = []
 data['environment'] = []
 data['beacons'] = []
 
+uniformity_list = []
+
 def simulate(dt, mins, scs, env):
   pr = cProfile.Profile()
   pr.enable()
@@ -41,7 +43,8 @@ def simulate(dt, mins, scs, env):
   data['beacons'].append(scs.toJson())
   
   mins[0].prev = scs
-  scs.generate_target_pos(beacons, env, mins[0])  
+  scs.generate_target_pos(beacons, env, mins[0])
+  uniformity_list.append(np.sum([beacon.calc_uniformity() for beacon in beacons]))
   tic = timeit.default_timer()
   for i in range(len(mins)):
     mins[i].insert_into_environment(env)
@@ -51,9 +54,11 @@ def simulate(dt, mins, scs, env):
       mins[i+1].prev = mins[i]
     beacons = np.append(beacons, mins[i])
     data['beacons'].append(mins[i].toJson())
-    
     for b in beacons:
       b.compute_neighbors(beacons)
+
+    uniformity_list.append(np.sum([beacon.calc_uniformity() for beacon in beacons]))   
+    
     print(f"min {mins[i].ID} landed at pos\t\t\t {mins[i].pos}")
     print(f"min {mins[i].ID} target\t\t\t\t {mins[i].target_pos}")
     print(f"min {mins[i].ID} neighbors: {[n.ID for n in mins[i].neighbors]}")
@@ -80,7 +85,7 @@ def write_to_file(file_path, data_to_write):
 
 
 if __name__ == "__main__":
-  _animate, save_animation, plot_propterties = True, False, True
+  _animate, save_animation, plot_propterties = False, False, False
   start_animation_from_min_ID = 0
 
 # %% Plotting styles
@@ -177,14 +182,14 @@ if __name__ == "__main__":
     np.array([
       0, 0
     ]),
-    obstacle_corners = open_large #open_w_sq_obs #open_large#open_small#obs_zig_zag#[]#
+    obstacle_corners = open_small#open_large #open_w_sq_obs #open_large#obs_zig_zag#[]#
   )
   data['environment'].append(env.toJson())
 
 # %%Parameter initialization
   max_range = 3
 
-  N_mins = 2
+  N_mins = 16
   dt = 0.01
 
   scs = SCS(Beacon.get_ID(), max_range)
@@ -240,6 +245,7 @@ if __name__ == "__main__":
   }
 
   beacons = simulate(dt, mins, scs, env)
+  print(f"uniformity_list: {uniformity_list}")
 
   
   fig = plt.figure(figsize=(5,5))
@@ -355,4 +361,16 @@ if __name__ == "__main__":
           mins[j].plot_vectors(mins[j-1],env,ax)
       ax.legend()
       ax.axis('equal')  
+
+  fig_uniformity = plt.figure(figsize=(5,5))
+  ax_uniformity = fig_uniformity.add_subplot(1,1,1)
+  ax_uniformity.set(
+    xlabel = 'Beacons',
+    ylabel = 'Uniformity',
+    title = 'Uniformity'
+  )
+    
+  ax_uniformity.plot(uniformity_list)
+  ax_uniformity.plot(uniformity_list, "or")
+
   plt.show()
