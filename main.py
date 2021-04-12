@@ -36,25 +36,10 @@ def simulate(dt, mins, scs, env):
   pr = cProfile.Profile()
   pr.enable()
 
-
-
   scs.insert_into_environment(env)
   beacons = np.array([scs], dtype=object)
   data['beacons'].append(scs.toJson())
-  # data['beacons'].append({
-  #       'Type': 'SCS',
-  #       'ID': '0',
-  #       # 'Pathtree': [0],
-  #       'pos_traj': np.array([0,0]).reshape(2,1).tolist(),
-  #       'force_traj': np.array([0,0]).reshape(2,1).tolist(),
-  #       'heading_traj': np.array([0,0]).reshape(2,1).tolist(),
-  #       'xi_traj': np.array([0]).tolist(),
-  #       #Vectors and stuff
-  #   })
-
-  #scs.generate_target_pos(beacons,env, mins[0])
-  # mins[0].target_pos = p2v(mins[0].target_r,np.random.uniform(0, np.pi/2))
-  # mins[0].prev = scs
+  
   mins[0].prev = scs
   scs.generate_target_pos(beacons, env, mins[0])  
   tic = timeit.default_timer()
@@ -63,28 +48,10 @@ def simulate(dt, mins, scs, env):
     while not mins[i].state == MinState.LANDED:
       mins[i].do_step(beacons, scs, env, dt)
     if i < len(mins)-1: #as long as i is not the index of the last min
-      # if i-1 > 0: #"prev_drone" for drone 1 will be the scs
-        # mins[i].generate_target_pos(beacons,env,mins[i-1], mins[i+1])
-      # else:
-        # mins[i].generate_target_pos(beacons,env,scs, mins[i+1])
       mins[i+1].prev = mins[i]
     beacons = np.append(beacons, mins[i])
     data['beacons'].append(mins[i].toJson())
-    # jsons_test = jsons.dump(mins[i])
-  
-
-    # data['beacons'].append({
-    #     'Type': 'MIN',
-    #     'ID': mins[i].ID,
-    #     # 'Pathtree': mins[i].pa,
-    #     'pos_traj': mins[i]._pos_traj.tolist(),#np.array([np.array([1,2]).reshape(2,1),np.array([3,4]).reshape(2,1)]).tolist(),
-    #     'force_traj': mins[i]._v_traj.tolist(),#np.array([np.array([7,8]).reshape(2,1),np.array([9,10]).reshape(2,1)]).tolist(),
-    #     'heading_traj': mins[i]._heading_traj.tolist(),#np.array([np.array([5,5]).reshape(2,1),np.array([6,6]).reshape(2,1)]).tolist(),
-    #     'xi_traj': mins[i]._xi_traj.tolist(),#np.array([1,2,3,4,5,6]).tolist()
-    #     #Vectors and stuff
-    # })
-
-
+    
     for b in beacons:
       b.compute_neighbors(beacons)
     print(f"min {mins[i].ID} landed at pos\t\t\t {mins[i].pos}")
@@ -98,31 +65,24 @@ def simulate(dt, mins, scs, env):
   print(f"minimum number of neighbors: {min(beacons, key=lambda b: len(b.neighbors))}") 
   print(f"Total elapsed time for simulation: {tot}")
   file_path = 'data_from_deployment_1.json'
-  # data = {}
-  # data['beacons'] = []
-  # for i in range(len(beacons)):
-  #   data['beacons'].append(beacons[i].toJson())
-  # with open('data_1.json', 'w') as outfile:
-    # json.dump(scs.toJson(), outfile, separators=(',', ':'), sort_keys=True, indent=2)
-  for i in range(len(beacons)):
-    json.dump(data, codecs.open(file_path, 'w', encoding='utf-8'), separators=(',', ':'), sort_keys=True, indent=2)
-    # jsons.dump(beacons,outfile)
-  obj_text = codecs.open(file_path, 'r', encoding='utf-8').read()
-  json_data = json.loads(obj_text)
-  # s = io.StringIO()
-  # sortby = SortKey.CUMULATIVE
-  # ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-  # ps.print_stats()
-  # print(s.getvalue())
+  with open(file_path, 'w') as outfile:
+    json.dump(data, outfile, separators=(',', ':'), sort_keys=True, indent=2)
+  s = io.StringIO()
+  sortby = SortKey.CUMULATIVE
+  ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+  ps.print_stats()
+  print(s.getvalue())
   return beacons   
 
 if __name__ == "__main__":
-  _animate, save_animation, plot_propterties, replay = False, False, True, False
+  _animate, save_animation, plot_propterties = True, False, False
   start_animation_from_min_ID = 0
 
 # %% Plotting styles
   # set styles
   if not _animate:
+  # Animation runs way faster when using default styles
+  # The below styles gives nicer looking plots
     try:
         # installed with "pip install SciencePLots" (https://github.com/garrettj403/SciencePlots.git)
         # gives quite nice plots
@@ -393,161 +353,5 @@ if __name__ == "__main__":
         else:
           mins[j].plot_vectors(mins[j-1],env,ax)
       ax.legend()
-      ax.axis('equal')
-
-  # plt.show()
-  # _animate, save_animation, replay = True, False, True
-  # start_animation_from_min_ID = 0
-  # if replay:
-  #   obj_text = codecs.open('data_1.json', 'r', encoding='utf-8').read()
-  #   json_data = json.loads(obj_text)
-
-  #   obstacle_corners2 = [np.array(corner) for corner in json_data['environment'][0]['Obstacle_corners']]
-  #   entrance_point2 = np.array(json_data['environment'][0]['Entrance_point'])
-    
-  #   env2 = Env(
-  #     entrance_point2,
-  #     obstacle_corners = obstacle_corners2
-  #   )
-
-  #   K_o2 = json_data['parameters']['K_o']
-  #   max_range2 = json_data['parameters']['Max_range']
-  #   N_mins2 = json_data['parameters']['N_mins']
-  #   d_none2 = json_data['parameters']['d_none']
-  #   d_perf2 = json_data['parameters']['d_perf']
-  #   delta_expl_angle2 = json_data['parameters']['delta_expl_angle']
-  #   xi_max2 = json_data['parameters']['xi_max']
-
-
-  #   scs2 = SCS(json_data['beacons'][0]['ID'],max_range2)
-  #   scs2.insert_into_environment(env2)
-
-  #   mins2 = [
-  #     Min(json_data['beacons'][i+1]['ID'],
-  #       max_range2,
-  #       None,
-  #       # DeploymentFSM(
-  #       #   # NoFollow(),
-  #       #   # LineExplore(
-  #       #   #   # RSSI_threshold=0.5,
-  #       #   #   K_o= 5*1*(i+1),#30,# 12 0.1,#0.01, #12 works somewhat with TWO_DIM_LOCAL, else much lower (0.4-ish)
-  #       #   #   kind=LineExploreKind.TWO_DIM_LOCAL,
-  #       #   # )
-  #       #   NewAttractiveFollow(K_o=.3),
-  #       #   NewPotentialFieldsExplore(K_o=.3, target_point_or_line=NewPotentialFieldsExplore.Target.LINE)
-  #       # ),
-  #       xi_max=xi_max2,
-  #       d_perf=d_perf2,
-  #       d_none=d_none2,#2.1,
-  #       delta_expl_angle=delta_expl_angle2#np.pi/4#0#np.pi/4#np.pi/6#0#np.pi/6#np.pi/4 #0
-  #     ) for i in range(N_mins2)
-  #   ]
-
-  #   for e in range(len(mins2)):
-  #     mins2[e]._pos_traj = np.array(json_data['beacons'][e+1]['pos_traj'])
-  #     mins2[e]._v_traj = np.array(json_data['beacons'][e+1]['force_traj'])
-  #     mins2[e]._heading_traj = np.array(json_data['beacons'][e+1]['heading_traj'])
-  #     mins2[e]._xi_traj = np.array(json_data['beacons'][e+1]['xi_traj'])
-  #     mins2[e].state_traj = [MinState(state[0]) if type(state)==list else MinState(state) for state in json_data['beacons'][e+1]['state_traj']]#np.array(json_data['beacons'][e+1]['state_traj'])#[MinState(mstate_int[0]) for mstate_int in np.array(json_data['beacons'][e+1]['state_traj'])]#np.array(json_data['beacons'][e+1]['state_traj'])
-      
-  #     mins2[e].heading = mins2[e]._heading_traj[-1]
-  #     mins2[e].pos = np.array([mins2[e]._pos_traj[0][-1], mins2[e]._pos_traj[1][-1]])
-  #     mins2[e].state = MinState(mins2[e].state_traj[-1])
-  #     t = 2
-
-  #   fig3 = plt.figure(figsize=(5,5))
-  #   ax3 = fig3.add_subplot(1,1,1)
-    
-
-  #   if _animate:
-  #     for mn in mins2[:start_animation_from_min_ID]:
-  #       # if plot_propterties:
-  #       #   mn.plot(ax1_1)
-  #       #   mn.plot_traj_line(ax1_1)
-  #       #   # mn.plot_vectors(mn.prev, env, ax[0])
-  #       #   mn.plot_force_traj_line(ax1_2)
-  #       #   mn.plot_xi_traj_line(ax1_3)
-  #       #   mn.plot(ax1_1)
-  #       #   mn.plot_traj_line(ax1_1)
-  #       #   # mn.plot_vectors(mn.prev, env, ax[0])
-  #       #   mn.plot_force_traj_line(ax1_2)
-  #       #   mn.plot_xi_traj_line(ax1_3)
-  #       # else:
-  #       mn.plot(ax3)
-  #       mn.plot_vectors(mn.prev, env2, ax3)
-
-  #     offset, min_counter = [0], [start_animation_from_min_ID]
-
-  #     def init():
-  #       # if plot_propterties:
-  #         # scs.plot(ax1_1)
-  #         # env.plot(ax1_1)
-  #         # artists = []
-  #         # for mn in mins:
-  #         #   artists += mn.plot(ax1_1)
-  #         #   artists += (mn.plot_traj_line(ax1_1), ) #Type: Line2D(_line6)
-  #         #   artists += (mn.plot_force_traj_line(ax1_2), )
-  #         #   artists += (mn.plot_xi_traj_line(ax1_3), )
-  #         #   mn.plot_pos_from_pos_traj_index(0)
-  #         #   mn.plot_force_from_traj_index(0)
-  #         #   mn.plot_xi_from_traj_index(0)
-  #         # if start_animation_from_min_ID == 0:
-  #         #   ax1_2.legend()  
-  #       # else:
-  #       scs2.plot(ax3)
-  #       env2.plot(ax3)
-  #       artists = []
-  #       for mn in mins2:
-  #         artists += mn.plot(ax3)
-  #         artists += (mn.plot_traj_line(ax3), )
-  #         mn.plot_pos_from_pos_traj_index(0)
-  #       return artists
-
-  #     def animate(i):
-  #       if i - offset[0] >= mins2[min_counter[0]].get_pos_traj_length():
-  #         offset[0] += mins2[min_counter[0]].get_pos_traj_length()
-  #         min_counter[0] += 1
-  #       # if plot_propterties:
-  #       #   plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
-  #       #   plt_force_traj = mins[min_counter[0]].plot_force_from_traj_index(i-offset[0])
-  #       #   plt_xi_traj = mins[min_counter[0]].plot_xi_from_traj_index(i-offset[0])
-  #       #   return  plt_force_traj, plt_xi_traj, plt_pos_traj #,mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0]), mins[min_counter[0]].plot_force_from_traj_index(i-offset[0]) #2
-  #       # else:
-  #       plt_pos_traj = mins2[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
-  #       return plt_pos_traj
-    
-  #     anim = FuncAnimation(fig3, animate, init_func=init, interval=2, blit=False)
-      
-  #     if save_animation:
-  #       animation_name = "animation.gif"
-  #       print("Saving animation")
-  #       anim.save(animation_name)
-  #       print(f"Animation saved to {animation_name}")
-  #   else:
-  #     scs2.plot(ax3)
-  #     env2.plot(ax3)
-  #     for j in range(len(mins2)):#mn in mins:
-        
-  #       mins2[j].plot(ax3)
-  #       mins2[j].plot_traj_line(ax3)
-  #       if j == 0:
-  #         mins2[j].plot_vectors(scs2,env2,ax3)
-  #       else:
-  #         mins2[j].plot_vectors(mins2[j-1],env2,ax3)
-  #     ax3.legend()
-  #     ax3.axis('equal')
-
-  #   # else:
-  #   #   env.plot(ax)
-  #   #   scs.plot(ax)
-  #   #   for j in range(len(mins)):#mn in mins:
-  #   #     mins[j].plot(ax)
-  #   #     mins[j].plot_traj_line(ax)
-  #   #     if j == 0:
-  #   #       mins[j].plot_vectors(scs,env,ax)
-  #   #     else:
-  #   #       mins[j].plot_vectors(mins[j-1],env,ax)
-  #   #   ax.legend()
-  #   #   ax.axis('equal')
-  
+      ax.axis('equal')  
   plt.show()

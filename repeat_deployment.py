@@ -47,35 +47,35 @@ file_path = 'data_from_deployment_1.json'
 obj_text = codecs.open(file_path, 'r', encoding='utf-8').read()
 json_data = json.loads(obj_text)
 
-obstacle_corners2 = [np.array(corner) for corner in json_data['environment'][0]['Obstacle_corners']]
-entrance_point2 = np.array(json_data['environment'][0]['Entrance_point'])
+obstacle_corners_from_json = [np.array(corner) for corner in json_data['environment'][0]['Obstacle_corners']]
+entrance_point_from_json = np.array(json_data['environment'][0]['Entrance_point'])
 
-env2 = Env(
-    entrance_point2,
-    obstacle_corners = obstacle_corners2
+env_from_json = Env(
+    entrance_point_from_json,
+    obstacle_corners = obstacle_corners_from_json
 )
 
-K_o2 = json_data['parameters']['K_o']
-max_range2 = json_data['parameters']['Max_range']
-N_mins2 = json_data['parameters']['N_mins']
-d_none2 = json_data['parameters']['d_none']
-d_perf2 = json_data['parameters']['d_perf']
-delta_expl_angle2 = json_data['parameters']['delta_expl_angle']
-xi_max2 = json_data['parameters']['xi_max']
+K_o_from_json = json_data['parameters']['K_o']
+max_range_from_json = json_data['parameters']['Max_range']
+N_mins_from_json = json_data['parameters']['N_mins']
+d_none_from_json = json_data['parameters']['d_none']
+d_perf_from_json = json_data['parameters']['d_perf']
+delta_expl_angle_from_json = json_data['parameters']['delta_expl_angle']
+xi_max_from_json = json_data['parameters']['xi_max']
 
 
-scs2 = SCS(json_data['beacons'][0]['ID'],max_range2)
-scs2.insert_into_environment(env2)
+scs_from_json = SCS(json_data['beacons'][0]['ID'],max_range_from_json)
+scs_from_json.insert_into_environment(env_from_json)
 
 mins2 = [
     Min(json_data['beacons'][i+1]['ID'],
-    max_range2,
+    max_range_from_json,
     None,
-    xi_max=xi_max2,
-    d_perf=d_perf2,
-    d_none=d_none2,
-    delta_expl_angle=delta_expl_angle2
-    ) for i in range(N_mins2)
+    xi_max=xi_max_from_json,
+    d_perf=d_perf_from_json,
+    d_none=d_none_from_json,
+    delta_expl_angle=delta_expl_angle_from_json
+    ) for i in range(N_mins_from_json)
 ]
 
 for e in range(len(mins2)):
@@ -88,7 +88,6 @@ for e in range(len(mins2)):
     mins2[e].heading = mins2[e]._heading_traj[-1]
     mins2[e].pos = np.array([mins2[e]._pos_traj[0][-1], mins2[e]._pos_traj[1][-1]])
     mins2[e].state = MinState(mins2[e].state_traj[-1])
-    t = 2
 
 fig = plt.figure(figsize=(5,5))
 
@@ -133,14 +132,14 @@ if _animate:
             mn.plot_xi_traj_line(ax1_3)
         else:
             mn.plot(ax)
-            mn.plot_vectors(mn.prev, env2, ax)
+            mn.plot_vectors(mn.prev, env_from_json, ax)
 
     offset, min_counter = [0], [start_animation_from_min_ID]
 
     def init():
         if plot_propterties:
-            scs2.plot(ax1_1)
-            env2.plot(ax1_1)
+            scs_from_json.plot(ax1_1)
+            env_from_json.plot(ax1_1)
             artists = []
             for mn in mins2:
                 artists += mn.plot(ax1_1)
@@ -153,8 +152,8 @@ if _animate:
             if start_animation_from_min_ID == 0:
                 ax1_2.legend()  
         else:
-            scs2.plot(ax)
-            env2.plot(ax)
+            scs_from_json.plot(ax)
+            env_from_json.plot(ax)
             artists = []
             for mn in mins2:
                 artists += mn.plot(ax)
@@ -184,26 +183,26 @@ if _animate:
         print(f"Animation saved to {animation_name}")
 else:
     if plot_propterties:
-        env2.plot(ax1_1)
-        scs2.plot(ax1_1)
+        env_from_json.plot(ax1_1)
+        scs_from_json.plot(ax1_1)
         for mn in mins2:
             mn.plot(ax1_1)
             mn.plot_traj_line(ax1_1)
-            mn.plot_vectors(mn.prev, env2, ax1_1)
+            mn.plot_vectors(mn.prev, env_from_json, ax1_1)
             mn.plot_force_traj_line(ax2_1)
             mn.plot_xi_traj_line(ax2_2)
         ax2_1.legend()
     else:
-        env2.plot(ax)
-        scs2.plot(ax)
+        env_from_json.plot(ax)
+        scs_from_json.plot(ax)
         
         for j in range(len(mins2)):#mn in mins:
             mins2[j].plot(ax)
             mins2[j].plot_traj_line(ax)
         if j == 0:
-            mins2[j].plot_vectors(scs2,env2,ax)
+            mins2[j].plot_vectors(scs_from_json,env_from_json,ax)
         else:
-            mins2[j].plot_vectors(mins2[j-1],env2,ax)
+            mins2[j].plot_vectors(mins2[j-1],env_from_json,ax)
         ax.legend()
         ax.axis('equal')
 
