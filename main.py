@@ -63,19 +63,26 @@ def simulate(dt, mins, scs, env):
   toc = timeit.default_timer()
   tot = toc - tic
   print(f"minimum number of neighbors: {min(beacons, key=lambda b: len(b.neighbors))}") 
-  print(f"Total elapsed time for simulation: {tot}")
-  file_path = 'data_from_deployment_1.json'
+  print(f"Total elapsed time for simulation: {tot}")  
+  file_path = r'json_files\data_from_deployment_4.json'
+  write_to_file(file_path, data)
+
+  # with open(file_path, 'w') as outfile:
+  #   json.dump(data, outfile, separators=(',', ':'), sort_keys=True, indent=2)
+  # s = io.StringIO()
+  # sortby = SortKey.CUMULATIVE
+  # ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+  # ps.print_stats()
+  # print(s.getvalue())
+  return beacons
+
+def write_to_file(file_path, data_to_write):
   with open(file_path, 'w') as outfile:
-    json.dump(data, outfile, separators=(',', ':'), sort_keys=True, indent=2)
-  s = io.StringIO()
-  sortby = SortKey.CUMULATIVE
-  ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-  ps.print_stats()
-  print(s.getvalue())
-  return beacons   
+    json.dump(data_to_write, outfile, separators=(',', ':'), sort_keys=True, indent=2)
+
 
 if __name__ == "__main__":
-  _animate, save_animation, plot_propterties = True, False, False
+  _animate, save_animation, plot_propterties = False, False, False
   start_animation_from_min_ID = 0
 
 # %% Plotting styles
@@ -180,10 +187,10 @@ if __name__ == "__main__":
   data['environment'].append(env.toJson())
 
 # %%Parameter initialization
-  max_range = 3 #0.51083#float(-np.log(-0.6))#3 #0.75    0.51083
+  max_range = 3
 
-  N_mins = 2#18#7#2*5#3
-  dt = 0.01#0.01
+  N_mins = 2
+  dt = 0.01
 
   scs = SCS(Beacon.get_ID(), max_range)
   """ Potential fields exploration
@@ -223,7 +230,7 @@ if __name__ == "__main__":
       xi_max=1,
       d_perf=0.1,
       d_none=2.5,#2.1,
-      delta_expl_angle=np.pi/4#0#np.pi/4#np.pi/6#0#np.pi/6#np.pi/4 #0
+      delta_expl_angle=np.pi/4#0 np.pi/6
     ) for i in range(N_mins)
   ]
 
@@ -292,7 +299,7 @@ if __name__ == "__main__":
         artists = []
         for mn in mins:
           artists += mn.plot(ax1_1)
-          artists += (mn.plot_traj_line(ax1_1), ) #Type: Line2D(_line6)
+          artists += (mn.plot_traj_line(ax1_1), )
           artists += (mn.plot_force_traj_line(ax1_2), )
           artists += (mn.plot_xi_traj_line(ax1_3), )
           mn.plot_pos_from_pos_traj_index(0)
@@ -318,7 +325,7 @@ if __name__ == "__main__":
         plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
         plt_force_traj = mins[min_counter[0]].plot_force_from_traj_index(i-offset[0])
         plt_xi_traj = mins[min_counter[0]].plot_xi_from_traj_index(i-offset[0])
-        return  plt_force_traj, plt_xi_traj, plt_pos_traj #,mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0]), mins[min_counter[0]].plot_force_from_traj_index(i-offset[0]) #2
+        return  plt_force_traj, plt_xi_traj, plt_pos_traj
       else:
         plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
         return plt_pos_traj
@@ -345,7 +352,7 @@ if __name__ == "__main__":
     else:
       env.plot(ax)
       scs.plot(ax)
-      for j in range(len(mins)):#mn in mins:
+      for j in range(len(mins)):
         mins[j].plot(ax)
         mins[j].plot_traj_line(ax)
         if j == 0:
