@@ -43,7 +43,7 @@ if not _animate:
                 "legend.numpoints": 1,
             }
         )
-file_path = 'data_from_deployment_1.json'
+file_path = r'json_files/data_from_deployment_1.json'
 obj_text = codecs.open(file_path, 'r', encoding='utf-8').read()
 json_data = json.loads(obj_text)
 
