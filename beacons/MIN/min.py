@@ -301,7 +301,7 @@ class Min(Beacon):
     self.point.set_color(self.clr[self.state_traj[index]])
     self.annotation.set_x(new_pos[0])
     self.annotation.set_y(new_pos[1])
-    theta = np.linspace(0, 2*np.pi)
+    # theta = np.linspace(0, 2*np.pi)
     # self.radius.set_data(new_pos.reshape(2, 1) + p2v(self.range, theta))
     self.traj_line.set_data(self._pos_traj[:, :index])
     self.heading_arrow.set_data(*np.hstack((new_pos.reshape(2, 1), new_pos.reshape(2, 1) + p2v(1, self._heading_traj[index]).reshape(2, 1))))
@@ -331,4 +331,3 @@ class Min(Beacon):
         'state_traj': [state.value for state in self.state_traj]
     }
     return jsonDict
-    
