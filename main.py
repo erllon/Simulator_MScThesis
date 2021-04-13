@@ -313,17 +313,17 @@ if __name__ == "__main__":
       if plot_propterties:
         mn.plot(ax1_1)
         mn.plot_traj_line(ax1_1)
-        # mn.plot_vectors(mn.prev, env, ax[0])
+        # mn.plot_vectors(env, ax[0])
         mn.plot_force_traj_line(ax1_2)
         mn.plot_xi_traj_line(ax1_3)
         mn.plot(ax1_1)
         mn.plot_traj_line(ax1_1)
-        # mn.plot_vectors(mn.prev, env, ax[0])
+        # mn.plot_vectors(env, ax[0])
         mn.plot_force_traj_line(ax1_2)
         mn.plot_xi_traj_line(ax1_3)
       else:
         mn.plot(ax)
-        mn.plot_vectors(mn.prev, env, ax)
+        mn.plot_vectors(env, ax)
 
     offset, min_counter = [0], [start_animation_from_min_ID]
 
@@ -379,7 +379,7 @@ if __name__ == "__main__":
       for mn in mins:
         mn.plot(ax1_1)
         mn.plot_traj_line(ax1_1)
-        mn.plot_vectors(mn.prev, env, ax1_1)
+        mn.plot_vectors(env, ax1_1)
         mn.plot_force_traj_line(ax2_1)
         mn.plot_xi_traj_line(ax2_2)
       ax2_1.legend()
@@ -392,9 +392,9 @@ if __name__ == "__main__":
         mins[j].plot(ax)
         mins[j].plot_traj_line(ax)
         if j == 0:
-          mins[j].plot_vectors(scs,env,ax)
+          mins[j].plot_vectors(env,ax)
         else:
-          mins[j].plot_vectors(mins[j-1],env,ax)
+          mins[j].plot_vectors(env,ax)
       ax.legend()
       ax.axis('equal')  
   fig_uniformity = plt.figure(figsize=(5,5))

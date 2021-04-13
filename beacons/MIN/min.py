@@ -229,7 +229,7 @@ class Min(Beacon):
 
     return self.point, self.annotation#, self.radius
   
-  def plot_vectors(self, prev_drone, ENV, axis):
+  def plot_vectors(self, ENV, axis):
 
     plot_vec(axis, normalize(self.tot_vec), self.pos, clr=self.vec_clr[VectorTypes.TOTAL] )
     interval_vec_1 = normalize(R_z(self.delta_expl_angle)[:2,:2]@self.tot_vec)
