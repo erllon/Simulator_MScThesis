@@ -48,7 +48,7 @@ def simulate(dt, mins, scs, env):
   # If we deploy drones until some condition on the uniformity is fulfilled
   delta_uniformity = 0
   delta_limit = 0.5
-  limit = 1.5#2#0.05 #Try 1.5?
+  limit = 2#1.5#2#0.05 #Try 1.5?
   i = 0
 
   tic = timeit.default_timer()
@@ -73,7 +73,9 @@ def simulate(dt, mins, scs, env):
     print(f"min {mins[i].ID} target\t\t\t\t {mins[i].target_pos}")
     print(f"min {mins[i].ID} neighbors: {[n.ID for n in mins[i].neighbors]}")
     if not mins[i].deployment_strategy.get_target() is None:
-          print(f"Its target now has {len(mins[i].deployment_strategy.get_target().neighbors)} neighs\n------------------", )
+          print(f"Its target now has {len(mins[i].deployment_strategy.get_target().neighbors)} neighs", )
+    print(f"uniformity after min {mins[i].ID} landed: {uniformity_list[-1]}")
+    print("------------------")
     i += 1
   pr.disable()
   toc = timeit.default_timer()
@@ -114,7 +116,7 @@ if __name__ == "__main__":
       plt.rcParams.update(
           {
               # setgrid
-              "axes.grid": False,#True,
+              "axes.grid": True,
               "grid.linestyle": ":",
               "grid.color": "k",
               "grid.alpha": 0.5,
@@ -126,6 +128,24 @@ if __name__ == "__main__":
               "legend.numpoints": 1,
           }
       )
+  else:
+    plt.rcParams.update(
+      {
+          # setgrid
+          "axes.grid": True,
+          "grid.linestyle": ":",
+          "grid.color": "k",
+          "grid.alpha": 0.5,
+          "grid.linewidth": 0.5,
+          # Legend
+          "legend.frameon": True,
+          "legend.framealpha": 1.0,
+          "legend.fancybox": True,
+          "legend.numpoints": 1,
+      }
+    )
+    
+
 # %% Environment initialization
   obstacle_corners_1D = [
       np.array([
