@@ -55,14 +55,13 @@ class RangeSensor():
         Returns:
             float: distance along sensor-frame x-axis to nearest obstacle (inf if no obstacle is within range)
         """
-        #TODO: This only returns the shortes distance along the x-axis in the sensor-frame
-        #      Add "correct" angle for Crazyflies? 27 degrees
+        
         valid_crossings_dict = {
             "lengths" : np.array([]),
             "angles"  : np.array([])
         }
         valid_crossings = np.array([np.inf])
-        closed_corners = np.vstack((corners, corners[0, :])) #Inneholder alle linjestykkene i en obstacle
+        closed_corners = np.vstack((corners, corners[0, :])) #Contains all the line segments that defines an obstacle
 
         num_of_rays = 11 # 11 rays total, 5 pairs + "0-angle"
         fov_angle = np.deg2rad(27) #Total field-of-view

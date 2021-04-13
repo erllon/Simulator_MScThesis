@@ -21,7 +21,7 @@ class DeploymentFSM():
                     target_pos_explore = MIN.prev.generate_target_pos(beacons, ENV, MIN)
                 else:
                     target_pos_explore = MIN.prev.generate_target_pos(beacons, ENV, MIN.prev.prev, MIN)
-                self.__es.prepare_exploration(target_pos_explore)#(self.__fs.target)
+                self.__es.prepare_exploration(target_pos_explore)
                 MIN.state = MinState.EXPLORING
                 print(f"{MIN.ID} exploring")
         if MIN.state == MinState.EXPLORING:

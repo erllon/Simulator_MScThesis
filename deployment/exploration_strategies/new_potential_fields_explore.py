@@ -28,10 +28,10 @@ class NewPotentialFieldsExplore(ExplorationStrategy):
         xi_is = np.array([])
         xi_is = np.array([MIN.get_xi_to_other_from_model(b) for b in beacons])
 
-        neigh_indices, =  np.where(xi_is > self.__RSSI_threshold*MIN.xi_max)#np.where(RSSIs_all <= MIN.range) #np.where(xi_is > self.RSSI_threshold)
+        neigh_indices, =  np.where(xi_is > self.__RSSI_threshold*MIN.xi_max)
         xi_is_neigh = xi_is[neigh_indices]
         
-        MIN._xi_traj = np.column_stack((MIN._xi_traj, xi_is)) #np.max(xi_is) #axis=0, but should be 1D...
+        MIN._xi_traj = np.column_stack((MIN._xi_traj, xi_is))
         MIN.compute_neighbors(beacons)
 
         if np.any(MIN.prev_pos != None):
