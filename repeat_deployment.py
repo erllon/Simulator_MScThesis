@@ -16,9 +16,11 @@ import json, codecs
 from copy import deepcopy
 
 
-_animate, save_animation, plot_propterties = False, False, False
+_animate, save_animation, plot_propterties = True, False, False
 
 if not _animate:
+# Animation runs way faster when using default styles
+# The below styles gives nicer looking plots
     try:
         # installed with "pip install SciencePLots" (https://github.com/garrettj403/SciencePlots.git)
         # gives quite nice plots
@@ -31,7 +33,7 @@ if not _animate:
         plt.rcParams.update(
             {
                 # setgrid
-                "axes.grid": False,#True,
+                "axes.grid": True,
                 "grid.linestyle": ":",
                 "grid.color": "k",
                 "grid.alpha": 0.5,
@@ -43,6 +45,22 @@ if not _animate:
                 "legend.numpoints": 1,
             }
         )
+else:
+    plt.rcParams.update(
+        {
+            # setgrid
+            "axes.grid": True,
+            "grid.linestyle": ":",
+            "grid.color": "k",
+            "grid.alpha": 0.5,
+            "grid.linewidth": 0.5,
+            # Legend
+            "legend.frameon": True,
+            "legend.framealpha": 1.0,
+            "legend.fancybox": True,
+            "legend.numpoints": 1,
+        }
+    )
 
 file_path = r'json_files/ds_test123.json'
 obj_text = codecs.open(file_path, 'r', encoding='utf-8').read()
@@ -50,11 +68,6 @@ json_data = json.loads(obj_text)
 
 obstacle_corners_from_json = [np.array(corner) for corner in json_data['environment'][0]['Obstacle_corners']]
 entrance_point_from_json = np.array(json_data['environment'][0]['Entrance_point'])
-
-env_from_json = Env(
-    entrance_point_from_json,
-    obstacle_corners = obstacle_corners_from_json
-)
 
 K_o_from_json = json_data['parameters']['K_o']
 max_range_from_json = json_data['parameters']['Max_range']
@@ -64,10 +77,17 @@ d_perf_from_json = json_data['parameters']['d_perf']
 delta_expl_angle_from_json = json_data['parameters']['delta_expl_angle']
 xi_max_from_json = json_data['parameters']['xi_max']
 
-start_animation_from_min_ID = 0
-stop_min_ID = 5#N_mins_from_json#1#
+scs_from_json = SCS(json_data['beacons'][0]['ID'], max_range_from_json)
 
-scs_from_json = SCS(json_data['beacons'][0]['ID'],max_range_from_json)
+env_from_json = Env(
+    entrance_point_from_json,
+    obstacle_corners = obstacle_corners_from_json
+)
+
+start_animation_from_min_ID = 0
+stop_min_ID = N_mins_from_json#1#
+
+
 scs_from_json.insert_into_environment(env_from_json)
 
 mins2 = [
@@ -99,6 +119,7 @@ uniformity_list = json_data['uniformity']
 
 fig = plt.figure(figsize=(5,5))
 fig.canvas.set_window_title('Replay')
+# plt.grid()
 
 if plot_propterties:
     if _animate:
