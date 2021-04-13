@@ -15,10 +15,30 @@ from pstats import SortKey
 import json, codecs
 from copy import deepcopy
 
+def calc_uniformity(beacon):
+    """
+        A smaller "uniformity"-value means that nodes are
+        more uniformly distributed
+    """
+    print("beacon: {beacon}")
+    if len(beacon.neighbors) != 0:
+        D_ij = [np.linalg.norm(beacon.get_vec_to_other(neigh)) for neigh in beacon.neighbors]
+        M_ij = np.sum(D_ij)/len(D_ij)
+        K_i = len(beacon.neighbors)
 
-_animate, save_animation, plot_propterties = True, False, False
-start_animation_from_min_ID = 0
-stop_min_ID = 2
+        test = [(d - M_ij)**2 for d in D_ij]
+        sum_test = np.sum(test)
+        within_parenthesis = 1/K_i * sum_test
+
+        U_i = np.sqrt(within_parenthesis)
+        return U_i
+    else:
+        return 0
+
+
+
+_animate, save_animation, plot_propterties = False, False, False
+
 if not _animate:
     try:
         # installed with "pip install SciencePLots" (https://github.com/garrettj403/SciencePlots.git)
@@ -44,7 +64,8 @@ if not _animate:
                 "legend.numpoints": 1,
             }
         )
-file_path = r'json_files/data_from_deployment_5.json'
+
+file_path = r'json_files/ds_test123.json'
 obj_text = codecs.open(file_path, 'r', encoding='utf-8').read()
 json_data = json.loads(obj_text)
 
@@ -64,6 +85,8 @@ d_perf_from_json = json_data['parameters']['d_perf']
 delta_expl_angle_from_json = json_data['parameters']['delta_expl_angle']
 xi_max_from_json = json_data['parameters']['xi_max']
 
+start_animation_from_min_ID = 0
+stop_min_ID = N_mins_from_json
 
 scs_from_json = SCS(json_data['beacons'][0]['ID'],max_range_from_json)
 scs_from_json.insert_into_environment(env_from_json)
@@ -93,6 +116,8 @@ for e in range(len(mins2)):
     mins2[e].state = MinState(mins2[e].state_traj[-1])
 
 mins_to_plot = deepcopy(mins2[:stop_min_ID])
+
+uniformity_list = json_data['uniformity']
 
 fig = plt.figure(figsize=(5,5))
 fig.canvas.set_window_title('Replay')
@@ -211,5 +236,16 @@ else:
             mins_to_plot[j].plot_vectors(mins_to_plot[j-1],env_from_json,ax)
         ax.legend()
         ax.axis('equal')
+fig_uniformity = plt.figure(figsize=(5,5))
+ax_uniformity = fig_uniformity.add_subplot(1,1,1)
+ax_uniformity.set(
+    xlabel = 'Beacons',
+    ylabel = 'Uniformity',
+    title = 'Uniformity'
+)
+
+plt.xticks(range(len(uniformity_list)+1)) #ints on x-axis
+ax_uniformity.plot(uniformity_list)
+ax_uniformity.plot(uniformity_list, "or")
 
 plt.show()
