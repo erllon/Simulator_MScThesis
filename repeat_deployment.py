@@ -65,7 +65,7 @@ delta_expl_angle_from_json = json_data['parameters']['delta_expl_angle']
 xi_max_from_json = json_data['parameters']['xi_max']
 
 start_animation_from_min_ID = 0
-stop_min_ID = N_mins_from_json
+stop_min_ID = 5#N_mins_from_json#1#
 
 scs_from_json = SCS(json_data['beacons'][0]['ID'],max_range_from_json)
 scs_from_json.insert_into_environment(env_from_json)
@@ -211,7 +211,7 @@ else:
         ax.legend()
         ax.axis('equal')
 
-        
+
 fig_uniformity = plt.figure(figsize=(5,5))
 ax_uniformity = fig_uniformity.add_subplot(1,1,1)
 ax_uniformity.set(
@@ -220,8 +220,8 @@ ax_uniformity.set(
     title = 'Uniformity'
 )
 
-plt.xticks(range(len(uniformity_list)+1)) #ints on x-axis
-ax_uniformity.plot(uniformity_list)
-ax_uniformity.plot(uniformity_list, "or")
+plt.xticks(range(len(uniformity_list[:stop_min_ID])+1)) #ints on x-axis
+ax_uniformity.plot(uniformity_list[:stop_min_ID+1])
+ax_uniformity.plot(uniformity_list[:stop_min_ID+1], "or")
 
 plt.show()
