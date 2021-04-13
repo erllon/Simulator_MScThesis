@@ -85,7 +85,7 @@ class RangeSensor():
                     if (t >= 0).all() and (t <= max_t).all():
                         valid_crossings = np.hstack((valid_crossings, np.linalg.norm(t)))
                         valid_crossings_dict["lengths"] = np.hstack((valid_crossings_dict["lengths"], np.linalg.norm(t)))
-                        valid_crossings_dict["angles"] = np.hstack((valid_crossings_dict["angles"], self.host.heading + self.host_relative_angle + current_ray_angle))
+                        valid_crossings_dict["angles"] = np.hstack((valid_crossings_dict["angles"], current_ray_angle))
                 except np.linalg.LinAlgError:
                     pass
         

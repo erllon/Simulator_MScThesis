@@ -191,8 +191,9 @@ class Min(Beacon):
         """Vector FROM drone TO obstacle in world frame"""
         
         length = s.measurement.get_val()
-        angle = s.measurement.get_angle()
-        vec_from_obs = -p2v(length, angle)
+        angle_sensor_frame = s.measurement.get_angle()
+        angle_world_frame = angle_sensor_frame + s.host.heading + s.host_relative_angle
+        vec_from_obs = -p2v(length, angle_world_frame)
         """Scaling the vector that points towards the obstalce
           so that obstacles that are close to the drone produce larger vectors"""
         meas_length = np.linalg.norm(vec_from_obs)

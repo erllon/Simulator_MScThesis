@@ -65,14 +65,14 @@ class NewPotentialFieldsExplore(ExplorationStrategy):
 
         for s in MIN.sensors:
             s.sense(ENV)
-        # vecs_to_obs = [
-        #     (R_z(MIN.heading)@R_z(s.host_relative_angle))[:2,:2]@p2v(s.measurement.get_val(), s.measurement.get_angle()).reshape(2,)
-        #     for s in MIN.sensors if s.measurement.is_valid()
-        # ]
         vecs_to_obs = [
-            p2v(s.measurement.get_val(), s.measurement.get_angle()).reshape(2,)
+            (R_z(MIN.heading)@R_z(s.host_relative_angle))[:2,:2]@p2v(s.measurement.get_val(), s.measurement.get_angle()).reshape(2,)
             for s in MIN.sensors if s.measurement.is_valid()
         ]
+        # vecs_to_obs = [
+            # p2v(s.measurement.get_val(), s.measurement.get_angle()).reshape(2,)
+            # for s in MIN.sensors if s.measurement.is_valid()
+        # ]
         
         return get_generic_force_vector(vecs_to_obs, K_o, d_o=MIN.range)
     
