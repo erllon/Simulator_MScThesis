@@ -16,7 +16,7 @@ import json, codecs
 from copy import deepcopy
 
 
-_animate, save_animation, plot_propterties = True, False, False
+_animate, save_animation, plot_propterties = False, False, False
 
 if not _animate:
 # Animation runs way faster when using default styles
@@ -108,6 +108,10 @@ for e in range(len(mins2)):
     mins2[e]._heading_traj = np.array(json_data['beacons'][e+1]['heading_traj'])
     mins2[e]._xi_traj = np.array(json_data['beacons'][e+1]['xi_traj'])
     mins2[e].state_traj = [MinState(state[0]) if type(state)==list else MinState(state) for state in json_data['beacons'][e+1]['state_traj']]
+    if e != len(mins2)-1:
+        mins2[e].tot_vec = np.array(json_data['beacons'][e+1]['vectors']['tot_vec'])
+        mins2[e].obs_vec = np.array(json_data['beacons'][e+1]['vectors']['obs_vec'])
+        print(f"mins2[{e}].tot_vec: {mins2[e].tot_vec}")
 
     mins2[e].heading = mins2[e]._heading_traj[-1]
     mins2[e].pos = np.array([mins2[e]._pos_traj[0][-1], mins2[e]._pos_traj[1][-1]])
@@ -131,6 +135,7 @@ if plot_propterties:
         ax1_3.title.set_text(r"$\xi$ from neighbors")
     else:
         fig2 = plt.figure(figsize=(5,5))
+        fig2.canvas.set_window_title('Replay properties')
         ax1_1 = fig.add_subplot(1,1,1)
         ax2_1 = fig2.add_subplot(2,1,1)
         ax2_2 = fig2.add_subplot(2,1,2)
@@ -148,17 +153,17 @@ if _animate:
         if plot_propterties:
             mn.plot(ax1_1)
             mn.plot_traj_line(ax1_1)
-            # mn.plot_vectors(mn.prev, env, ax[0])
+            # mn.plot_vectors(env, ax[0])
             mn.plot_force_traj_line(ax1_2)
             mn.plot_xi_traj_line(ax1_3)
             mn.plot(ax1_1)
             mn.plot_traj_line(ax1_1)
-            # mn.plot_vectors(mn.prev, env, ax[0])
+            # mn.plot_vectors(env, ax[0])
             mn.plot_force_traj_line(ax1_2)
             mn.plot_xi_traj_line(ax1_3)
         else:
             mn.plot(ax)
-            mn.plot_vectors(mn.prev, env_from_json, ax)
+            mn.plot_vectors(env_from_json, ax)
 
     offset, min_counter = [0], [start_animation_from_min_ID]
 
@@ -214,7 +219,7 @@ else:
         for mn in mins_to_plot:
             mn.plot(ax1_1)
             mn.plot_traj_line(ax1_1)
-            mn.plot_vectors(mn.prev, env_from_json, ax1_1)
+            mn.plot_vectors(env_from_json, ax1_1)
             mn.plot_force_traj_line(ax2_1)
             mn.plot_xi_traj_line(ax2_2)
         ax2_1.legend()
@@ -225,15 +230,17 @@ else:
         for j in range(len(mins_to_plot)):
             mins_to_plot[j].plot(ax)
             mins_to_plot[j].plot_traj_line(ax)
-        if j == 0:
-            mins_to_plot[j].plot_vectors(scs_from_json,env_from_json,ax)
-        else:
-            mins_to_plot[j].plot_vectors(mins_to_plot[j-1],env_from_json,ax)
+            if j == 0:
+                mins_to_plot[j].plot_vectors(env_from_json, ax)
+            else:
+                mins_to_plot[j].plot_vectors(env_from_json,ax)
         ax.legend()
         ax.axis('equal')
 
 
 fig_uniformity = plt.figure(figsize=(5,5))
+fig_uniformity.canvas.set_window_title('Replay uniformity')
+
 ax_uniformity = fig_uniformity.add_subplot(1,1,1)
 ax_uniformity.set(
     xlabel = 'Beacons',

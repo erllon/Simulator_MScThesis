@@ -64,12 +64,20 @@ def simulate(dt, mins, scs, env):
     data['beacons'].append(mins[i].toJson())
     for b in beacons:
       b.compute_neighbors(beacons)
-
+    if isinstance(beacons[i], Min): 
+      data['beacons'][i]['vectors'] = {
+          'tot_vec': beacons[i].tot_vec.tolist(),
+          'obs_vec': beacons[i].obs_vec.tolist()
+        }
+    
+      
     uniformity_list.append(np.sum([beacon.calc_uniformity() for beacon in beacons]))
     delta_uniformity = uniformity_list[-1] - uniformity_list[-2]
     
     
     print(f"min {mins[i].ID} landed at pos\t\t\t {mins[i].pos}")
+    print(f"min {mins[i].ID} tot_vec = {mins[i].tot_vec}")
+    
     print(f"min {mins[i].ID} target\t\t\t\t {mins[i].target_pos}")
     print(f"min {mins[i].ID} neighbors: {[n.ID for n in mins[i].neighbors]}")
     if not mins[i].deployment_strategy.get_target() is None:

@@ -330,6 +330,7 @@ class Min(Beacon):
         'force_traj': self._v_traj.tolist(),
         'heading_traj': self._heading_traj.tolist(),
         'xi_traj': self._xi_traj.tolist(),
-        'state_traj': [state.value for state in self.state_traj]
+        'state_traj': [state.value for state in self.state_traj],
+        'vectors': {}
     }
     return jsonDict
