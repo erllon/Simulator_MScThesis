@@ -15,27 +15,6 @@ from pstats import SortKey
 import json, codecs
 from copy import deepcopy
 
-def calc_uniformity(beacon):
-    """
-        A smaller "uniformity"-value means that nodes are
-        more uniformly distributed
-    """
-    print("beacon: {beacon}")
-    if len(beacon.neighbors) != 0:
-        D_ij = [np.linalg.norm(beacon.get_vec_to_other(neigh)) for neigh in beacon.neighbors]
-        M_ij = np.sum(D_ij)/len(D_ij)
-        K_i = len(beacon.neighbors)
-
-        test = [(d - M_ij)**2 for d in D_ij]
-        sum_test = np.sum(test)
-        within_parenthesis = 1/K_i * sum_test
-
-        U_i = np.sqrt(within_parenthesis)
-        return U_i
-    else:
-        return 0
-
-
 
 _animate, save_animation, plot_propterties = False, False, False
 
@@ -92,7 +71,7 @@ scs_from_json = SCS(json_data['beacons'][0]['ID'],max_range_from_json)
 scs_from_json.insert_into_environment(env_from_json)
 
 mins2 = [
-    Min(json_data['beacons'][i+1]['ID'],
+    Min(json_data['beacons'][i+1]['ID'], #i+1 because [0] is the SCS
     max_range_from_json,
     None,
     xi_max=xi_max_from_json,
@@ -101,7 +80,6 @@ mins2 = [
     delta_expl_angle=delta_expl_angle_from_json
     ) for i in range(N_mins_from_json)
 ]
-
 
 
 for e in range(len(mins2)):
@@ -141,11 +119,7 @@ if plot_propterties:
         ax2_2.title.set_text(r"$\xi$ from neighbors") 
 else:
     ax = fig.add_subplot(1,1,1)
-    # fig, ax = plt.subplots(1,1)
     ax.title.set_text("Deployment")
-
-# fig3 = plt.figure(figsize=(5,5))
-# ax3 = fig3.add_subplot(1,1,1)
 
 
 if _animate:
@@ -236,6 +210,8 @@ else:
             mins_to_plot[j].plot_vectors(mins_to_plot[j-1],env_from_json,ax)
         ax.legend()
         ax.axis('equal')
+
+        
 fig_uniformity = plt.figure(figsize=(5,5))
 ax_uniformity = fig_uniformity.add_subplot(1,1,1)
 ax_uniformity.set(

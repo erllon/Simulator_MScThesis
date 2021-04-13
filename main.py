@@ -81,9 +81,7 @@ def simulate(dt, mins, scs, env):
   toc = timeit.default_timer()
   tot = toc - tic
   print(f"minimum number of neighbors: {min(beacons, key=lambda b: len(b.neighbors))}") 
-  print(f"Total elapsed time for simulation: {tot}")  
-  # file_path = r'json_files\ds_test123.json'
-  # write_to_file(file_path, data)
+  print(f"Total elapsed time for simulation: {tot}")
   
   # s = io.StringIO()
   # sortby = SortKey.CUMULATIVE
@@ -267,9 +265,6 @@ if __name__ == "__main__":
 
   file_path = r'json_files\ds_test123.json'
   write_to_file(file_path, data)
-
-  # print(f"uniformity_list: {uniformity_list}")
-
   
   fig = plt.figure(figsize=(5,5))
   
@@ -292,7 +287,6 @@ if __name__ == "__main__":
       ax2_2.title.set_text(r"$\xi$ from neighbors")
   else:
     ax = fig.add_subplot(1,1,1)
-    # fig, ax = plt.subplots(1,1)
     ax.title.set_text("Deployment")
 
 
