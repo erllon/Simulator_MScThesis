@@ -14,8 +14,6 @@ from deployment.following_strategies.no_follow import NoFollow
 from deployment.exploration_strategies.line_explore import LineExplore, LineExploreKind
 from deployment.deployment_fsm import DeploymentFSM
 
-from plot_fields import FieldPlotter
-
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
