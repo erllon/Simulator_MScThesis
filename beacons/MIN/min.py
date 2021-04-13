@@ -200,6 +200,7 @@ class Min(Beacon):
         """Vector FROM drone TO obstacle"""
 
         vec_from_obs = (MIN.range - meas_length)*normalize(vec_from_obs)
+        #Another possible scaling is: (1-meas_length/MIN.range)*normalize(vec_from_obs)#
         vecs_from_obs.append(vec_from_obs.reshape(2, ))
         ang_from_obs.append(gva(vec_from_obs.reshape(2, )))
 
