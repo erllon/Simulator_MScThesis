@@ -31,6 +31,7 @@ data = {}
 data['parameters'] = []
 data['environment'] = []
 data['beacons'] = []
+data['uniformity'] = []
 
 uniformity_list = []
 
@@ -49,13 +50,13 @@ def simulate(dt, mins, scs, env):
   # If we deploy drones until some condition on the uniformity is fulfilled
   delta_uniformity = 0
   delta_limit = 0.5
-  limit = 0.05
+  limit = 1.5#2#0.05 #Try 1.5?
   i = 0
 
   tic = timeit.default_timer()
 
-  # while uniformity_list[-1] < limit:#delta_uniformity <= limit:
-  for i in range(len(mins)):
+  while uniformity_list[-1] < limit and i < N_mins:#delta_uniformity <= limit:
+  # for i in range(len(mins)):
     mins[i].insert_into_environment(env)
     while not mins[i].state == MinState.LANDED:
       mins[i].do_step(beacons, scs, env, dt)
@@ -75,14 +76,14 @@ def simulate(dt, mins, scs, env):
     print(f"min {mins[i].ID} neighbors: {[n.ID for n in mins[i].neighbors]}")
     if not mins[i].deployment_strategy.get_target() is None:
           print(f"Its target now has {len(mins[i].deployment_strategy.get_target().neighbors)} neighs\n------------------", )
-    # i += 1
+    i += 1
   pr.disable()
   toc = timeit.default_timer()
   tot = toc - tic
   print(f"minimum number of neighbors: {min(beacons, key=lambda b: len(b.neighbors))}") 
   print(f"Total elapsed time for simulation: {tot}")  
-  file_path = r'json_files\data_from_deployment_4.json'
-  write_to_file(file_path, data)
+  # file_path = r'json_files\ds_test123.json'
+  # write_to_file(file_path, data)
   
   # s = io.StringIO()
   # sortby = SortKey.CUMULATIVE
@@ -204,7 +205,7 @@ if __name__ == "__main__":
   _d_perf = 0.1
   _d_none = 2.5
   _delta_expl_angle = np.pi/4 #np.pi/6
-  _K_o = 0.4
+  _K_o = 0.6
 
   N_mins = 2
   dt = 0.01
@@ -251,8 +252,11 @@ if __name__ == "__main__":
     ) for i in range(N_mins)
   ]
 
+  beacons = simulate(dt, mins, scs, env)
+  data['uniformity'] = [float(number) for number in uniformity_list]
+
   data['parameters'] = {
-    'N_mins': N_mins,
+    'N_mins': len(beacons)-1,#N_mins,
     'Max_range' : max_range,
     'K_o': _K_o,
     'xi_max': _xi_max,
@@ -261,8 +265,10 @@ if __name__ == "__main__":
     'delta_expl_angle': _delta_expl_angle
   }
 
-  beacons = simulate(dt, mins, scs, env)
-  print(f"uniformity_list: {uniformity_list}")
+  file_path = r'json_files\ds_test123.json'
+  write_to_file(file_path, data)
+
+  # print(f"uniformity_list: {uniformity_list}")
 
   
   fig = plt.figure(figsize=(5,5))
@@ -379,7 +385,6 @@ if __name__ == "__main__":
           mins[j].plot_vectors(mins[j-1],env,ax)
       ax.legend()
       ax.axis('equal')  
-
   fig_uniformity = plt.figure(figsize=(5,5))
   ax_uniformity = fig_uniformity.add_subplot(1,1,1)
   ax_uniformity.set(
@@ -387,7 +392,8 @@ if __name__ == "__main__":
     ylabel = 'Uniformity',
     title = 'Uniformity'
   )
-    
+
+  plt.xticks(range(len(uniformity_list)+1)) #ints on x-axis
   ax_uniformity.plot(uniformity_list)
   ax_uniformity.plot(uniformity_list, "or")
 
