@@ -13,7 +13,9 @@ from abc import ABC, abstractmethod
 class Beacon():
 
   ID_counter = 0
-
+  RSSI_THRESHOLD_NEIGHBORS = 0.2
+  # Important to ensure that this value is greater than
+  # exploration_strategy.MIN_RSSI_STRENGTH_BEFORE_LAND
   @staticmethod
   def get_ID():
     ret = Beacon.ID_counter
@@ -49,7 +51,7 @@ class Beacon():
     return dist < self.range and dist < other.range
 
   def compute_neighbors(self, others):
-    self.neighbors = list(filter(lambda other: self.get_xi_to_other_from_model(other) > 0.2*self.xi_max and self != other, others))
+    self.neighbors = list(filter(lambda other: self.get_xi_to_other_from_model(other) > Beacon.RSSI_THRESHOLD_NEIGHBORS*self.xi_max and self != other, others))
   
   @abstractmethod
   def generate_target_pos(self, beacons, ENV, next_min):
