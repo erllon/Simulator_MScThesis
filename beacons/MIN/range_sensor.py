@@ -66,7 +66,10 @@ class RangeSensor():
         num_of_rays = 11 # 11 rays total, 5 pairs + "0-angle"
         fov_angle = np.deg2rad(27) #Total field-of-view
         start_ang = -fov_angle/2.0
-        delta_ang = fov_angle/(num_of_rays-1)
+        if num_of_rays == 1:
+            delta_ang = 0
+        else:
+            delta_ang = fov_angle/(num_of_rays-1)
         
         for i in range(num_of_rays):
             current_ray_angle = start_ang + i*delta_ang
