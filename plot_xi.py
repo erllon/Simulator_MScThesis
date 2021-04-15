@@ -47,10 +47,13 @@ xi_fun = np.vectorize(xi)
 XI = [xi(d) for d in D]
 
 plt.plot(D, XI, color="blue")
-plt.axvline(x=d_perf, ymin=0, ymax=1, color='green', label='d_perf')
-plt.axvline(x=d_none, ymin=0, ymax=1, color="red", label='d_none')
+plt.axvline(x=d_perf, ymin=0, ymax=xi_max+0.5, color='green', label='d_perf')
+plt.axvline(x=d_none, ymin=0, ymax=xi_max+0.5, color="red", label='d_none')
 # plt.axhline(y=xi_max, xmin=0, xmax=D[-1], color="black", label='xi_max')
-plt.legend()
+plt.axvline(x=0, color="black")
+plt.axhline(y=0, color="black")
+plt.ylim([-0.1, xi_max + 0.5])
+plt.legend()    
 plt.show()
 
 
