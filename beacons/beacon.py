@@ -35,7 +35,7 @@ class Beacon():
     self.d_perf = d_perf
     self.d_none = d_none
     self._omega = np.pi/(self.d_none - self.d_perf)
-    self._phi = -(np.pi*self.d_perf) / (d_none - d_perf)
+    self._phi = -(np.pi*self.d_perf) / (self.d_none - self.d_perf)
     self._xi_max_decrease = (self.xi_max/2)*self._omega
     """ Gains """
     self.k = k
