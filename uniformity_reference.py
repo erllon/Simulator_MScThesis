@@ -130,8 +130,9 @@ ax_ref = fig.add_subplot(1,1,1)
 
 env.plot(ax_ref)
 scs.plot(ax_ref)
-uniformity_list.append(scs.calc_uniformity())
 beacons = np.array([scs], dtype=object)
+uniformity_list.append(scs.calc_uniformity()/len(beacons))
+
 
 
 for mn in mins:
@@ -139,19 +140,19 @@ for mn in mins:
     mn.state = MinState.LANDED
     mn.compute_neighbors(beacons)
     beacons = np.append(mn, beacons)
-    uniformity_list.append(np.sum([beacon.calc_uniformity() for beacon in beacons]))
+    uniformity_list.append(np.sum([beacon.calc_uniformity() for beacon in beacons])/len(beacons))
     delta_uniformity_list.append(uniformity_list[-1]-uniformity_list[-2])
     # print(f"min {mn.ID} has {len(mn.neighbors)} neighs")
 
 for mn2 in mins:
-    # uniformity_list.append(np.sum([beacon.calc_uniformity() for beacon in beacons]))
+    # uniformity_list.append(np.sum([beacon.calc_uniformity() for beacon in beacons])/len(beacons))
     mn2.plot(ax_ref)
 
-test = 0
-for beacon in beacons:
-    test += beacon.calc_uniformity()
-    print(f"beacon_id: {beacon.ID}")
-    print(f"calc_uniform: {beacon.calc_uniformity()}")
+# test = 0
+# for beacon in beacons:
+#     test += beacon.calc_uniformity()
+#     print(f"beacon_id: {beacon.ID}")
+#     print(f"calc_uniform: {beacon.calc_uniformity()}")
 
 fig_uniformity = plt.figure(figsize=(5,5))
 ax_uniformity = fig_uniformity.add_subplot(1,1,1)

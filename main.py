@@ -43,7 +43,7 @@ def simulate(dt, mins, scs, env):
   
   mins[0].prev = scs
   scs.generate_target_pos(beacons, env, mins[0])
-  uniformity_list.append(np.sum([beacon.calc_uniformity() for beacon in beacons]))
+  uniformity_list.append(np.sum([beacon.calc_uniformity() for beacon in beacons])/len(beacons))
 
   # If we deploy drones until some condition on the uniformity is fulfilled
   delta_uniformity = 0
@@ -71,7 +71,7 @@ def simulate(dt, mins, scs, env):
         }
     
       
-    uniformity_list.append(np.sum([beacon.calc_uniformity() for beacon in beacons]))
+    uniformity_list.append(np.sum([beacon.calc_uniformity() for beacon in beacons])/len(beacons))
     delta_uniformity = uniformity_list[-1] - uniformity_list[-2]
     
     
