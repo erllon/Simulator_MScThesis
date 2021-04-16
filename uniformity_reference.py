@@ -25,6 +25,32 @@ import cProfile, pstats, io
 from pstats import SortKey
 import json, codecs
 
+try:
+    # installed with "pip install SciencePLots" (https://github.com/garrettj403/SciencePlots.git)
+    # gives quite nice plots
+    plt_styles = ["science", "grid", "bright", "no-latex"]
+    plt.style.use(plt_styles)
+    print(f"pyplot using style set {plt_styles}")
+except Exception as e:
+    print(e)
+    print("setting grid and only grid and legend manually")
+    plt.rcParams.update(
+        {
+            # setgrid
+            "axes.grid": True,
+            "grid.linestyle": ":",
+            "grid.color": "k",
+            "grid.alpha": 0.5,
+            "grid.linewidth": 0.5,
+            # Legend
+            "legend.frameon": True,
+            "legend.framealpha": 1.0,
+            "legend.fancybox": True,
+            "legend.numpoints": 1,
+        }
+    )
+
+
 equal_dist = 1.2267#1.7915
 # 1.7915, hypothenus equal to the distance representing RSSI_THRESHOLD_NEIGH
 # 12267, three mins form a isosceles(?) triangle (likebeint trekant)
@@ -127,6 +153,7 @@ for i in range(len(mins)):
 
 fig = plt.figure(figsize=(5,5))
 ax_ref = fig.add_subplot(1,1,1)
+ax_ref.title.set_text(f"equal_dist = {equal_dist}")
 
 env.plot(ax_ref)
 scs.plot(ax_ref)
