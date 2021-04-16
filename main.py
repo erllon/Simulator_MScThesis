@@ -48,7 +48,7 @@ def simulate(dt, mins, scs, env):
   # If we deploy drones until some condition on the uniformity is fulfilled
   delta_uniformity = 0
   delta_limit = 0.5
-  limit = 2#1.5#2#0.05 #Try 1.5?
+  limit = 0.3#2#1.5#2#0.05 #Try 1.5?
   i = 0
 
   tic = timeit.default_timer()
@@ -104,7 +104,7 @@ def write_to_file(file_path, data_to_write):
 
 
 if __name__ == "__main__":
-  _animate, save_animation, plot_propterties = False, False, False
+  _animate, save_animation, plot_propterties = False, False, True
   start_animation_from_min_ID = 0
 
 # %% Plotting styles
@@ -289,10 +289,11 @@ if __name__ == "__main__":
     'delta_expl_angle': _delta_expl_angle
   }
 
-  file_path = r'json_files\ds_test123.json'
+  file_path = r'json_files\ds_test123_large.json'
   write_to_file(file_path, data)
   
   fig = plt.figure(figsize=(5,5))
+  fig.canvas.set_window_title(f"Deployment {file_path}")
   
   if plot_propterties:
     if _animate:
@@ -304,6 +305,8 @@ if __name__ == "__main__":
       ax1_3.title.set_text(r"$\xi$ from neighbors")
     else:
       fig2 = plt.figure(figsize=(5,5))
+      fig2.canvas.set_window_title(f"Properties {file_path}")
+
       ax1_1 = fig.add_subplot(1,1,1)
       ax2_1 = fig2.add_subplot(2,1,1)
       ax2_2 = fig2.add_subplot(2,1,2)
@@ -349,7 +352,7 @@ if __name__ == "__main__":
           mn.plot_force_from_traj_index(0)
           mn.plot_xi_from_traj_index(0)
         if start_animation_from_min_ID == 0:
-          ax1_2.legend()  
+          ax1_2.legend(ncol=2, prop={'size': 9})  
       else:
         scs.plot(ax)
         env.plot(ax)
@@ -390,7 +393,7 @@ if __name__ == "__main__":
         mn.plot_vectors(env, ax1_1)
         mn.plot_force_traj_line(ax2_1)
         mn.plot_xi_traj_line(ax2_2)
-      ax2_1.legend()
+      ax2_1.legend(ncol=2, prop={'size': 9})
 
     else:
       env.plot(ax)
@@ -403,9 +406,11 @@ if __name__ == "__main__":
           mins[j].plot_vectors(env,ax)
         else:
           mins[j].plot_vectors(env,ax)
-      ax.legend()
+      ax.legend(ncol=2, prop={'size': 9})
       ax.axis('equal')  
   fig_uniformity = plt.figure(figsize=(5,5))
+  fig_uniformity.canvas.set_window_title(f"Uniformity {file_path}")
+
   ax_uniformity = fig_uniformity.add_subplot(1,1,1)
   ax_uniformity.set(
     xlabel = 'Beacons',

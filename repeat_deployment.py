@@ -16,7 +16,7 @@ import json, codecs
 from copy import deepcopy
 
 
-_animate, save_animation, plot_propterties = False, False, False
+_animate, save_animation, plot_propterties = False, False, True
 
 if not _animate:
 # Animation runs way faster when using default styles
@@ -181,7 +181,7 @@ if _animate:
                 mn.plot_force_from_traj_index(0)
                 mn.plot_xi_from_traj_index(0)
             if start_animation_from_min_ID == 0:
-                ax1_2.legend()  
+                ax1_2.legend(ncol=2, prop={'size': 9})  
         else:
             scs_from_json.plot(ax)
             env_from_json.plot(ax)
@@ -222,7 +222,7 @@ else:
             mn.plot_vectors(env_from_json, ax1_1)
             mn.plot_force_traj_line(ax2_1)
             mn.plot_xi_traj_line(ax2_2)
-        ax2_1.legend()
+        ax2_1.legend(ncol=2, prop={'size': 9})
     else:
         env_from_json.plot(ax)
         scs_from_json.plot(ax)
@@ -234,7 +234,7 @@ else:
                 mins_to_plot[j].plot_vectors(env_from_json, ax)
             else:
                 mins_to_plot[j].plot_vectors(env_from_json,ax)
-        ax.legend()
+        ax.legend(ncol=2, prop={'size': 9})
         ax.axis('equal')
 
 

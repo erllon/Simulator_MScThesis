@@ -286,7 +286,7 @@ class Min(Beacon):
     return self.traj_line
   
   def plot_force_traj_line(self, axis):
-    self.force_traj_line, = axis.plot(np.linspace(start=0, stop=len(self._v_traj),num=len(self._v_traj)), self._v_traj, label=f"Drone {self.ID}")
+    self.force_traj_line, = axis.plot(np.linspace(start=0, stop=len(self._v_traj),num=len(self._v_traj)), self._v_traj, label=fr"$\nu_{self.ID}$")
     return self.force_traj_line
 
   def plot_xi_traj_line(self, axis):    
