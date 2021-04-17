@@ -67,7 +67,8 @@ def simulate(dt, mins, scs, env):
     if isinstance(beacons[i], Min): 
       data['beacons'][i]['vectors'] = {
           'tot_vec': beacons[i].tot_vec.tolist(),
-          'obs_vec': beacons[i].obs_vec.tolist()
+          'obs_vec': beacons[i].obs_vec.tolist(),
+          'neigh_vec': beacons[i].neigh_vec.tolist()
         }
     
       
