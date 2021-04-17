@@ -143,7 +143,7 @@ class Min(Beacon):
 
     self.tot_vec = p2v(1, expl_ang)
     
-    self.neigh_vec = p2v(1, avg_ang_from_neigh)
+    self.neigh_vec = tot_vec_from_neigh#p2v(1, avg_ang_from_neigh)
     
     # Rot_mat = R_z(gva(self.tot_vec))
     # origin_transl = np.hstack((self.pos,0)).reshape((3,1))
@@ -175,7 +175,8 @@ class Min(Beacon):
       if not (MIN.get_vec_to_other(n) == 0).all():
         vec_from_neigh = -MIN.get_vec_to_other(n).reshape(2, 1)
         dist = np.linalg.norm(vec_from_neigh) #when using xi for RSSI, dist will be in the interval (d_perf, d_none)
-        scaling = MIN.d_none - MIN.d_perf
+        scaling = MIN.d_none #- MIN.d_perf
+        # Simply using d_none in the same way as max_range makes more sense, as one does not care what distance that produce the "perfect" \xi
         # vecs_from_neighs.append((MIN.range - dist)*normalize(vec_from_neigh)) #TODO: When using xi as RSSI, this scaling will not produce perf results
         vecs_from_neighs.append((scaling-dist)*normalize(vec_from_neigh))        
         
@@ -236,6 +237,8 @@ class Min(Beacon):
     interval_vec_2 = normalize(R_z(-self.delta_expl_angle)[:2,:2]@self.tot_vec)
     plot_vec(axis, interval_vec_1, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
     plot_vec(axis, interval_vec_2, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
+
+    plot_vec(axis, self.neigh_vec, self.pos, clr='green')
 
     # if self.ID != 0:
     #   heading2 = normalize(R_z(np.pi/2)[:2,:2]@p2v(1, self.heading))
