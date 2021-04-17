@@ -289,7 +289,7 @@ if __name__ == "__main__":
     'delta_expl_angle': _delta_expl_angle
   }
 
-  file_path = r'json_files\ds_test123_large.json'
+  file_path = r'json_files\ds_test123.json'
   write_to_file(file_path, data)
   
   fig = plt.figure(figsize=(5,5))
@@ -320,7 +320,7 @@ if __name__ == "__main__":
 
 
   if _animate:
-    for mn in mins[:start_animation_from_min_ID]:
+    for mn in beacons[1:start_animation_from_min_ID]: #mins[:start_animation_from_min_ID]:
       if plot_propterties:
         mn.plot(ax1_1)
         mn.plot_traj_line(ax1_1)
