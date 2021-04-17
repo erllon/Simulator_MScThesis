@@ -320,8 +320,7 @@ if __name__ == "__main__":
 
 
   if _animate:
-    for mn in beacons[1:start_animation_from_min_ID]: #mins[:start_animation_from_min_ID]:
-      if plot_propterties:
+    for mn in beacons[1:start_animation_from_min_ID]: #SCS is already plotted
         mn.plot(ax1_1)
         mn.plot_traj_line(ax1_1)
         # mn.plot_vectors(env, ax[0])
@@ -332,9 +331,9 @@ if __name__ == "__main__":
         # mn.plot_vectors(env, ax[0])
         mn.plot_force_traj_line(ax1_2)
         mn.plot_xi_traj_line(ax1_3)
-      else:
-        mn.plot(ax)
-        mn.plot_vectors(env, ax)
+    else:
+      mn.plot(ax)
+      mn.plot_vectors(env, ax)
 
     offset, min_counter = [0], [start_animation_from_min_ID]
 
@@ -387,7 +386,7 @@ if __name__ == "__main__":
     if plot_propterties:
       env.plot(ax1_1)
       scs.plot(ax1_1)
-      for mn in mins:
+      for mn in beacons[1:]:#SCS is already plotted, using beacons instead of mins so that only landed mins are taken into account
         mn.plot(ax1_1)
         mn.plot_traj_line(ax1_1)
         mn.plot_vectors(env, ax1_1)
