@@ -233,6 +233,7 @@ if __name__ == "__main__":
   _K_o = 0.9
 
   N_mins = 2
+  file_path = r'json_files\ds_test_123.json'
   dt = 0.01
 
   scs = SCS(Beacon.get_ID(), max_range)
@@ -290,11 +291,10 @@ if __name__ == "__main__":
     'delta_expl_angle': _delta_expl_angle
   }
 
-  file_path = r'json_files\ds_test123.json'
   write_to_file(file_path, data)
   
   fig = plt.figure(figsize=(5,5))
-  fig.canvas.set_window_title(f"Deployment {file_path}")
+  fig.canvas.set_window_title(f"Deployment {file_path[:-5]}")
   
   if plot_propterties:
     if _animate:
