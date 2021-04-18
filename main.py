@@ -220,7 +220,7 @@ if __name__ == "__main__":
     np.array([
       0, 0
     ]),
-    obstacle_corners = open_small#open_large #open_w_sq_obs #open_large#obs_zig_zag#[]#
+    obstacle_corners = open_large #open_small#open_w_sq_obs #open_large#obs_zig_zag#[]#
   )
   data['environment'].append(env.toJson())
 
@@ -229,8 +229,8 @@ if __name__ == "__main__":
   _xi_max = 1
   _d_perf = 0.1
   _d_none = 2.5
-  _delta_expl_angle = np.pi/4 #np.pi/6
-  _K_o = 0.6
+  _delta_expl_angle = 0#np.pi/4 #np.pi/6
+  _K_o = 0.9
 
   N_mins = 2
   dt = 0.01
