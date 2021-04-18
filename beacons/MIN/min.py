@@ -151,6 +151,8 @@ class Min(Beacon):
     # a = np.hstack((Rot_mat,origin_transl))
     # h_trans_mat = np.vstack((a,rest))#np.vstack((np.vstack((Rot_mat,origin_transl)),rest))
 
+    # Could increase the distance the target point is generated at, to increase the force applied to the min
+    # It is the fact that the distance is 1 that the force is not saturated when entering the exploration phase
     target_pos = self.pos + p2v(1, next_min.target_angle)#p2v(self.range, next_min.target_angle)#+ p2v(self.range, self.target_angle)#p2v(10, target_angle)#.reshape((2,)) #R_z(gva(tot_vec))[:2,:2]@p2v(self.target_r,target_angle)
     # target_pos_tilde = np.hstack((target_pos,0,1)).reshape((4,1))
     # target_pos_world = h_trans_mat @ target_pos_tilde
