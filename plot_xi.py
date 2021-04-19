@@ -48,8 +48,8 @@ XI = [xi(d) for d in D]
 
 plt.plot(D, XI, color="blue")
 plt.title(r"$\xi(\|\|\mathbf{x}_i - \mathbf{x}_j\|\|,...)$")
-plt.axvline(x=d_perf, ymin=0, ymax=xi_max+0.5, color='green', label=r'$d_{perf}$')
-plt.axvline(x=d_none, ymin=0, ymax=xi_max+0.5, color="red", label=r'$d_{none}$')
+plt.axvline(x=d_perf, ymin=0, ymax=xi_max+0.5, color='green', label=r'$d_{perf}$', linestyle=':')
+plt.axvline(x=d_none, ymin=0, ymax=xi_max+0.5, color="red", label=r'$d_{none}$', linestyle='-.')
 # plt.axhline(y=xi_max, xmin=0, xmax=D[-1], color="black", label='xi_max')
 plt.axvline(x=0, color="black")
 plt.axhline(y=0, color="black")
