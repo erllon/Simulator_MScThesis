@@ -105,7 +105,7 @@ def write_to_file(file_path, data_to_write):
 
 
 if __name__ == "__main__":
-  _animate, save_animation, plot_propterties = False, False, True
+  _animate, save_animation, plot_propterties = True, False, False
   start_animation_from_min_ID = 0
 
 # %% Plotting styles
@@ -322,6 +322,7 @@ if __name__ == "__main__":
 
   if _animate:
     for mn in beacons[1:start_animation_from_min_ID]: #SCS is already plotted
+      if plot_propterties:
         mn.plot(ax1_1)
         mn.plot_traj_line(ax1_1)
         # mn.plot_vectors(env, ax[0])
@@ -332,9 +333,9 @@ if __name__ == "__main__":
         # mn.plot_vectors(env, ax[0])
         mn.plot_force_traj_line(ax1_2)
         mn.plot_xi_traj_line(ax1_3)
-    else:
-      mn.plot(ax)
-      mn.plot_vectors(env, ax)
+      else:
+        mn.plot(ax)
+        mn.plot_vectors(env, ax)
 
     offset, min_counter = [0], [start_animation_from_min_ID]
 
