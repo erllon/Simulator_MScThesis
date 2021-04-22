@@ -7,7 +7,7 @@ from beacons.MIN.min import Min, MinState
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
+from matplotlib.animation import FuncAnimation, PillowWriter, FFMpegWriter 
 
 import timeit
 import cProfile, pstats, io
@@ -16,7 +16,7 @@ import json, codecs
 from copy import deepcopy
 
 
-_animate, save_animation, plot_propterties = False, False, True
+_animate, save_animation, plot_propterties = True, True, False
 
 if not _animate:
 # Animation runs way faster when using default styles
@@ -62,7 +62,7 @@ else:
         }
     )
 
-file_path = r'json_files/ds_test123.json'
+file_path = r'json_files/useful_open_small3_random_45_limit_03.json'
 obj_text = codecs.open(file_path, 'r', encoding='utf-8').read()
 json_data = json.loads(obj_text)
 
@@ -85,7 +85,7 @@ env_from_json = Env(
 )
 
 start_animation_from_min_ID = 0
-stop_min_ID = N_mins_from_json#1#
+stop_min_ID = 6#17#N_mins_from_json#1#
 
 
 scs_from_json.insert_into_environment(env_from_json)
@@ -163,7 +163,7 @@ if _animate:
             mn.plot_xi_traj_line(ax1_3)
         else:
             mn.plot(ax)
-            mn.plot_vectors(env_from_json, ax)
+            # mn.plot_vectors(env_from_json, ax)
 
     offset, min_counter = [0], [start_animation_from_min_ID]
 
@@ -205,13 +205,21 @@ if _animate:
             plt_pos_traj =  mins_to_plot[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
             return plt_pos_traj
 
-    anim = FuncAnimation(fig, animate, init_func=init, interval=2, blit=False)
+    anim = FuncAnimation(fig, animate, init_func=init, interval=2, blit=False, save_count=2000)
     
     if save_animation:
-        animation_name = "animation.gif"
+        # f = r"c://Users/xx/Desktop/animation.gif" 
+        writergif = PillowWriter(fps=30) 
+        writervideo = FFMpegWriter(fps=60)
+
+        # anim.save(f, writer=writergif)
+
+        animation_name_gif = "animation_test.gif"
+        animation_name_video = "animation_test_video_small_2.mp4"
         print("Saving animation")
-        anim.save(animation_name)   
-        print(f"Animation saved to {animation_name}")
+        # anim.save(animation_name, writer=writergif)
+        anim.save(animation_name_video,writer=writervideo)   
+        print(f"Animation saved to {animation_name_video}")
 else:
     if plot_propterties:
         env_from_json.plot(ax1_1)
@@ -219,7 +227,7 @@ else:
         for mn in mins_to_plot:
             mn.plot(ax1_1)
             mn.plot_traj_line(ax1_1)
-            mn.plot_vectors(env_from_json, ax1_1)
+            # mn.plot_vectors(env_from_json, ax1_1)
             mn.plot_force_traj_line(ax2_1)
             mn.plot_xi_traj_line(ax2_2)
         ax2_1.legend(ncol=2, prop={'size': 9})
@@ -230,10 +238,10 @@ else:
         for j in range(len(mins_to_plot)):
             mins_to_plot[j].plot(ax)
             mins_to_plot[j].plot_traj_line(ax)
-            if j == 0:
-                mins_to_plot[j].plot_vectors(env_from_json, ax)
-            else:
-                mins_to_plot[j].plot_vectors(env_from_json,ax)
+            # if j == 0:
+                # mins_to_plot[j].plot_vectors(env_from_json, ax)
+            # else:
+                # mins_to_plot[j].plot_vectors(env_from_json,ax)
         ax.legend(ncol=2, prop={'size': 9})
         ax.axis('equal')
 
