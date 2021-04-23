@@ -16,7 +16,7 @@ import json, codecs
 from copy import deepcopy
 
 
-_animate, save_animation, plot_propterties = True, True, False
+_animate, save_animation, plot_propterties = False,False,False#True, True, False
 
 if not _animate:
 # Animation runs way faster when using default styles
@@ -121,7 +121,7 @@ mins_to_plot = deepcopy(mins2[:stop_min_ID])
 
 uniformity_list = json_data['uniformity']
 
-fig = plt.figure(figsize=(5,5))
+fig = plt.figure(figsize=(5.2,3))
 fig.canvas.set_window_title('Replay')
 # plt.grid()
 
@@ -134,7 +134,7 @@ if plot_propterties:
         ax1_2.title.set_text(r"$\left\|\| F_{applied} \right\|\|$") #Set title
         ax1_3.title.set_text(r"$\xi$ from neighbors")
     else:
-        fig2 = plt.figure(figsize=(5,5))
+        fig2 = plt.figure(figsize=(5.2,3))
         fig2.canvas.set_window_title('Replay properties')
         ax1_1 = fig.add_subplot(1,1,1)
         ax2_1 = fig2.add_subplot(2,1,1)
@@ -246,18 +246,18 @@ else:
         ax.axis('equal')
 
 
-fig_uniformity = plt.figure(figsize=(5,5))
-fig_uniformity.canvas.set_window_title('Replay uniformity')
+# fig_uniformity = plt.figure(figsize=(5.2,3))
+# fig_uniformity.canvas.set_window_title('Replay uniformity')
 
-ax_uniformity = fig_uniformity.add_subplot(1,1,1)
-ax_uniformity.set(
-    xlabel = 'Beacons',
-    ylabel = 'Uniformity',
-    title = 'Uniformity'
-)
+# ax_uniformity = fig_uniformity.add_subplot(1,1,1)
+# ax_uniformity.set(
+#     xlabel = 'Beacons',
+#     ylabel = 'Uniformity',
+#     title = 'Uniformity'
+# )
 
-plt.xticks(range(len(uniformity_list[:stop_min_ID])+1)) #ints on x-axis
-ax_uniformity.plot(uniformity_list[:stop_min_ID+1])
-ax_uniformity.plot(uniformity_list[:stop_min_ID+1], "or")
+# plt.xticks(range(len(uniformity_list[:stop_min_ID])+1)) #ints on x-axis
+# ax_uniformity.plot(uniformity_list[:stop_min_ID+1])
+# ax_uniformity.plot(uniformity_list[:stop_min_ID+1], "or")
 
 plt.show()

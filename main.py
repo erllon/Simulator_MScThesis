@@ -293,7 +293,7 @@ if __name__ == "__main__":
 
   write_to_file(file_path, data)
   
-  fig = plt.figure(figsize=(5,5))
+  fig = plt.figure(figsize=(5.2,3))
   fig.canvas.set_window_title(f"Deployment {file_path[:-5]}")
   
   if plot_propterties:
@@ -305,7 +305,7 @@ if __name__ == "__main__":
       ax1_2.title.set_text(r"$\left\|\| F_{applied} \right\|\|$")
       ax1_3.title.set_text(r"$\xi$ from neighbors")
     else:
-      fig2 = plt.figure(figsize=(5,5))
+      fig2 = plt.figure(figsize=(5.2,3))
       fig2.canvas.set_window_title(f"Properties {file_path}")
 
       ax1_1 = fig.add_subplot(1,1,1)
@@ -409,7 +409,7 @@ if __name__ == "__main__":
           mins[j].plot_vectors(env,ax)
       ax.legend(ncol=2, prop={'size': 9})
       ax.axis('equal')  
-  fig_uniformity = plt.figure(figsize=(5,5))
+  fig_uniformity = plt.figure(figsize=(5.2,3))
   fig_uniformity.canvas.set_window_title(f"Uniformity {file_path}")
 
   ax_uniformity = fig_uniformity.add_subplot(1,1,1)
