@@ -134,7 +134,7 @@ if plot_propterties:
         ax1_2.title.set_text(r"$\left\|\| F_{applied} \right\|\|$") #Set title
         ax1_3.title.set_text(r"$\xi$ from neighbors")
     else:
-        fig2 = plt.figure(figsize=(5.2,3))
+        fig2 = plt.figure(figsize=(5,5), tight_layout=True)
         fig2.canvas.set_window_title('Replay properties')
         ax1_1 = fig.add_subplot(1,1,1)
         ax2_1 = fig2.add_subplot(2,1,1)
