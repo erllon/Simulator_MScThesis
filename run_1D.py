@@ -92,6 +92,10 @@ def simulate(dt, mins, scs, env):
   tot = toc - tic
   print(f"minimum number of neighbors: {min(beacons, key=lambda b: len(b.neighbors))}") 
   print(f"Total elapsed time for simulation: {tot}")
+  print(f"minimum number of neighbors: {min(beacons, key=lambda b: len(b.neighbors))}")
+  print("positions of the beacons:")
+  for b in beacons:
+    print(b.pos[0])
   
   # s = io.StringIO()
   # sortby = SortKey.CUMULATIVE
