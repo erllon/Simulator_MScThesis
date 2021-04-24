@@ -96,6 +96,7 @@ def simulate(dt, mins, scs, env):
   print("positions of the beacons:")
   for b in beacons:
     print(b.pos[0])
+  print(uniformity_list)
   
   # s = io.StringIO()
   # sortby = SortKey.CUMULATIVE
