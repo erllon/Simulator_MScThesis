@@ -53,7 +53,7 @@ def simulate(dt, mins, scs, env):
 
   tic = timeit.default_timer()
 
-  while uniformity_list[-1] < limit and i < N_mins:#delta_uniformity <= limit:
+  while i < N_mins:#uniformity_list[-1] < limit and i < N_mins:#delta_uniformity <= limit:
   # for i in range(len(mins)):
     mins[i].insert_into_environment(env)
     while not mins[i].state == MinState.LANDED:
@@ -78,7 +78,7 @@ def simulate(dt, mins, scs, env):
     
     print(f"min {mins[i].ID} landed at pos\t\t\t {mins[i].pos}")
     print(f"min {mins[i].ID} tot_vec = {mins[i].tot_vec}")
-    
+    print(f"distance between n+1 and n = {np.linalg.norm(beacons[-1].pos-beacons[-2].pos)}")
     print(f"min {mins[i].ID} target\t\t\t\t {mins[i].target_pos}")
     print(f"min {mins[i].ID} neighbors: {[n.ID for n in mins[i].neighbors]}")
     if not mins[i].deployment_strategy.get_target() is None:
@@ -105,7 +105,7 @@ def write_to_file(file_path, data_to_write):
 
 
 if __name__ == "__main__":
-  _animate, save_animation, plot_propterties = True, False, False
+  _animate, save_animation, plot_propterties = False, False, True
   start_animation_from_min_ID = 0
 
 # %% Plotting styles
@@ -220,7 +220,7 @@ if __name__ == "__main__":
     np.array([
       0, 0
     ]),
-    obstacle_corners = open_large #open_small#open_w_sq_obs #open_large#obs_zig_zag#[]#
+    obstacle_corners = []#open_large #open_small#open_w_sq_obs #open_large#obs_zig_zag#[]#
   )
   data['environment'].append(env.toJson())
 
@@ -232,7 +232,7 @@ if __name__ == "__main__":
   _delta_expl_angle = 0#np.pi/4 #np.pi/6
   _K_o = 0.9
 
-  N_mins = 2
+  N_mins = 6
   file_path = r'json_files\ds_test_123.json'
   dt = 0.01
 
@@ -262,14 +262,14 @@ if __name__ == "__main__":
       Beacon.get_ID(),
       max_range,
       DeploymentFSM(
-        # NoFollow(),
-        # LineExplore(
-        #   # RSSI_threshold=0.5,
-        #   K_o= 5*1*(i+1),#30,# 12 0.1,#0.01, #12 works somewhat with TWO_DIM_LOCAL, else much lower (0.4-ish)
-        #   kind=LineExploreKind.TWO_DIM_LOCAL,
-        # )
-        NewAttractiveFollow(K_o=_K_o),
-        NewPotentialFieldsExplore(K_o=_K_o, target_point_or_line=NewPotentialFieldsExplore.Target.LINE)
+        NoFollow(),
+        LineExplore(
+          # RSSI_threshold=0.5,
+          K_o= 5*1*(i+1),#30,# 12 0.1,#0.01, #12 works somewhat with TWO_DIM_LOCAL, else much lower (0.4-ish)
+          kind=LineExploreKind.ONE_DIM_LOCAL,
+        )
+        # NewAttractiveFollow(K_o=_K_o),
+        # NewPotentialFieldsExplore(K_o=_K_o, target_point_or_line=NewPotentialFieldsExplore.Target.LINE)
       ),
       xi_max=_xi_max,
       d_perf=_d_perf,

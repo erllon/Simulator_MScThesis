@@ -23,6 +23,9 @@ class NewPotentialFieldsExplore(ExplorationStrategy):
         self.__min_force_threshold = min_force_threshold
         self.__point_or_line = target_point_or_line   
         self.__RSSI_threshold = rssi_threshold
+        
+    def __str__(self):
+        return "NewPotFieldsExplore"
 
     def get_exploration_velocity(self, MIN, beacons, ENV):
         xi_is = np.array([])

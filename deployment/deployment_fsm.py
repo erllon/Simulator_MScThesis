@@ -17,11 +17,14 @@ class DeploymentFSM():
             try:
                 return self.__fs.get_following_velocity(MIN, beacons, ENV)
             except AtTargetException:
-                if MIN.prev == SCS:
-                    target_pos_explore = MIN.prev.generate_target_pos(beacons, ENV, MIN)
+                if str(MIN.deployment_strategy.get_expl_strategy()) != "LineExplore":
+                    if MIN.prev == SCS:
+                        target_pos_explore = MIN.prev.generate_target_pos(beacons, ENV, MIN)
+                    else:
+                        target_pos_explore = MIN.prev.generate_target_pos(beacons, ENV, MIN.prev.prev, MIN)
+                    self.__es.prepare_exploration(target_pos_explore)
                 else:
-                    target_pos_explore = MIN.prev.generate_target_pos(beacons, ENV, MIN.prev.prev, MIN)
-                self.__es.prepare_exploration(target_pos_explore)
+                    self.__es.prepare_exploration(self.__fs.target)    
                 MIN.state = MinState.EXPLORING
                 print(f"{MIN.ID} exploring")
         if MIN.state == MinState.EXPLORING:
@@ -36,3 +39,6 @@ class DeploymentFSM():
     
     def get_target(self):
         return self.__fs.target
+    
+    def get_expl_strategy(self):
+        return self.__es

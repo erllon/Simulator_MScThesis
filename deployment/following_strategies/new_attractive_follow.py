@@ -8,7 +8,7 @@ class NewAttractiveFollow(FollowingStrategy):
     
     def __init__(self, K_o, same_num_neighs_differentiator=lambda MINs, k: min(MINs, key=k)):
         super().__init__(same_num_neighs_differentiator)
-        self.__K_o = K_o
+        self.__K_o = K_o  
     
     def __compute_target(self, beacons, SCS):
         self.target = beacons[-1]
