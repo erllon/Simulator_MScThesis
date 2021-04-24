@@ -298,7 +298,7 @@ if __name__ == "__main__":
       ax1_3.title.set_text(r"$\xi$ from neighbors")
     else:
       fig2 = plt.figure(figsize=(5,5))#plt.figure(figsize=(5,5), tight_layout=True)
-      fig2.canvas.set_window_title(f"Properties {file_path[-5]}")
+      fig2.canvas.set_window_title(f"Properties {file_path[:-5]}")
 
       ax1_1 = fig.add_subplot(1,1,1)
       ax2_1 = fig2.add_subplot(2,1,1)
@@ -400,7 +400,7 @@ if __name__ == "__main__":
       ax.legend(ncol=2, prop={'size': 9})
       ax.axis('equal')  
   fig_uniformity = plt.figure(figsize=(5,5))#plt.figure(figsize=(5.2,3))
-  fig_uniformity.canvas.set_window_title(f"Uniformity {file_path[-5]}")
+  fig_uniformity.canvas.set_window_title(f"Uniformity {file_path[:-5]}")
 
   ax_uniformity = fig_uniformity.add_subplot(1,1,1)
   ax_uniformity.set(
