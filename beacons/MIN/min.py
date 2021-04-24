@@ -96,9 +96,7 @@ class Min(Beacon):
     self._heading_traj = np.concatenate((self._heading_traj, [self.heading]))
     self.state_traj = np.concatenate((self.state_traj, [self.state]))
 
-    #As of 21.01 .get_velocity_vector() returns the calculated force, self._force_hist considers the norm of the force
     self._v_traj = np.hstack((self._v_traj, np.linalg.norm(v)))
-    #self._xi_traj gets set in self.deployment_strategy.get_velocity_vector()
     
   def generate_target_pos(self, beacons, ENV, prev_min, next_min):
     """Generates a target point for next_min
@@ -143,20 +141,12 @@ class Min(Beacon):
 
     self.tot_vec = p2v(1, expl_ang)
     
-    self.neigh_vec = tot_vec_from_neigh#p2v(1, avg_ang_from_neigh)
-    
-    # Rot_mat = R_z(gva(self.tot_vec))
-    # origin_transl = np.hstack((self.pos,0)).reshape((3,1))
-    # rest = np.array([0,0,0,1])
-    # a = np.hstack((Rot_mat,origin_transl))
-    # h_trans_mat = np.vstack((a,rest))#np.vstack((np.vstack((Rot_mat,origin_transl)),rest))
+    self.neigh_vec = tot_vec_from_neigh
 
     # Could increase the distance the target point is generated at, to increase the force applied to the min
     # It is the fact that the distance is 1 that the force is not saturated when entering the exploration phase
-    target_pos = self.pos + p2v(1, next_min.target_angle)#p2v(self.range, next_min.target_angle)#+ p2v(self.range, self.target_angle)#p2v(10, target_angle)#.reshape((2,)) #R_z(gva(tot_vec))[:2,:2]@p2v(self.target_r,target_angle)
-    # target_pos_tilde = np.hstack((target_pos,0,1)).reshape((4,1))
-    # target_pos_world = h_trans_mat @ target_pos_tilde
-    # self.test = target_pos.reshape(2, ) + self.pos.reshape(2, ) #+ self.pos.reshape(2, )#target_pos.reshape(2, ) + self.pos.reshape(2, )
+    target_pos = self.pos + p2v(1, next_min.target_angle)
+    
     if next_min.first_target_pos == None:
       next_min.first_target_pos = deepcopy(target_pos.reshape(2, ))
       print(f"first_target: {next_min.first_target_pos}")
@@ -177,9 +167,8 @@ class Min(Beacon):
       if not (MIN.get_vec_to_other(n) == 0).all():
         vec_from_neigh = -MIN.get_vec_to_other(n).reshape(2, 1)
         dist = np.linalg.norm(vec_from_neigh) #when using xi for RSSI, dist will be in the interval (d_perf, d_none)
-        scaling = MIN.d_none #- MIN.d_perf
-        # Simply using d_none in the same way as max_range makes more sense, as one does not care what distance that produce the "perfect" \xi
-        # vecs_from_neighs.append((MIN.range - dist)*normalize(vec_from_neigh)) #TODO: When using xi as RSSI, this scaling will not produce perf results
+        scaling = MIN.d_none
+
         vecs_from_neighs.append((scaling-dist)*normalize(vec_from_neigh))        
         
         ang_from_neighs.append(gva(vec_from_neigh.reshape(2, )))
@@ -203,7 +192,7 @@ class Min(Beacon):
         """Vector FROM drone TO obstacle"""
 
         vec_from_obs = (MIN.range - meas_length)*normalize(vec_from_obs)
-        #Another possible scaling is: (1-meas_length/MIN.range)*normalize(vec_from_obs)#
+
         vecs_from_obs.append(vec_from_obs.reshape(2, ))
         ang_from_obs.append(gva(vec_from_obs.reshape(2, )))
 
@@ -222,15 +211,8 @@ class Min(Beacon):
     self.heading_arrow = plot_vec(axis, p2v(1, self.heading), self.pos)
     self.point = axis.plot(*self.pos, color=self.clr[self.state], marker="o", markersize=8)[0]
     self.annotation = axis.annotate(self.ID, xy=(self.pos[0], self.pos[1]), fontsize=14)
-    # theta = np.linspace(0, 2*np.pi)
-    # self.radius = axis.plot(
-    #   self.pos[0] + self.range*np.cos(theta), self.pos[1] + self.range*np.sin(theta),
-    #   linestyle="dashed",
-    #   color="black",
-    #   alpha=0.3
-    # )[0]
 
-    return self.point, self.annotation#, self.radius
+    return self.point, self.annotation
   
   def plot_vectors(self, ENV, axis):
 
@@ -240,51 +222,7 @@ class Min(Beacon):
     plot_vec(axis, interval_vec_1, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
     plot_vec(axis, interval_vec_2, self.pos, clr=self.vec_clr[VectorTypes.INTERVAL])
 
-    plot_vec(axis, self.neigh_vec, self.pos, clr='green')
-
-    # if self.ID != 0:
-    #   heading2 = normalize(R_z(np.pi/2)[:2,:2]@p2v(1, self.heading))
-    #   heading3 = normalize(R_z(2*np.pi/2)[:2,:2]@p2v(1, self.heading))
-    #   heading4 = normalize(R_z(3*np.pi/2)[:2,:2]@p2v(1, self.heading))
-    #   plot_vec(axis,heading2, self.pos)
-    #   plot_vec(axis,heading3, self.pos)
-    #   plot_vec(axis,heading4, self.pos)
-
-
-
-    # vec_counter = 0
-    # for s in self.sensors:
-    #   sensor_vec1 = p2v(self.range, self.heading + s.host_relative_angle - np.deg2rad(27)/2.0)
-    #   sensor_vec2 = p2v(self.range, self.heading + s.host_relative_angle + np.deg2rad(27)/2.0)
-
-    #   plot_vec(axis, sensor_vec1, self.pos, clr="green")
-    #   plot_vec(axis, sensor_vec2, self.pos, clr="green")
-    #   # if s.measurement.is_valid():# and self.ID > 3:
-    #   #   meas_vec = R_z(s.measurement.get_angle())[:2,:2]@p2v(1,0)
-    #   #   plot_vec(axis, meas_vec, self.pos, clr="red")
-    #   #   vec_counter += 1
-    # # print(f"A total of {vec_counter} obstacle vectors")
-    # if np.linalg.norm(self.obs_vec) != 0: 
-    #   plot_vec(axis, self.obs_vec, self.pos, clr="blue")
-    
-    # for vec in self.vecs_from_obs:
-    #   plot_vec(axis, vec, self.pos, clr="blue")
-      
-    # if self.next:
-    #   plot_vec(axis, self.next.first_target_pos-self.pos, self.pos, clr="red") #This should ALWAYS be in the given "target interval"
-    #   plot_vec(axis, self.next.final_target_pos-self.pos, self.pos, clr="green") #This should ALWAYS be in the given "target interval"
-      
-
-      # plot_vec(axis, self.next.target_pos-self.pos, self.pos, clr="red") #This should ALWAYS be in the given "target interval"
-
-    # axis.plot(*(self.target_pos), color="red",marker="o",markersize=8)
-    # axis.plot(*(self.first_target_pos), color="red",marker="o",markersize=8)
-    # axis.plot(*(self.final_target_pos), color="green",marker="o",markersize=8)
-
-    # axis.annotate(f"{self.ID}", (self.first_target_pos))
-    # axis.annotate(f"{self.ID}", (self.final_target_pos))
-    # axis.annotate(f"{self.ID}", (self.target_pos))
-
+    # plot_vec(axis, self.neigh_vec, self.pos, clr='green')
 
   def plot_traj_line(self, axis):
     self.traj_line, = axis.plot(*self._pos_traj, alpha=0.4)
@@ -308,11 +246,10 @@ class Min(Beacon):
     self.point.set_color(self.clr[self.state_traj[index]])
     self.annotation.set_x(new_pos[0])
     self.annotation.set_y(new_pos[1])
-    # theta = np.linspace(0, 2*np.pi)
-    # self.radius.set_data(new_pos.reshape(2, 1) + p2v(self.range, theta))
+    
     self.traj_line.set_data(self._pos_traj[:, :index])
     self.heading_arrow.set_data(*np.hstack((new_pos.reshape(2, 1), new_pos.reshape(2, 1) + p2v(1, self._heading_traj[index]).reshape(2, 1))))
-    return self.point, self.annotation, self.traj_line, self.heading_arrow#, self.radius
+    return self.point, self.annotation, self.traj_line, self.heading_arrow
 
   def plot_force_from_traj_index(self, index):
     new_force = self._v_traj[:index]

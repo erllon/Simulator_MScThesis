@@ -17,7 +17,7 @@ class LineExploreKind(IntEnum):
 
 class LineExplore(ExplorationStrategy):
 
-  RSSI_THRESHOLD = 0.5
+  MIN_RSSI_STRENGTH_BEFORE_LAND = 0.22
 
   def __init__(self, K_o=1, force_threshold=0.1, kind=LineExploreKind.ONE_DIM_GLOBAL): #RSSI_threshold=0.6
     self.K_o = K_o
@@ -38,63 +38,13 @@ class LineExplore(ExplorationStrategy):
     land_due_to_no_neighs = False
 
     F_n = np.zeros((2, ))
-    F_o = gof(self.K_o, MIN, ENV)
-    F_o_angle = gva(F_o)
-    # print(f"F_o_angle: {F_o_angle}")
 
     x_is = np.concatenate([b.pos.reshape(2, 1) for b in beacons], axis=1)
     xi_is = np.array([MIN.get_xi_to_other_from_model(b) for b in beacons])
-    MIN._xi_traj = np.column_stack((MIN._xi_traj, xi_is)) #np.max(xi_is) #axis=0, but should be 1D...
+    MIN._xi_traj = np.column_stack((MIN._xi_traj, xi_is))
 
-    # if int(self.kind) <= LineExploreKind.TWO_DIM_GLOBAL:
-    #   """GLOBAL METHODS"""
-
-    #   if self.kind == LineExploreKind.ONE_DIM_GLOBAL:
-    #     x_is = x_is[0, :]
-
-    #     """ Default values """
-    #     k_is = np.ones(x_is.shape)
-    #     a_is = np.ones(x_is.shape)
-    #     a_is[-1] = 1 + (1/k_is[-1])*np.sum(k_is[:-1])
-
-    #     """ Leads to equally spaced drones """
-    #     k_is = np.zeros(x_is.shape)
-    #     k_is[-1] = 2*1
-    #     a_is[-1] = 1
-
-    #     """ Test for 'move back gains' (a_i*k_i = 0 for all 0 < i < n) """
-        
-    #     """ test 1 """
-
-    #     k_is = np.zeros(x_is.shape)
-    #     a_is = np.ones(x_is.shape)
-    #     a_is[-1] = 2
-    #     k_is[-1] = 1
-
-    #     """ test 2 """
-
-    #     k_is = np.ones(x_is.shape)
-    #     a_is = np.zeros(x_is.shape)
-
-    #     a_is[-1] = 2
-    #     k_is[-1] = np.sum(k_is) - 1
-
-    #     assert k_is[-1]*a_is[-1] > np.sum(k_is) or np.isclose(k_is[-1]*a_is[-1], np.sum(k_is)) and a_is[-1] >= 0,\
-    #        "Conditions on constants a_i and k_i do not hold. Cannot guarantee x_{n+1} > x_{n}"
-        
-    #     F_n = np.array([-np.sum(k_is*(MIN.pos[0] - a_is*(x_is + xi_is))), 0])
-    #     F_o = 1*F_o[0]
-      
-    #   elif self.kind == LineExploreKind.TWO_DIM_GLOBAL:
-    #     k_is = np.zeros(len(beacons))
-    #     k_is[-1] = 1
-    #     x_is = np.concatenate([b.pos.reshape(2, 1) for b in beacons], axis=1)
-    #     xi_is = np.array([MIN.get_RSSI(b) for b in beacons])*np.ones((2, 1))
-    #     F_n = -np.sum(k_is*(MIN.pos.reshape(2, 1) - (x_is + xi_is)), axis=1).reshape(2, )
-   
-    # else:
     """ LOCAL METHODS """
-    neigh_indices, = np.where(xi_is > self.RSSI_THRESHOLD)
+    neigh_indices, = np.where(xi_is > self.MIN_RSSI_STRENGTH_BEFORE_LAND)#np.where(xi_is > self.RSSI_THRESHOLD)
     land_due_to_no_neighs = len(neigh_indices) == 0
     if land_due_to_no_neighs:
         print(f"{MIN.ID} STOPPED due to no neighs")
@@ -119,10 +69,10 @@ class LineExplore(ExplorationStrategy):
 
 
         """ Leads to equally spaced drones """
-        # k_is = np.zeros(x_is.shape)
-        # a_is = np.zeros(x_is.shape)
-        # k_is[m] = 2*1
-        # a_is[m] = 1
+        k_is = np.zeros(x_is.shape)
+        a_is = np.zeros(x_is.shape)
+        k_is[m] = 2*1
+        a_is[m] = 1
 
         """ Using qualitative info. about xi function vol. 1"""
         a_is = np.ones(x_is.shape)
@@ -130,13 +80,6 @@ class LineExplore(ExplorationStrategy):
         k_is = np.zeros(x_is.shape)
         k_is[m] = 2
 
-        k_is[m] = (1/(a_is[m]-1))*np.sum(np.delete(k_is*(1+a_is*delta_is), m)) + 0.1
-        
-        """ Using qualitative info. about xi function vol. 2"""
-        # k_is = np.ones(x_is.shape)
-        # a_is = np.ones(x_is.shape)
-
-        # a_is[m] = 1#(1/k_is[m])*np.sum(np.delete(k_is*(1+a_is*delta_is), m)) + 1
         assert (k_is >= 0).all() and \
                (a_is >= 0).all() and \
                len((k_is[np.nonzero(a_is)])) > 0 and \
@@ -161,6 +104,7 @@ class LineExplore(ExplorationStrategy):
       # print(f"xi_is[m]-F[0] = {xi_is[m]-F[0]}")
       raise AtLandingConditionException
     return F
+    
 
 # %%Clamp
   @staticmethod
@@ -169,197 +113,3 @@ class LineExplore(ExplorationStrategy):
     if norm_F > limit:
       return limit*F/norm_F
     return F
-#     neigh_indices, = np.where(xi_is > self.RSSI_threshold) #np.where(RSSIs_all <= MIN.range) 
-#     xi_is_neigh = xi_is[neigh_indices]
-    
-#     MIN._xi_traj = np.column_stack((MIN._xi_traj, xi_is)) #np.max(xi_is) #axis=0, but should be 1D...
-
-#     F = None
-#     if self.ndims == 1:
-#       """ 1D """
-#       x_is = np.array([b.pos[0] for b in beacons])
-#       k_is, a_is = None, None
-      
-# # %% Global knowledge
-#       """ Default values """
-#       # k_is = np.ones(x_is.shape)
-#       # a_is = np.ones(x_is.shape)
-#       # a_is[-1] = 1 + (1/k_is[-1])*np.sum(k_is[:-1])
-
-#       """ Leads to equally spaced drones """
-#       k_is = np.zeros(x_is.shape)
-#       a_is = np.zeros(x_is.shape)
-#       k_is[-1] = 2*1
-#       a_is[-1] = 1
-
-#       """ Test for 'move back gains' (a_i*k_i = 0 for all 0 < i < n) """
-      
-#       """ test 1 """
-
-#       # k_is = np.zeros(x_is.shape)
-#       # a_is = np.ones(x_is.shape)
-#       # a_is[-1] = 2
-#       # k_is[-1] = 1
-
-#       """ test 2 """
-
-#       # k_is = np.ones(x_is.shape)
-#       # a_is = np.zeros(x_is.shape)
-
-#       # a_is[-1] = 2
-#       # k_is[-1] = np.sum(k_is) - 1
-
-# # %% Local knowledge
-#       # x_is = np.array([beacons[i].pos[0] for i in neigh_indices])
-#       # k_is = np.ones(x_is.shape)
-#       # a_is = np.zeros(x_is.shape)
-#       # k_is[-1] = 2*1
-#       # a_is[-1] = 1
-# #REMOVE COMMENTS FROM HERE
-#       # neigh_indices, = np.where(xi_is > self.RSSI_threshold)
-#       # if len(neigh_indices) == 0:
-#       #     print(xi_is, self.RSSI_threshold)
-#       #     print(f"{MIN.ID} STOPPED due to no neighs")
-#       #     raise AtLandingConditionException
-      
-#       # x_is = x_is[neigh_indices]
-#       # xi_is = xi_is[neigh_indices]
-
-#       # m = np.argmax(x_is)
-
-#       # k_is = np.ones(x_is.shape)
-#       # a_is = 1.1*np.ones(x_is.shape)
-
-#       # a_is[m] = (1/k_is[m])*np.sum(k_is) + 1
-
-
-
-#       # """ Leads to equally spaced drones """
-#       # #k_is = np.zeros(x_is.shape)
-#       # #k_is[j] = 2*1
-#       # #a_is[j] = 1
-
-#       # """ Using qualitative info. about xi function vol. 1"""
-#       # a_is = np.ones(x_is.shape)
-#       # a_is[m] = 1.1
-#       # k_is = np.ones(x_is.shape)
-
-#       # delta_is = np.array([b.get_xi_max_decrease() for b in beacons[neigh_indices]])
-
-#       # k_is[m] = (1/(a_is[m]-1))*np.sum(np.delete(k_is*(1+a_is*delta_is), m)) + 0.1
-      
-#       # """ Using qualitative info. about xi function vol. 2"""
-#       # k_is = np.ones(x_is.shape)
-#       # a_is = np.ones(x_is.shape)
-
-#       # a_is[m] = (1/k_is[m])*np.sum(np.delete(k_is*(1+a_is*delta_is), m)) + 1
-
-#       # assert (k_is[m]*a_is[m] > np.sum(k_is) or np.isclose(k_is[m]*a_is[m], np.sum(k_is))) and a_is[m] >= 0,\
-#       #   f"""
-#       #   Conditions on constants a_i and k_i do not hold. Cannot guarantee x_n_plus_one > max(x_i) for i in neighbors of nu_n_plus_one.
-#       #   {k_is[m]*(a_is[m] - 1)} >=? {np.sum(np.delete(k_is, m))} and {a_is[m]} >= 0.
-#       #     """
-# #TO HERE
-
-#       F_n = -np.sum(k_is*(MIN.pos[0] - a_is*(x_is + xi_is)))
-#       F_o = 0*gof(self.K_o, MIN, ENV)[0]
-#       F = self.__clamp(np.array([F_n + F_o, 0]), 15) #10, 100
-#     else:
-#       print("No neighbors")
-#       raise AtLandingConditionException
-#     if np.linalg.norm(F) < self.force_threshold:
-#       print(f"Force lower than threshold: {np.linalg.norm(F)} < {self.force_threshold}")
-#       raise AtLandingConditionException
-#     return F
-    
-# %%Gammel kode
-    # # SE OVER HVORDAN TING NEDENFOR BLIR REGNET UT, SAMT SE HVA SOM ER KOMMENTERT BORT
-    # # RSSIs_all = np.array([np.linalg.norm(MIN.get_vec_to_other(b)) for b in beacons])
-    # # neigh_indices, = np.where(RSSIs_all < MIN.range)
-    # # Change state of all neighbors to MinState.NEIGHBOR???
-    # xi_RSSI = np.array([MIN.get_RSSI(b) for b in beacons]) #np.array([np.linalg.norm(MIN.get_vec_to_other(b)) for b in beacons])#
-    # neigh_indices, = np.where(xi_RSSI > self.RSSI_threshold) #np.where(RSSIs_all <= MIN.range) 
-    # xi_neigh = xi_RSSI[neigh_indices]
-    
-    # F = None
-    # if len(neigh_indices)!=0:
-    #   if self.ndims == 1:
-    #     """ 1D """
-    #     x_is = np.array([beacons[i].pos[0] for i in neigh_indices])#np.array([beacons[i].pos[0] for i in neigh_indices]) #np.array([b.pos[0] for b in beacons])
-    #     k_is = np.ones(x_is.shape)#np.ones(x_is.shape)# * (np.ones(len(x_is)) + np.array(range(len(x_is)))*0.1)#np.zeros(x_is.shape)#np.ones(x_is.shape)
-    #     k_is[-1] = 1
-
-    #     epsilon = 3*0.10 #0 because we only want the drones to move to the right?
-
-    #     if np.array(neigh_indices != self.prev_neigh_indices).all():
-    #       print(f"prev_neigh: {self.prev_neigh_indices} \t current_neigh: {neigh_indices}")
-    #       xi_random = np.random.uniform(epsilon - self.RSSI_threshold, epsilon)
-    #       if self.prev_xi_rand != None:
-    #         if (xi_random - self.prev_xi_rand) > 0.4:
-    #           xi_random = epsilon - 0.05
-    #         print(f"prev_random: {self.prev_xi_rand} \t current RAND: {xi_random}")
-    #         print("-------------------------------------------------")
-    #     else:
-    #       xi_random = self.prev_xi_rand
-
-    #     F_n = -1*np.sum(k_is*(x_is- MIN.pos[0]  - (xi_neigh - epsilon + xi_random)))
-    #     F_o = 0*gof(self.K_o, MIN, ENV)[0]
-    #     F = np.array([F_n + F_o, 0])
-    #     self.prev_xi_rand = xi_random
-    #     self.prev_neigh_indices = neigh_indices
-    #   elif self.ndims == 2:
-    #     """ 2D """
-    #     x_is = np.array([beacons[i].pos for i in neigh_indices])
-    #     k_is = 5*np.ones(len(x_is)) #np.ones(len(x_is)) + np.array(range(len(x_is)))#np.array(range(len(x_is)))%2np.ones(len(x_is)) + np.array(range(len(x_is)))#np.ones(len(x_is)) #np.zeros(len(x_is))
-    #     #k_is[-1] = 1
-    #     epsilon_x = 4*0.10
-    #     epsilon_y = 1*0.10
-    #     epsilon = np.hstack((epsilon_x, epsilon_y)).reshape(2, )
-
-    #     # Update the xi_rands when the neighbor set changes
-    #     # print(f"(self.prev_neigh_indices == None): {(self.prev_neigh_indices == None)}")
-    #     # print(f"(neigh_indices == self.prev_neigh_indices).any(): {(neigh_indices == self.prev_neigh_indices).any()}")
-    #     # print(f"prev_neigh: {self.prev_neigh_indices} \t current_neigh: {neigh_indices}")
-    #     # print(f"prev_rand: {self.prev_RSSIs_rand} \t current_rand: {RSSIs_random}")
-
-    #     if np.array(neigh_indices != self.prev_neigh_indices).all(): #np.array(self.prev_neigh_indices == None).any() or 
-    #       #print(f"prev_neigh: {self.prev_neigh_indices} \t current_neigh: {neigh_indices}")
-    #       xi_random_x = np.random.uniform(epsilon_x-self.RSSI_threshold, epsilon_x) #self.RSSI_threshold
-    #       xi_random_y = np.random.uniform(epsilon_y-self.RSSI_threshold, epsilon_y)
-    #       if np.array(self.prev_xi_rand != None).any():
-    #         if (xi_random_x - self.prev_xi_rand[0]) > 0.4:
-    #           xi_random_x = self.prev_xi_rand[0] - 0.1#epsilon_x - 0.1            
-    #         if (xi_random_y - self.prev_xi_rand[1]) > 0.4:
-    #           xi_random_y = self.prev_xi_rand[1] - 0.1 #epsilon_y - 0.1
-    #       xi_random = np.hstack((xi_random_x, xi_random_y))         
-    #       #print(f"prev_random: {self.prev_xi_rand} \t current RAND: {xi_random}")
-    #     else:
-    #       xi_random = self.prev_xi_rand
-        
-    #     F_n = np.zeros((2, ))
-    #     for i in range(len(x_is)): #neigh_indices:
-    #       #F_n += (k_is[i]*(x_is[i].reshape(2, ) - MIN.pos.reshape(2, ) + RSSIs_all[i] - epsilon.reshape(2, ) + RSSIs_random)).reshape(2, ) #funker
-    #       #F_n -= (k_is[i]*(x_is[i] + xi_RSSI[i] - (MIN.pos.reshape(2, ) - epsilon + xi_random))).reshape(2, ) #works
-    #       #print((-xi_RSSI[i] - epsilon + xi_random))
-    #       #F_n -= (k_is[i]*(x_is[i]-MIN.pos.reshape(2, )  - (-xi_RSSI[i] - epsilon + xi_random))).reshape(2, )
-    #       xi_tot = xi_neigh[i] - epsilon + xi_random
-    #       #F_n -= (k_is[i]*(MIN.pos.reshape(2, ) - x_is[i] -xi_tot)).reshape(2, ) #Original
-    #       F_n -= (k_is[i]*(x_is[i] - MIN.pos.reshape(2, ) - xi_tot)).reshape(2, ) #Chaning order of positions (pos_drone_i - pos_drone_{n+1})
-    #       #F_n += (k_is[i]*(MIN.pos.reshape(2, ) - (x_is[i] + xi_RSSI[i] - epsilon + xi_random))).reshape(2, ) #+= WORKS "PERFECTLY"?!?!
-
-    #     F_o = gof(self.K_o, MIN, ENV).reshape(2, )
-    #     # print(f"F_n: {F_n}")
-    #     # print(f"F_o: {F_o}")
-    #     # print("-------------")
-    #     F = F_n + F_o
-    #     self.prev_xi_rand = xi_random
-    #     self.prev_neigh_indices = neigh_indices
-    #     # print(f"np.linalg.norm(F): {np.linalg.norm(F)}")
-    # else:
-    #   print("No neighbors")
-    #   raise AtLandingConditionException
-    # if np.linalg.norm(F) < self.force_threshold:
-    #   print(f"Force lower than threshold: {np.linalg.norm(F)} < {self.force_threshold}")
-    #   raise AtLandingConditionException
-    # return F
-
