@@ -220,7 +220,7 @@ if __name__ == "__main__":
     np.array([
       0, 0
     ]),
-    obstacle_corners = []#open_large #open_small#open_w_sq_obs #open_large#obs_zig_zag#[]#
+    obstacle_corners = open_small#open_large #[]#open_w_sq_obs #open_large#obs_zig_zag#[]#
   )
   data['environment'].append(env.toJson())
 
@@ -237,39 +237,14 @@ if __name__ == "__main__":
   dt = 0.01
 
   scs = SCS(Beacon.get_ID(), max_range)
-  """ Potential fields exploration
-  mins = [
-    Min(
-      max_range,
-      DeploymentFSM(
-        AttractiveFollow(
-          K_o = 0.001,
-          same_num_neighs_differentiator=lambda MINs, k: min(MINs, key=k)
-        ),
-        PotentialFieldsExplore(
-          K_n=1,
-          K_o=1,
-          min_force_threshold=0.1
-        )
-      )
-    ) for _ in range(N_mins)
-  ]
-  """
-  """ Line exploration """
-
+  """ Potential fields exploration """
   mins = [
     Min(
       Beacon.get_ID(),
       max_range,
       DeploymentFSM(
-        NoFollow(),
-        LineExplore(
-          # RSSI_threshold=0.5,
-          K_o= 5*1*(i+1),#30,# 12 0.1,#0.01, #12 works somewhat with TWO_DIM_LOCAL, else much lower (0.4-ish)
-          kind=LineExploreKind.ONE_DIM_LOCAL,
-        )
-        # NewAttractiveFollow(K_o=_K_o),
-        # NewPotentialFieldsExplore(K_o=_K_o, target_point_or_line=NewPotentialFieldsExplore.Target.LINE)
+        NewAttractiveFollow(K_o=_K_o),
+        NewPotentialFieldsExplore(K_o=_K_o, target_point_or_line=NewPotentialFieldsExplore.Target.LINE)
       ),
       xi_max=_xi_max,
       d_perf=_d_perf,
@@ -278,11 +253,28 @@ if __name__ == "__main__":
     ) for i in range(N_mins)
   ]
 
+  """ Line exploration """
+  # mins = [
+  #   Min(
+  #     Beacon.get_ID(),
+  #     max_range,
+  #     DeploymentFSM(
+  #       NoFollow(),
+  #       LineExplore(
+  #         kind=LineExploreKind.ONE_DIM_LOCAL,
+  #       )
+  #     ),
+  #     xi_max=_xi_max,
+  #     d_perf=_d_perf,
+  #     d_none=_d_none
+  #   ) for i in range(N_mins)
+  # ]
+
   beacons = simulate(dt, mins, scs, env)
   data['uniformity'] = [float(number) for number in uniformity_list]
 
   data['parameters'] = {
-    'N_mins': len(beacons)-1,#N_mins,
+    'N_mins': len(beacons)-1,#N_mins, len(beacons)-1 so that it works when deploying unknown number of mins
     'Max_range' : max_range,
     'K_o': _K_o,
     'xi_max': _xi_max,
@@ -293,7 +285,7 @@ if __name__ == "__main__":
 
   write_to_file(file_path, data)
   
-  fig = plt.figure(figsize=(5.2,3))
+  fig = plt.figure(figsize=(5,5))#plt.figure(figsize=(5.2,3))
   fig.canvas.set_window_title(f"Deployment {file_path[:-5]}")
   
   if plot_propterties:
@@ -305,7 +297,7 @@ if __name__ == "__main__":
       ax1_2.title.set_text(r"$\left\|\| F_{applied} \right\|\|$")
       ax1_3.title.set_text(r"$\xi$ from neighbors")
     else:
-      fig2 = plt.figure(figsize=(5,5), tight_layout=True)
+      fig2 = plt.figure(figsize=(5,5))#plt.figure(figsize=(5,5), tight_layout=True)
       fig2.canvas.set_window_title(f"Properties {file_path[-5]}")
 
       ax1_1 = fig.add_subplot(1,1,1)
@@ -325,12 +317,10 @@ if __name__ == "__main__":
       if plot_propterties:
         mn.plot(ax1_1)
         mn.plot_traj_line(ax1_1)
-        # mn.plot_vectors(env, ax[0])
         mn.plot_force_traj_line(ax1_2)
         mn.plot_xi_traj_line(ax1_3)
         mn.plot(ax1_1)
         mn.plot_traj_line(ax1_1)
-        # mn.plot_vectors(env, ax[0])
         mn.plot_force_traj_line(ax1_2)
         mn.plot_xi_traj_line(ax1_3)
       else:
@@ -409,7 +399,7 @@ if __name__ == "__main__":
           mins[j].plot_vectors(env,ax)
       ax.legend(ncol=2, prop={'size': 9})
       ax.axis('equal')  
-  fig_uniformity = plt.figure(figsize=(5.2,3))
+  fig_uniformity = plt.figure(figsize=(5,5))#plt.figure(figsize=(5.2,3))
   fig_uniformity.canvas.set_window_title(f"Uniformity {file_path[-5]}")
 
   ax_uniformity = fig_uniformity.add_subplot(1,1,1)
