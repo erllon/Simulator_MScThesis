@@ -75,10 +75,10 @@ class LineExplore(ExplorationStrategy):
         a_is[m] = 1
 
         """ Using qualitative info. about xi function vol. 1"""
-        a_is = np.ones(x_is.shape)
-        a_is[m] = 1.5
-        k_is = np.zeros(x_is.shape)
-        k_is[m] = 2
+        # a_is = np.ones(x_is.shape)
+        # a_is[m] = 1.5
+        # k_is = np.zeros(x_is.shape)
+        # k_is[m] = 2
 
         assert (k_is >= 0).all() and \
                (a_is >= 0).all() and \
