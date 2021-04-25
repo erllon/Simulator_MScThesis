@@ -210,7 +210,7 @@ class Min(Beacon):
   def plot(self, axis):
     self.heading_arrow = plot_vec(axis, p2v(1, self.heading), self.pos)
     self.point = axis.plot(*self.pos, color=self.clr[self.state], marker="o", markersize=8)[0]
-    self.annotation = axis.annotate(self.ID, xy=(self.pos[0], self.pos[1]), fontsize=14)
+    self.annotation = axis.annotate(self.ID, xy=(self.pos[0], self.pos[1]+0.003), fontsize=14)
 
     return self.point, self.annotation
   
