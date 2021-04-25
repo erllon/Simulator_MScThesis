@@ -94,9 +94,13 @@ def simulate(dt, mins, scs, env):
   print(f"Total elapsed time for simulation: {tot}")
   print(f"minimum number of neighbors: {min(beacons, key=lambda b: len(b.neighbors))}")
   print("positions of the beacons:")
-  for b in beacons:
-    print(b.pos[0])
+  pos_diff = []
+  for i in range(len(beacons)):
+    print(beacons[i].pos[0])
+    if i > 0:
+      pos_diff.append(beacons[i].pos[0] - beacons[i-1].pos[0])
   print(uniformity_list)
+  print(pos_diff)
   
   # s = io.StringIO()
   # sortby = SortKey.CUMULATIVE
