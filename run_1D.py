@@ -78,7 +78,6 @@ def simulate(dt, mins, scs, env):
     
     print(f"min {mins[i].ID} landed at pos\t\t\t {mins[i].pos}")
     print(f"min {mins[i].ID} tot_vec = {mins[i].tot_vec}")
-    print(f"distance between n+1 and n = {np.linalg.norm(beacons[-1].pos-beacons[-2].pos)}")
     # print(f"min {mins[i].ID} target\t\t\t\t {mins[i].target_pos}")
     print(f"min {mins[i].ID} neighbors: {[n.ID for n in mins[i].neighbors]}")
     print(f"distance between n+1 and n = {np.linalg.norm(beacons[-1].pos-beacons[-2].pos)}")
@@ -99,8 +98,8 @@ def simulate(dt, mins, scs, env):
     print(beacons[i].pos[0])
     if i > 0:
       pos_diff.append(beacons[i].pos[0] - beacons[i-1].pos[0])
-  print(uniformity_list)
-  print(pos_diff)
+  print(f"uniformity_list: {uniformity_list}")
+  print(f"pos_diff: {pos_diff}")
   
   # s = io.StringIO()
   # sortby = SortKey.CUMULATIVE
