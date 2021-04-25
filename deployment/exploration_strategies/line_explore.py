@@ -1,3 +1,4 @@
+from beacons.beacon import Beacon
 from deployment.exploration_strategies.exploration_strategy import (
     ExplorationStrategy,
     AtLandingConditionException
@@ -17,6 +18,7 @@ class LineExploreKind(IntEnum):
 
 class LineExplore(ExplorationStrategy):
 
+  # MIN_RSSI_NEIGH_THRESHOLD = 0.2
   MIN_RSSI_STRENGTH_BEFORE_LAND = 0.22
 
   def __init__(self, K_o=1, force_threshold=0.1, kind=LineExploreKind.ONE_DIM_GLOBAL): #RSSI_threshold=0.6
@@ -41,6 +43,7 @@ class LineExplore(ExplorationStrategy):
 
     x_is = np.concatenate([b.pos.reshape(2, 1) for b in beacons], axis=1)
     xi_is = np.array([MIN.get_xi_to_other_from_model(b) for b in beacons])
+    dists = np.array([np.abs(MIN.pos[0] - b.pos[0]) for b in beacons])
     MIN._xi_traj = np.column_stack((MIN._xi_traj, xi_is))
 
     """ LOCAL METHODS """
@@ -48,54 +51,65 @@ class LineExplore(ExplorationStrategy):
     land_due_to_no_neighs = len(neigh_indices) == 0
     if land_due_to_no_neighs:
         print(f"{MIN.ID} landed due to RSSI below threshold")
+        raise AtLandingConditionException
     else:
 
       x_is = x_is[:, neigh_indices]
       xi_is = xi_is[neigh_indices]
+      dists = dists[neigh_indices]
 
-      if self.kind == LineExploreKind.ONE_DIM_LOCAL:
-        x_is = x_is[0, :]
+      x_is = x_is[0, :]
 
-        m = np.argmax(x_is)
+      m = np.argmax(x_is)
 
-        delta_is = np.array([b.get_xi_max_decrease() for b in beacons[neigh_indices]])
+      delta_is = np.array([b.get_xi_max_decrease() for b in beacons[neigh_indices]])
 
-        
-        """ Test """
-        # k_is = np.ones(x_is.shape)
-        # a_is = 1.1*np.ones(x_is.shape)
+      derivative_RSSI = -(MIN.xi_max/2)*MIN._omega*np.sin(MIN._omega*np.abs(dists) + MIN._phi)
+      
+      """ Test """
+      # k_is = np.ones(x_is.shape)
+      # a_is = 1.1*np.ones(x_is.shape)
 
-        # a_is[m] = (1/k_is[m])*np.sum(k_is) + 1
+      # a_is[m] = (1/k_is[m])*np.sum(k_is) + 1
 
 
-        """ Leads to equally spaced drones """
-        k_is = np.zeros(x_is.shape)
-        a_is = np.zeros(x_is.shape)
-        k_is[m] = 2*1
-        a_is[m] = 1
+      """ Leads to equally spaced drones """
+      k_is = np.zeros(x_is.shape)
+      a_is = np.zeros(x_is.shape)
+      k_is[m] = 1
+      a_is[m] = 1
 
-        """ Using qualitative info. about xi function vol. 1"""
-        # a_is = np.ones(x_is.shape)
-        # a_is[m] = 1.5
-        # k_is = np.zeros(x_is.shape)
-        # k_is[m] = 2
+      """ Using qualitative info. about xi function vol. 1"""
+      # k_is = np.zeros(x_is.shape)        
+      # a_is = np.ones(x_is.shape)
+      # k_is[m] = 1
+      # a_is[m] = 1.1 
 
-        assert (k_is >= 0).all() and \
-               (a_is >= 0).all() and \
-               len((k_is[np.nonzero(a_is)])) > 0 and \
-               (a_is[m] >= 1).all() and \
-               (k_is[m]*(a_is[m]-1) >= np.sum(k_is[:m]*(1 + a_is[:m]*delta_is[:m])) or np.isclose(k_is[m]*(a_is[m]-1), np.sum(k_is[:m]*(1 + a_is[:m]*delta_is[:m])))),\
-          f"""
-          Conditions on constants a_i and k_i do not hold. Cannot guarantee x_n_plus_one > max(x_i) for i in neighbors of nu_n_plus_one.
-          len(k_is[np.nonzero(a_is)]) = {len(k_is[np.nonzero(a_is)])} >? 0
-          {k_is} >=? 0 and
-          {a_is} >=? 0 and
-          {a_is[m]} >=? 1 and
-          {k_is[m]*(a_is[m]-1)} >=? {np.sum(k_is[:m] + a_is[:m]*delta_is[:m])} and {a_is[m]} >= 1.
-          """
-          
-        F_n = np.array([-np.sum(k_is*(MIN.pos[0] - a_is*(x_is + xi_is))), 0])
-    F_n = self.__clamp(F_n,17)
+      beta_is = a_is*derivative_RSSI
+
+      assert (k_is >= 0).all() and \
+              (a_is >= 0).all() and \
+              len((k_is[np.nonzero(a_is)])) > 0 and \
+              (a_is[m] >= 1).all() and \
+              (k_is[m]*(a_is[m]-1) >= np.sum(k_is[:m]*(1 + a_is[:m]*delta_is[:m])) or np.isclose(k_is[m]*(a_is[m]-1), np.sum(k_is[:m]*(1 + a_is[:m]*delta_is[:m])))),\
+        f"""
+        Conditions on constants a_i and k_i do not hold. Cannot guarantee x_n_plus_one > max(x_i) for i in neighbors of nu_n_plus_one.
+        len(k_is[np.nonzero(a_is)]) = {len(k_is[np.nonzero(a_is)])} >? 0
+        {k_is} >=? 0 and
+        {a_is} >=? 0 and
+        {a_is[m]} >=? 1 and
+        {k_is[m]*(a_is[m]-1)} >=? {np.sum(k_is[:m] + a_is[:m]*delta_is[:m])} and {a_is[m]} >= 1.
+        """
+        # print(f"a_is*derivative_RSSI: {a_is*derivative_RSSI}")
+      F_n = np.array([-np.sum(k_is*(MIN.pos[0] - a_is*(x_is + xi_is)*(1-beta_is))), 0])
+        # print(f"k_is[m]:{k_is[m]}")
+        # print(f"(MIN.pos[0] - a_is[m]*(x_is[m] + xi_is[m]):{(MIN.pos[0] - a_is[m]*(x_is[m] + xi_is[m]))}")
+        # print(f"derivative_RSSI[m]:{derivative_RSSI[m]}")
+        # print(f"a_is[m]:{a_is[m]}")
+
+        # F_n = np.array([-k_is[m]*(MIN.pos[0] - a_is[m]*(x_is[m] + xi_is[m])*(1-a_is[m]*derivative_RSSI[m])),0])
+        # F_n = np.array([-k_is[m]*(MIN.pos[0] - a_is[m]*(x_is[m] + xi_is[m])*(1-a_is[m]*derivative_RSSI)), 0])
+    F_n = self.__clamp(F_n,2)
     F = F_n
     at_landing_condition = land_due_to_no_neighs or np.linalg.norm(F) <= self.force_threshold
     if at_landing_condition:
