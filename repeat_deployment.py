@@ -16,7 +16,7 @@ import json, codecs
 from copy import deepcopy
 
 
-_animate, save_animation, plot_propterties = False,False,False#True, True, False
+_animate, save_animation, plot_propterties = False,False,True#True, True, False
 
 if not _animate:
 # Animation runs way faster when using default styles
@@ -62,7 +62,7 @@ else:
         }
     )
 
-file_path = r'json_files/useful_open_small3_random_45_limit_03.json'
+file_path = r'json_files/line_explore_equal_dist.json'
 obj_text = codecs.open(file_path, 'r', encoding='utf-8').read()
 json_data = json.loads(obj_text)
 
@@ -116,7 +116,7 @@ for e in range(len(mins2)):
     mins2[e].heading = mins2[e]._heading_traj[-1]
     mins2[e].pos = np.array([mins2[e]._pos_traj[0][-1], mins2[e]._pos_traj[1][-1]])
     mins2[e].state = MinState(mins2[e].state_traj[-1])
-
+mins2[-1]._xi_traj = np.array(json_data['beacons'][e+1]['xi_traj'])
 mins_to_plot = deepcopy(mins2[:stop_min_ID])
 
 uniformity_list = json_data['uniformity']
@@ -134,15 +134,19 @@ if plot_propterties:
         ax1_2.title.set_text(r"$\left\|\| F_{applied} \right\|\|$") #Set title
         ax1_3.title.set_text(r"$\xi$ from neighbors")
     else:
-        fig2 = plt.figure(figsize=(5,5), tight_layout=True)
-        fig2.canvas.set_window_title('Replay properties')
+        fig2 = plt.figure(figsize=(5.2,3))#plt.figure(figsize=(5,5), tight_layout=True)
+        fig2.canvas.set_window_title('Replay force')
+        fig3 = plt.figure(figsize=(5.2,3))
+        fig3.canvas.set_window_title('Replay xi')
         ax1_1 = fig.add_subplot(1,1,1)
-        ax2_1 = fig2.add_subplot(2,1,1)
-        ax2_2 = fig2.add_subplot(2,1,2)
+        ax2_1 = fig2.add_subplot(1,1,1)
+        # ax2_2 = fig2.add_subplot(2,1,2)
+        ax3_1 = fig3.add_subplot(1,1,1)
 
         ax1_1.title.set_text("Deployment")
         ax2_1.title.set_text(r"$\left\|\| F_{applied} \right\|\|$") #Set title
-        ax2_2.title.set_text(r"$\xi$ from neighbors") 
+        # ax2_2.title.set_text(r"$\xi$ from neighbors")
+        ax3_1.title.set_text(r"$\xi$ from neighbors") 
 else:
     ax = fig.add_subplot(1,1,1)
     ax.title.set_text("Deployment")
@@ -229,8 +233,16 @@ else:
             mn.plot_traj_line(ax1_1)
             # mn.plot_vectors(env_from_json, ax1_1)
             mn.plot_force_traj_line(ax2_1)
-            mn.plot_xi_traj_line(ax2_2)
-        ax2_1.legend(ncol=2, prop={'size': 9})
+            # mn.plot_xi_traj_line(ax2_2)
+        # mins_to_plot[-1].plot_xi_traj_line(ax2_2)
+        mins_to_plot[-1].plot_xi_traj_line(ax3_1)
+
+        # ax2_1.legend(ncol=2, prop={'size': 9})
+        # ax3_1.legend(ncol=2, prop={'size': 9})
+        ax2_1.legend(ncol=1, prop={'size': 9}, handlelength=1, bbox_to_anchor=(1.13,1), borderaxespad=0)
+        ax3_1.legend(ncol=1, prop={'size': 9}, handlelength=1, bbox_to_anchor=(1.13,1), borderaxespad=0)
+
+
     else:
         env_from_json.plot(ax)
         scs_from_json.plot(ax)
