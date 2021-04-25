@@ -62,7 +62,7 @@ else:
         }
     )
 
-file_path = r'json_files/line_explore_diff_dists.json'
+file_path = r'json_files/line_explore_test123.json'
 obj_text = codecs.open(file_path, 'r', encoding='utf-8').read()
 json_data = json.loads(obj_text)
 
@@ -219,7 +219,7 @@ if _animate:
         # anim.save(f, writer=writergif)
 
         animation_name_gif = "animation_test.gif"
-        animation_name_video = "animation_test_video_small_2.mp4"
+        animation_name_video = "animation_test123.mp4"
         print("Saving animation")
         # anim.save(animation_name, writer=writergif)
         anim.save(animation_name_video,writer=writervideo)   
