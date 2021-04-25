@@ -62,7 +62,7 @@ else:
         }
     )
 
-file_path = r'json_files/line_explore_equal_dist.json'
+file_path = r'json_files/line_explore_diff_dists.json'
 obj_text = codecs.open(file_path, 'r', encoding='utf-8').read()
 json_data = json.loads(obj_text)
 
@@ -77,7 +77,7 @@ d_perf_from_json = json_data['parameters']['d_perf']
 delta_expl_angle_from_json = json_data['parameters']['delta_expl_angle']
 xi_max_from_json = json_data['parameters']['xi_max']
 
-scs_from_json = SCS(json_data['beacons'][0]['ID'], max_range_from_json)
+scs_from_json = SCS(json_data['beacons'][0]['ID'], max_range_from_json, xi_max=xi_max_from_json, d_perf=d_perf_from_json, d_none=d_none_from_json)
 
 env_from_json = Env(
     entrance_point_from_json,
