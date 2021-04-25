@@ -47,7 +47,7 @@ class LineExplore(ExplorationStrategy):
     neigh_indices, = np.where(xi_is > self.MIN_RSSI_STRENGTH_BEFORE_LAND)#np.where(xi_is > self.RSSI_THRESHOLD)
     land_due_to_no_neighs = len(neigh_indices) == 0
     if land_due_to_no_neighs:
-        print(f"{MIN.ID} STOPPED due to no neighs")
+        print(f"{MIN.ID} landed due to RSSI below threshold")
     else:
 
       x_is = x_is[:, neigh_indices]
@@ -99,9 +99,10 @@ class LineExplore(ExplorationStrategy):
     F = F_n
     at_landing_condition = land_due_to_no_neighs or np.linalg.norm(F) <= self.force_threshold
     if at_landing_condition:
-      # print(f"xi_is[m] = {xi_is[m]}")
-      # print(f"F[0] = {F[0]}")
-      # print(f"xi_is[m]-F[0] = {xi_is[m]-F[0]}")
+      if land_due_to_no_neighs and not np.linalg.norm(F) <= self.force_threshold:
+        print("Landed due to no neighs")
+      elif not land_due_to_no_neighs and np.linalg.norm(F) <= self.force_threshold:
+        print("Landed due to too low force")
       raise AtLandingConditionException
     return F
     
