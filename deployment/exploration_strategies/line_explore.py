@@ -47,24 +47,25 @@ class LineExplore(ExplorationStrategy):
     MIN._xi_traj = np.column_stack((MIN._xi_traj, xi_is))
 
     """ LOCAL METHODS """
-    neigh_indices, = np.where(xi_is > self.MIN_RSSI_STRENGTH_BEFORE_LAND)#np.where(xi_is > self.RSSI_THRESHOLD)
-    land_due_to_no_neighs = len(neigh_indices) == 0
+    neigh_indices_within_landing_threshold, = np.where(xi_is > self.MIN_RSSI_STRENGTH_BEFORE_LAND*MIN.xi_max)#np.where(xi_is > self.RSSI_THRESHOLD)
+    actual_neigh_indices, = np.where(xi_is > Beacon.RSSI_THRESHOLD_NEIGHBORS*MIN.xi_max)
+    land_due_to_no_neighs = len(neigh_indices_within_landing_threshold) == 0
     if land_due_to_no_neighs:
         print(f"{MIN.ID} landed due to RSSI below threshold")
         raise AtLandingConditionException
     else:
 
-      x_is = x_is[:, neigh_indices]
-      xi_is = xi_is[neigh_indices]
-      dists = dists[neigh_indices]
+      x_is = x_is[:, actual_neigh_indices]
+      xi_is = xi_is[actual_neigh_indices]
+      dists = dists[actual_neigh_indices]
 
       x_is = x_is[0, :]
 
       m = np.argmax(x_is)
 
-      delta_is = np.array([b.get_xi_max_decrease() for b in beacons[neigh_indices]])
-
-      derivative_RSSI = -(MIN.xi_max/2)*MIN._omega*np.sin(MIN._omega*np.abs(dists) + MIN._phi)
+      delta_is = np.array([b.get_xi_max_decrease() for b in beacons[actual_neigh_indices]])
+      derivative_RSSI = [-(MIN.xi_max/2)*MIN._omega*np.sin(MIN._omega*d + MIN._phi) if MIN.d_perf < d and d < MIN.d_none else 0 for d in dists]
+      # derivative_RSSI = -(MIN.xi_max/2)*MIN._omega*np.sin(MIN._omega*np.abs(dists) + MIN._phi)
       
       """ Test """
       # k_is = np.ones(x_is.shape)
@@ -83,7 +84,7 @@ class LineExplore(ExplorationStrategy):
       # k_is = np.zeros(x_is.shape)        
       # a_is = np.ones(x_is.shape)
       # k_is[m] = 1
-      # a_is[m] = 1.1 
+      # a_is[m] = 1.1
 
       beta_is = a_is*derivative_RSSI
 
@@ -109,7 +110,7 @@ class LineExplore(ExplorationStrategy):
 
         # F_n = np.array([-k_is[m]*(MIN.pos[0] - a_is[m]*(x_is[m] + xi_is[m])*(1-a_is[m]*derivative_RSSI[m])),0])
         # F_n = np.array([-k_is[m]*(MIN.pos[0] - a_is[m]*(x_is[m] + xi_is[m])*(1-a_is[m]*derivative_RSSI)), 0])
-    F_n = self.__clamp(F_n,2)
+    F_n = self.__clamp(F_n,3)
     F = F_n
     at_landing_condition = land_due_to_no_neighs or np.linalg.norm(F) <= self.force_threshold
     if at_landing_condition:
