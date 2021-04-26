@@ -232,11 +232,16 @@ class Min(Beacon):
     self.force_traj_line, = axis.plot(np.linspace(start=0, stop=len(self._v_traj),num=len(self._v_traj)), self._v_traj, label=rf"$\nu_{{{self.ID}}}$")
     return self.force_traj_line
 
-  def plot_xi_traj_line(self, axis):    
+  def plot_xi_traj_line(self, axis):  
+    xi_clr_cycle = plt.rcParams['axes.prop_cycle'].by_key()['color']  
     self.xi_traj_line = np.array([])
     for i in range(self._xi_traj.shape[0]):
       if np.array(self._xi_traj[i,:] != 0).any():
-        tmp, = axis.plot(np.linspace(start=0, stop=len(self._xi_traj[i,:]),num=len(self._xi_traj[i,:])), self._xi_traj[i], label=rf"$\nu_{{{i}}}$")
+        tmp, = axis.plot(np.linspace(start=0, stop=len(self._xi_traj[i,:]),num=len(self._xi_traj[i,:])), self._xi_traj[i], label=rf"$\nu_{{{i}}}$", color=xi_clr_cycle[i])
+        # if i == 0:
+        #   tmp, = axis.plot(np.linspace(start=0, stop=len(self._xi_traj[i,:]),num=len(self._xi_traj[i,:])), self._xi_traj[i], label=rf"$\nu_{{{i}}}$", color=xi_clr_cycle[self._xi_traj.shape[0]])
+        # else:
+        #   tmp, = axis.plot(np.linspace(start=0, stop=len(self._xi_traj[i,:]),num=len(self._xi_traj[i,:])), self._xi_traj[i], label=rf"$\nu_{{{i}}}$", color=xi_clr_cycle[i-1])
         self.xi_traj_line = np.append(self.xi_traj_line, tmp)
     return self.xi_traj_line
 
