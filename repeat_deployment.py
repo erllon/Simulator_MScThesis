@@ -62,7 +62,7 @@ else:
         }
     )
 
-file_path = r'json_files/line_explore_test123.json'
+file_path = r'json_files\line_explore_test123.json'
 obj_text = codecs.open(file_path, 'r', encoding='utf-8').read()
 json_data = json.loads(obj_text)
 
