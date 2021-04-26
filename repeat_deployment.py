@@ -18,7 +18,7 @@ from copy import deepcopy
 
 _animate, save_animation, plot_propterties = False,False,True#True, True, False
 
-if not _animate:
+if not _animate or (_animate and save_animation):
 # Animation runs way faster when using default styles
 # The below styles gives nicer looking plots
     try:
@@ -208,8 +208,9 @@ if _animate:
         else:
             plt_pos_traj =  mins_to_plot[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
             return plt_pos_traj
-
-    anim = FuncAnimation(fig, animate, init_func=init, interval=2, blit=False, save_count=2000)
+    
+    _save_count = 2000
+    anim = FuncAnimation(fig, animate, init_func=init, interval=2, blit=False, save_count=_save_count)
     
     if save_animation:
         # f = r"c://Users/xx/Desktop/animation.gif" 
@@ -220,7 +221,8 @@ if _animate:
 
         animation_name_gif = "animation_test.gif"
         animation_name_video = "animation_test123.mp4"
-        print("Saving animation")
+        print("Saving animation. Depending on the choise of 'save_count' this might take some time")
+        print(f"Chosen 'save_count' = {_save_count}")
         # anim.save(animation_name, writer=writergif)
         anim.save(animation_name_video,writer=writervideo)   
         print(f"Animation saved to {animation_name_video}")
