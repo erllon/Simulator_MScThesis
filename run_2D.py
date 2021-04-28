@@ -236,7 +236,7 @@ if __name__ == "__main__":
   file_path = r'json_files\ds_test_123.json'
   dt = 0.01
 
-  scs = SCS(Beacon.get_ID(), max_range)
+  scs = SCS(Beacon.get_ID(), max_range,xi_max=_xi_max, d_perf=_d_perf, d_none=_d_none)
   """ Potential fields exploration """
   mins = [
     Min(
