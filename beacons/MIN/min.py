@@ -113,7 +113,8 @@ class Min(Beacon):
     avg_ang_from_neigh = np.sum(ang_from_neighs, axis=0)/len(ang_from_neighs)
     
     """Calculating vectors FROM drone TO obstacles"""
-    vecs_from_obs, ang_from_obs = Min.get_obs_vecs_and_angles(self, ENV)
+    # vecs_from_obs, ang_from_obs = Min.get_obs_vecs_and_angles(self, ENV)
+    vecs_from_obs, _ = Min.get_obs_vecs_and_angles(self, ENV)
 
     expl_ang = 0
     ang_tot_vec_from_obs = 0
@@ -184,6 +185,9 @@ class Min(Beacon):
         
         length = s.measurement.get_val()
         angle_sensor_frame = s.measurement.get_angle()
+        meas_vec_sensor_frame = p2v(length, angle_sensor_frame)
+        meas_vec_world_frame = R_z(s.host.heading)[:2,:2]@R_z(s.host_relative_angle)[:2,:2]@meas_vec_sensor_frame
+        vec_away_from_obs = -meas_vec_world_frame
         angle_world_frame = angle_sensor_frame + s.host.heading + s.host_relative_angle
         vec_from_obs = -p2v(length, angle_world_frame)
         """Scaling the vector that points towards the obstalce
@@ -192,8 +196,12 @@ class Min(Beacon):
         """Vector FROM drone TO obstacle"""
 
         vec_from_obs = (MIN.range - meas_length)*normalize(vec_from_obs)
+        vec_from_obs2 = (MIN.range - meas_length)*normalize(vec_away_from_obs)
 
-        vecs_from_obs.append(vec_from_obs.reshape(2, ))
+
+        # vecs_from_obs.append(vec_from_obs.reshape(2, ))
+        vecs_from_obs.append(vec_from_obs2.reshape(2, ))
+
         ang_from_obs.append(gva(vec_from_obs.reshape(2, )))
 
     return vecs_from_obs, ang_from_obs     
