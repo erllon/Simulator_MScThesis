@@ -245,7 +245,7 @@ class Min(Beacon):
     self.xi_traj_line = np.array([])
     for i in range(self._xi_traj.shape[0]):
       if np.array(self._xi_traj[i,:] != 0).any():
-        tmp, = axis.plot(np.linspace(start=0, stop=len(self._xi_traj[i,:]),num=len(self._xi_traj[i,:])), self._xi_traj[i], label=rf"$\nu_{{{i}}}$", color=xi_clr_cycle[i-1])
+        tmp, = axis.plot(np.linspace(start=0, stop=len(self._xi_traj[i,:]),num=len(self._xi_traj[i,:])), self._xi_traj[i], label=rf"$\nu_{{{i}}}$")#), color=xi_clr_cycle[i-1])
         # if i == 0:
         #   tmp, = axis.plot(np.linspace(start=0, stop=len(self._xi_traj[i,:]),num=len(self._xi_traj[i,:])), self._xi_traj[i], label=rf"$\nu_{{{i}}}$", color=xi_clr_cycle[self._xi_traj.shape[0]])
         # else:
