@@ -55,6 +55,7 @@ def simulate(dt, mins, scs, env):
 
   while i < N_mins:#uniformity_list[-1] < limit and i < N_mins:#delta_uniformity <= limit:
   # for i in range(len(mins)):
+    print(f"file: {file_path}")
     mins[i].insert_into_environment(env)
     while not mins[i].state == MinState.LANDED:
       mins[i].do_step(beacons, scs, env, dt)
@@ -216,11 +217,39 @@ if __name__ == "__main__":
       ])      
     ]
 
+  stripa = [
+    np.array( 
+      [
+        [-1, -1],
+        [(-1 + 20),-1],
+        [(-1 + 20), (-1 + 3)],
+        [(-1 + 20 + 2),   (-1 + 3)],
+        [(-1 + 20 + 2),  -1],
+        [((-1 + 20 + 2) + 20), -1],
+        [((-1 + 20 + 2) + 20), (-1 + 3)],
+        [((-1 + 20 + 2) + 20 + 2),  (-1 + 3)],
+        [((-1 + 20 + 2) + 20 + 2),  -1],
+        [(((-1 + 20 + 2) + 20 + 2) + 20), -1],
+        [(((-1 + 20 + 2) + 20 + 2) + 20), 9],
+        [(((-1 + 20 + 2) + 20 + 2)), 9],
+        [((-1 + 20 + 2) + 20 + 2), (9 - 3)],
+        [((-1 + 20 + 2) + 20) , (9 - 3)],
+        [((-1 + 20 + 2) + 20) ,9],
+        [((-1 + 20 + 2)), 9],
+        [(-1 + 20 + 2) ,(9 - 3)],
+        [(-1 + 20) ,(9 - 3)],
+        [(-1 + 20) ,9],
+        [-1,  9],
+        [-1,  9]
+      ],
+    )
+  ]
+
   env = Env(
     np.array([
       0, 0
     ]),
-    obstacle_corners = open_small#open_large #[]#open_w_sq_obs #open_large#obs_zig_zag#[]#
+    obstacle_corners = stripa#open_small#open_large #[]#open_w_sq_obs #open_large#obs_zig_zag#[]#
   )
   data['environment'].append(env.toJson())
 
@@ -397,3 +426,5 @@ if __name__ == "__main__":
   ax_uniformity.plot(uniformity_list, "or")
 
   plt.show()
+
+# %%
