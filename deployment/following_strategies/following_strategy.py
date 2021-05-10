@@ -19,7 +19,7 @@ class AtTargetException(Exception):
 class FollowingStrategy(ABC):
 
     MAX_FOLLOWING_SPEED = 2
-    MIN_RSSI_SWITCH_BEACON = np.exp(-0.05)
+    MIN_RSSI_SWITCH_BEACON = 0.95#np.exp(-0.05)
     DEADZONE_RSSI_STRENGTH = np.exp(-0.05)
 
     def __init__(self, same_num_neighs_differentiator, rand_lim = np.pi/4):
