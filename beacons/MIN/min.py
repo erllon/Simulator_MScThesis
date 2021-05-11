@@ -167,8 +167,8 @@ class Min(Beacon):
     for n in MIN.neighbors:
       if not (MIN.get_vec_to_other(n) == 0).all():
         vec_from_neigh = -MIN.get_vec_to_other(n).reshape(2, 1)
-        dist = np.linalg.norm(vec_from_neigh) #when using xi for RSSI, dist will be in the interval (d_perf, d_none)
-        scaling = MIN.d_none
+        dist = np.linalg.norm(vec_from_neigh) #when using xi for RSSI, dist will be in the interval (0, 1.7916)
+        scaling = MIN.d_none#1.7916#
 
         vecs_from_neighs.append((scaling-dist)*normalize(vec_from_neigh))        
         
