@@ -108,10 +108,20 @@ class Min(Beacon):
     self.compute_neighbors(beacons)
 
     """Computing vectors FROM neighbors TO drone"""
-    vecs_from_neighs, ang_from_neighs = Min.get_neigh_vecs_and_angles(self)
-    tot_vec_from_neigh = np.sum(vecs_from_neighs,axis=0)
-    avg_ang_from_neigh = np.sum(ang_from_neighs, axis=0)/len(ang_from_neighs)
-    
+    returned_vecs, ang_from_neighs = Min.get_neigh_vecs_and_angles(self)
+    vecs_from_neighs = np.array(returned_vecs)
+    if vecs_from_neighs.shape[0] == 1:
+      # sorted_vecs_from_neighs = vecs_from_neighs
+      tot_vec_from_neigh = vecs_from_neighs#vecs_from_neighs
+    else:
+      sortidxs = np.argsort(np.linalg.norm(vecs_from_neighs[:], axis=-1))
+      sorted_vecs_from_neighs = vecs_from_neighs[sortidxs]#vecs_from_neighs[sortidxs]
+      # sorted_ang_from_neighs = ang_from_neighs[sortidxs]
+
+    # tot_vec_from_neigh = np.sum(vecs_from_neighs,axis=0)
+    # avg_ang_from_neigh = np.sum(ang_from_neighs, axis=0)/len(ang_from_neighs)
+    # 
+      tot_vec_from_neigh = np.sum(sorted_vecs_from_neighs[:4],axis=0)
     """Calculating vectors FROM drone TO obstacles"""
     # vecs_from_obs, ang_from_obs = Min.get_obs_vecs_and_angles(self, ENV)
     vecs_from_obs, _ = Min.get_obs_vecs_and_angles(self, ENV)
@@ -126,7 +136,7 @@ class Min(Beacon):
       ang_tot_vec_from_obs = gva(tot_vec_from_obs)
       self.obs_vec = p2v(1, ang_tot_vec_from_obs)
 
-      tot_vec_comb = tot_vec_from_obs.reshape(2, ) + tot_vec_from_neigh.reshape(2, )
+      tot_vec_comb = 0.5*tot_vec_from_obs.reshape(2, ) + 0.5*tot_vec_from_neigh.reshape(2, )
       ang_tot_vec_comb = gva(tot_vec_comb)
       expl_ang = ang_tot_vec_comb 
     else:
@@ -166,9 +176,9 @@ class Min(Beacon):
     vecs_from_neighs, ang_from_neighs = [], []
     for n in MIN.neighbors:
       if not (MIN.get_vec_to_other(n) == 0).all():
-        vec_from_neigh = -MIN.get_vec_to_other(n).reshape(2, 1)
+        vec_from_neigh = -MIN.get_vec_to_other(n)#.reshape(2, 1)
         dist = np.linalg.norm(vec_from_neigh) #when using xi for RSSI, dist will be in the interval (0, 1.7916)
-        scaling = MIN.d_none#1.7916#
+        scaling = 1.7916#MIN.d_none##
 
         vecs_from_neighs.append((scaling-dist)*normalize(vec_from_neigh))        
         
