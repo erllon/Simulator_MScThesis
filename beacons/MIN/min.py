@@ -109,8 +109,19 @@ class Min(Beacon):
 
     """Computing vectors FROM neighbors TO drone"""
     vecs_from_neighs, ang_from_neighs = Min.get_neigh_vecs_and_angles(self)
-    tot_vec_from_neigh = np.sum(vecs_from_neighs,axis=0)
-    avg_ang_from_neigh = np.sum(ang_from_neighs, axis=0)/len(ang_from_neighs)
+    test = np.array(vecs_from_neighs)
+    if test.shape[0] == 1:
+      # sorted_vecs_from_neighs = vecs_from_neighs
+      tot_vec_from_neigh = test#vecs_from_neighs
+    else:
+      sortidxs = np.argsort(np.linalg.norm(vecs_from_neighs[:], axis=-1))
+      sorted_vecs_from_neighs = test[sortidxs]#vecs_from_neighs[sortidxs]
+      # sorted_ang_from_neighs = ang_from_neighs[sortidxs]
+
+    # tot_vec_from_neigh = np.sum(vecs_from_neighs,axis=0)
+    # avg_ang_from_neigh = np.sum(ang_from_neighs, axis=0)/len(ang_from_neighs)
+    # 
+      tot_vec_from_neigh = np.sum(sorted_vecs_from_neighs[:4],axis=0)
     
     """Calculating vectors FROM drone TO obstacles"""
     # vecs_from_obs, ang_from_obs = Min.get_obs_vecs_and_angles(self, ENV)
@@ -126,7 +137,7 @@ class Min(Beacon):
       ang_tot_vec_from_obs = gva(tot_vec_from_obs)
       self.obs_vec = p2v(1, ang_tot_vec_from_obs)
 
-      tot_vec_comb = tot_vec_from_obs.reshape(2, ) + tot_vec_from_neigh.reshape(2, )
+      tot_vec_comb = 0.9*tot_vec_from_obs.reshape(2, ) + 0.1*tot_vec_from_neigh.reshape(2, )
       ang_tot_vec_comb = gva(tot_vec_comb)
       expl_ang = ang_tot_vec_comb 
     else:
@@ -146,7 +157,7 @@ class Min(Beacon):
 
     # Could increase the distance the target point is generated at, to increase the force applied to the min
     # It is the fact that the distance is 1 that the force is not saturated when entering the exploration phase
-    target_pos = self.pos + p2v(1, next_min.target_angle)
+    target_pos = self.pos + p2v(2, next_min.target_angle) #1.5
     
     if next_min.first_target_pos == None:
       next_min.first_target_pos = deepcopy(target_pos.reshape(2, ))
@@ -163,16 +174,17 @@ class Min(Beacon):
 
   @staticmethod
   def get_neigh_vecs_and_angles(MIN):
-    vecs_from_neighs, ang_from_neighs = [], []
+    vecs_from_neighs, ang_from_neighs = [], []#np.array([]), np.array([]) #[], []#
     for n in MIN.neighbors:
       if not (MIN.get_vec_to_other(n) == 0).all():
-        vec_from_neigh = -MIN.get_vec_to_other(n).reshape(2, 1)
+        vec_from_neigh = -MIN.get_vec_to_other(n)#.reshape(2,))
         dist = np.linalg.norm(vec_from_neigh) #when using xi for RSSI, dist will be in the interval (0, 1.7916)
         scaling = 4#MIN.d_none#1.7916#
 
-        vecs_from_neighs.append((scaling-dist)*normalize(vec_from_neigh))        
-        
+        vecs_from_neighs.append((scaling-dist)*normalize(vec_from_neigh))
         ang_from_neighs.append(gva(vec_from_neigh.reshape(2, )))
+        # vecs_from_neighs = np.append(vecs_from_neighs, (scaling-dist)*normalize(vec_from_neigh),axis=-1)
+        # ang_from_neighs = np.append(ang_from_neighs, gva(vec_from_neigh.reshape(2, )))
     return vecs_from_neighs, ang_from_neighs
     
   @staticmethod
