@@ -245,23 +245,32 @@ if __name__ == "__main__":
     )
   ]
 
+  open_uniformity_comp = [
+      np.array([
+        [-1, -1],
+        [-1,  9],
+        [ 9,  9],
+        [ 9, -1],
+      ]),
+    ]
+
   env = Env(
     np.array([
       0, 0
     ]),
-    obstacle_corners = stripa#open_small#open_large #[]#open_w_sq_obs #open_large#obs_zig_zag#[]#
+    obstacle_corners = open_uniformity_comp#open_large #stripa#open_small#[]#open_w_sq_obs #open_large#obs_zig_zag#[]#
   )
   data['environment'].append(env.toJson())
 
 # %%Parameter initialization
-  max_range = 3
+  max_range = 2#3
   _xi_max = 1
-  _d_perf = 0.1
-  _d_none = 2.5
-  _delta_expl_angle = 0#np.pi/4 #np.pi/6
+  _d_perf = 0.18#0.1
+  _d_none = 5.6#2.5
+  _delta_expl_angle = np.pi/4 #0#np.pi/6
   _K_o = 0.9
 
-  N_mins = 6
+  N_mins = 15
   file_path = r'json_files\ds_test_123.json'
   dt = 0.01
 
