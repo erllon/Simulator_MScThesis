@@ -245,6 +245,15 @@ if __name__ == "__main__":
     )
   ]
 
+  open_uniformity_comp = [
+    np.array([
+      [-1, -1],
+      [-1,  9],
+      [ 9,  9],
+      [ 9, -1],
+    ]),
+  ]
+
   env = Env(
     np.array([
       0, 0
