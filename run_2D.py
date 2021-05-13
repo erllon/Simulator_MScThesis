@@ -263,11 +263,11 @@ if __name__ == "__main__":
   data['environment'].append(env.toJson())
 
 # %%Parameter initialization
-  max_range = 2#2#3
+  max_range = 2#3
   _xi_max = 1
   _d_perf = 0.18#0.1
   _d_none = 5.6#2.5
-  _delta_expl_angle = np.pi/6#np.pi/4 #0#
+  _delta_expl_angle = np.pi/4#np.pi/6# #0#
   _K_o = 1.2#0.9
 
   N_mins = 15#7
