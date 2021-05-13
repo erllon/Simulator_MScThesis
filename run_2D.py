@@ -87,6 +87,10 @@ def simulate(dt, mins, scs, env):
     print(f"uniformity after min {mins[i].ID} landed: {uniformity_list[-1]}")
     print("------------------")
     i += 1
+
+  for b in beacons:
+    b.compute_neighbors(beacons)
+    print(f"Beacon ID {b.ID}, neighbors: {[neigh.ID for neigh in b.neighbors]}")
   pr.disable()
   toc = timeit.default_timer()
   tot = toc - tic
@@ -265,12 +269,12 @@ if __name__ == "__main__":
 # %%Parameter initialization
   max_range = 2#3
   _xi_max = 1
-  _d_perf = 0.18#0.1
-  _d_none = 5.6#2.5
+  _d_perf = 0.1#0.18#0.1
+  _d_none = 2.8#5.6#2.5
   _delta_expl_angle = np.pi/4#np.pi/6# #0#
-  _K_o = 1.2#0.9
+  _K_o = 1.2#0.9#1.2
 
-  N_mins = 15#7
+  N_mins = 20#15#7
   file_path = r'json_files\ds_test_123.json'
   dt = 0.01
 

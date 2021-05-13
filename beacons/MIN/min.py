@@ -137,7 +137,7 @@ class Min(Beacon):
       ang_tot_vec_from_obs = gva(tot_vec_from_obs)
       self.obs_vec = p2v(1, ang_tot_vec_from_obs)
 
-      tot_vec_comb = 0.9*tot_vec_from_obs.reshape(2, ) + 0.1*tot_vec_from_neigh.reshape(2, )
+      tot_vec_comb = 0.5*tot_vec_from_obs.reshape(2, ) + 0.5*tot_vec_from_neigh.reshape(2, )
       ang_tot_vec_comb = gva(tot_vec_comb)
       expl_ang = ang_tot_vec_comb 
     else:
@@ -157,7 +157,7 @@ class Min(Beacon):
 
     # Could increase the distance the target point is generated at, to increase the force applied to the min
     # It is the fact that the distance is 1 that the force is not saturated when entering the exploration phase
-    target_pos = self.pos + p2v(2, next_min.target_angle) #1.5
+    target_pos = self.pos + p2v(1, next_min.target_angle) #1.5
     
     if next_min.first_target_pos == None:
       next_min.first_target_pos = deepcopy(target_pos.reshape(2, ))
@@ -179,7 +179,7 @@ class Min(Beacon):
       if not (MIN.get_vec_to_other(n) == 0).all():
         vec_from_neigh = -MIN.get_vec_to_other(n)#.reshape(2,))
         dist = np.linalg.norm(vec_from_neigh) #when using xi for RSSI, dist will be in the interval (0, 1.7916)
-        scaling = 4#MIN.d_none#1.7916#
+        scaling = 2#4#MIN.d_none#1.7916#
 
         vecs_from_neighs.append((scaling-dist)*normalize(vec_from_neigh))
         ang_from_neighs.append(gva(vec_from_neigh.reshape(2, )))
