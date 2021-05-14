@@ -62,12 +62,12 @@ else:
         }
     )
 
-# file_path = r'json_files\line_explore_test123.json'
-folder_path = r'..\large-json-files\Stripa'
-file_name = r'\stripa_80_drones_45_random_single_ray1.json'
-# obj_text = codecs.open(file_path, 'r', encoding='utf-8').read()
-test = folder_path + file_name
-obj_text = codecs.open(folder_path + file_name, 'r', encoding='utf-8').read()
+
+# folder_path = r'..\large-json-files\Stripa'
+# file_name = r'\stripa_80_drones_45_random_single_ray1.json'
+
+file_path = r'json_files\unif_comp_26.json' #folder_path + file_name
+obj_text = codecs.open(file_path, 'r', encoding='utf-8').read()
 json_data = json.loads(obj_text)
 
 obstacle_corners_from_json = [np.array(corner) for corner in json_data['environment'][0]['Obstacle_corners']]
