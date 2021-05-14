@@ -86,6 +86,10 @@ ax = fig.add_subplot(1,1,1)
 
 plt.xticks(range(len(average_uniformity)+1)) #ints on x-axis
 ax.plot(average_uniformity)
-ax.plot(average_uniformity, "or")
-
+ax.plot(average_uniformity, "or", markersize=4)
+# e = [i for i in range(len(average_uniformity))]
+# ee = average_uniformity
+# ax.bar([i for i in range(len(average_uniformity))], [u for u in average_uniformity], 0.1)
+# ax.plot(average_uniformity, "or", markersize=4)
+print(f"Final avg uniformity: {average_uniformity[-1]}")
 plt.show()
