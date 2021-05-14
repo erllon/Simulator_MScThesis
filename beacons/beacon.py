@@ -51,7 +51,7 @@ class Beacon():
     return dist < self.range and dist < other.range
 
   def compute_neighbors(self, others):
-    self.neighbors = list(filter(lambda other: self.get_xi_to_other_from_model(other) > Beacon.RSSI_THRESHOLD_NEIGHBORS*self.xi_max and self != other, others))
+    self.neighbors = list(filter(lambda other: self.get_xi_to_other_from_model(other) >= Beacon.RSSI_THRESHOLD_NEIGHBORS*self.xi_max and self != other, others))
   
   @abstractmethod
   def generate_target_pos(self, beacons, ENV, next_min):
