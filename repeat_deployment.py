@@ -16,7 +16,7 @@ import json, codecs
 from copy import deepcopy
 
 
-_animate, save_animation, plot_propterties = False,False,True#True, True, False
+_animate, save_animation, plot_propterties = False,False,False#True, True, False
 
 if not _animate or (_animate and save_animation):
 # Animation runs way faster when using default styles
@@ -41,7 +41,7 @@ if not _animate or (_animate and save_animation):
                 # Legend
                 "legend.frameon": True,
                 "legend.framealpha": 1.0,
-                "legend.fancybox": True,
+                "legend.fancybox": True,    
                 "legend.numpoints": 1,
             }
         )
@@ -49,7 +49,7 @@ else:
     plt.rcParams.update(
         {
             # setgrid
-            "axes.grid": True,
+            "axes.grid": False,#True,
             "grid.linestyle": ":",
             "grid.color": "k",
             "grid.alpha": 0.5,
@@ -62,11 +62,10 @@ else:
         }
     )
 
-
 # folder_path = r'..\large-json-files\Stripa'
 # file_name = r'\stripa_80_drones_45_random_single_ray1.json'
 
-file_path = r'json_files\unif_comp_26.json' #folder_path + file_name
+file_path = r'json_files\unif_comp_big_rc_2.json' #folder_path + file_name
 obj_text = codecs.open(file_path, 'r', encoding='utf-8').read()
 json_data = json.loads(obj_text)
 
@@ -125,7 +124,7 @@ mins_to_plot = deepcopy(mins2[:stop_min_ID])
 
 uniformity_list = json_data['uniformity']
 
-fig = plt.figure(figsize=(5.2,3))
+fig = plt.figure(figsize=(5,5))#plt.figure(figsize=(5.2,3))#
 fig.canvas.set_window_title('Replay')
 # plt.grid()
 
@@ -147,13 +146,14 @@ if plot_propterties:
         # ax2_2 = fig2.add_subplot(2,1,2)
         ax3_1 = fig3.add_subplot(1,1,1)
 
-        ax1_1.title.set_text("Deployment")
+        # ax1_1.title.set_text("Deployment")
+        ax1_1.grid(False)
         ax2_1.title.set_text(r"$\left\|\| F_{applied} \right\|\|$") #Set title
         # ax2_2.title.set_text(r"$\xi$ from neighbors")
         ax3_1.title.set_text(r"$\xi$ from neighbors") 
 else:
-    ax = fig.add_subplot(1,1,1)
-    ax.title.set_text("Deployment")
+    ax = fig.add_subplot(1,1,1)    
+    # ax.title.set_text("Deployment")
 
 
 if _animate:
@@ -236,7 +236,7 @@ else:
         scs_from_json.plot(ax1_1)
         for mn in mins_to_plot:
             mn.plot(ax1_1)
-            mn.plot_traj_line(ax1_1)
+            # mn.plot_traj_line(ax1_1)
             # mn.plot_vectors(env_from_json, ax1_1)
             mn.plot_force_traj_line(ax2_1)
             # mn.plot_xi_traj_line(ax2_2)
@@ -255,14 +255,16 @@ else:
         
         for j in range(len(mins_to_plot)):
             mins_to_plot[j].plot(ax)
-            mins_to_plot[j].plot_traj_line(ax)
+            # mins_to_plot[j].plot_traj_line(ax)
             # if j == 0:
                 # mins_to_plot[j].plot_vectors(env_from_json, ax)
             # else:
                 # mins_to_plot[j].plot_vectors(env_from_json,ax)
         ax.legend(ncol=2, prop={'size': 9})
         ax.axis('equal')
-
+        ax.grid(False)
+        plt.xticks(range(-1,11))
+        plt.yticks(range(-1,10))
 
 # fig_uniformity = plt.figure(figsize=(5.2,3))
 # fig_uniformity.canvas.set_window_title('Replay uniformity')
