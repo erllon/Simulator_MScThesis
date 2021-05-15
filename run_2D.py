@@ -262,20 +262,20 @@ if __name__ == "__main__":
     np.array([
       0, 0
     ]),
-    obstacle_corners = open_uniformity_comp#open_large #stripa#open_small#[]#open_w_sq_obs #open_large#obs_zig_zag#[]#
+    obstacle_corners = open_uniformity_comp#stripa#obs_zig_zag#open_large #open_small#[]#open_w_sq_obs #open_large#[]#
   )
   data['environment'].append(env.toJson())
 
 # %%Parameter initialization
   max_range = 2#3
   _xi_max = 1
-  _d_perf = 0.1#0.18#0.1
-  _d_none = 2.8#5.6#2.5
+  _d_perf = 0.18#0.1#0.1#
+  _d_none = 5.6#2.8#2.5#
   _delta_expl_angle = np.pi/4#np.pi/6# #0#
-  _K_o = 1.2#0.9#1.2
+  _K_o = 1.2#0.9#1.2 #1.75
 
-  N_mins = 20#15#7
-  file_path = r'json_files\ds_test_123.json'
+  N_mins = 15 #20#15#7
+  file_path = r'json_files\unif_comp_big_rc_4.json'
   dt = 0.01
 
   scs = SCS(Beacon.get_ID(), max_range,xi_max=_xi_max, d_perf=_d_perf, d_none=_d_none)
