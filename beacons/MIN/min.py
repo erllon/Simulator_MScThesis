@@ -120,8 +120,8 @@ class Min(Beacon):
 
     # tot_vec_from_neigh = np.sum(vecs_from_neighs,axis=0)
     # avg_ang_from_neigh = np.sum(ang_from_neighs, axis=0)/len(ang_from_neighs)
-    # 
-      tot_vec_from_neigh = np.sum(sorted_vecs_from_neighs[:4],axis=0)
+    # THE VECTOR CORRESPONDING TO THE CLOSEST NEIGHBOR WILL BE THE **LAST** VECTOR IN sorted_vecs_from_neighs
+      tot_vec_from_neigh = sorted_vecs_from_neighs[-1]#np.sum(sorted_vecs_from_neighs[0],axis=0)#np.sum(sorted_vecs_from_neighs[:4],axis=0)#
     
     """Calculating vectors FROM drone TO obstacles"""
     # vecs_from_obs, ang_from_obs = Min.get_obs_vecs_and_angles(self, ENV)
@@ -137,7 +137,7 @@ class Min(Beacon):
       ang_tot_vec_from_obs = gva(tot_vec_from_obs)
       self.obs_vec = p2v(1, ang_tot_vec_from_obs)
 
-      tot_vec_comb = 0.5*tot_vec_from_obs.reshape(2, ) + 0.5*tot_vec_from_neigh.reshape(2, )
+      tot_vec_comb = tot_vec_from_obs.reshape(2, ) + tot_vec_from_neigh.reshape(2, )
       ang_tot_vec_comb = gva(tot_vec_comb)
       expl_ang = ang_tot_vec_comb 
     else:
@@ -179,9 +179,10 @@ class Min(Beacon):
       if not (MIN.get_vec_to_other(n) == 0).all():
         vec_from_neigh = -MIN.get_vec_to_other(n)#.reshape(2,))
         dist = np.linalg.norm(vec_from_neigh) #when using xi for RSSI, dist will be in the interval (0, 1.7916)
-        scaling = 2#4#MIN.d_none#1.7916#
+        scaling = 4#2#4#2#4#MIN.d_none#1.7916#
 
-        vecs_from_neighs.append((scaling-dist)*normalize(vec_from_neigh))
+        vecs_from_neighs.append(((scaling-dist)/scaling)*MIN.range*normalize(vec_from_neigh))
+        # vecs_from_neighs.append((MIN.range*(scaling-dist)/scaling)*normalize(vec_from_neigh))
         ang_from_neighs.append(gva(vec_from_neigh.reshape(2, )))
         # vecs_from_neighs = np.append(vecs_from_neighs, (scaling-dist)*normalize(vec_from_neigh),axis=-1)
         # ang_from_neighs = np.append(ang_from_neighs, gva(vec_from_neigh.reshape(2, )))
@@ -207,12 +208,13 @@ class Min(Beacon):
         meas_length = np.linalg.norm(vec_from_obs)
         """Vector FROM drone TO obstacle"""
 
-        vec_from_obs = (MIN.range - meas_length)*normalize(vec_from_obs)
-        vec_from_obs2 = (MIN.range - meas_length)*normalize(vec_away_from_obs)
+        vec_from_obs = (MIN.range - meas_length)*MIN.range*normalize(vec_from_obs)
+        vec_from_obs_scaled = (MIN.range - meas_length)*MIN.range*normalize(vec_away_from_obs)
+        # vec_from_obs_scaled = ((MIN.range - meas_length)/1)*normalize(vec_away_from_obs)
 
 
         # vecs_from_obs.append(vec_from_obs.reshape(2, ))
-        vecs_from_obs.append(vec_from_obs2.reshape(2, ))
+        vecs_from_obs.append(vec_from_obs_scaled.reshape(2, ))
 
         ang_from_obs.append(gva(vec_from_obs.reshape(2, )))
 
@@ -229,7 +231,7 @@ class Min(Beacon):
   """""
   def plot(self, axis):
     self.heading_arrow = plot_vec(axis, p2v(1, self.heading), self.pos)
-    self.point = axis.plot(*self.pos, color=self.clr[self.state], marker="o", markersize=8)[0]
+    self.point = axis.plot(*self.pos, color=self.clr[self.state], marker="o", markersize=4)[0]
     self.annotation = axis.annotate(self.ID, xy=(self.pos[0], self.pos[1]+0.003), fontsize=14)
 
     return self.point, self.annotation
