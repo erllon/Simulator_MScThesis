@@ -20,7 +20,7 @@ class SCS(Beacon):
     PLOTTING STUFF
     """
     def plot(self, axis):
-        self.point = axis.plot(*self.pos, color="black", marker="o", markersize=8)[0]
+        self.point = axis.plot(*self.pos, color="black", marker="o", markersize=6)[0]
         self.annotation = axis.annotate(self.ID, xy=(self.pos[0], self.pos[1]+0.003), fontsize=14)
         return self.point, self.annotation
     
