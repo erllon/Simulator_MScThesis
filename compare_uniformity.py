@@ -66,8 +66,8 @@ else:
 num_of_runs = 100
 global_list = []
 for i in tqdm(range(num_of_runs)):
-    folder_path = r'..\large-json-files\Uniformity_comp_small_sR'
-    file_name = r'\avg_unif_comp_small_rs_15_drones_' + str(i+1) + r'.json'
+    folder_path = r'..\large-json-files\Uniformity_comp_small_sR\Correct'
+    file_name = r'\correct_avg_unif_comp_small_rs_15_drones_' + str(i+1) + r'.json'
 
     file_path = folder_path + file_name #r'json_files\unif_comp_26.json' #
     obj_text = codecs.open(file_path, 'r', encoding='utf-8').read()
