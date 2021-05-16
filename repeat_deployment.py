@@ -65,7 +65,8 @@ else:
 folder_path = r'..\large-json-files\Uniformity_comp_small_sR'
 file_name = r'\good_depl_1.json' #r'\unif_comp_small_rc_3_15_drones.json'
 
-file_path = r'zig_zag_test_30_10.json'# folder_path + file_name
+file_path = r'..\large-json-files\test_redoing_plot_5.json'  # r'json_files\correct_avg_unif_comp_small_rs_15_drones_31.json'
+#r'json_files\correct_avg_unif_comp_small_rs_15_drones_21.json'#r'zig_zag_test_30_10.json'# folder_path + file_name
 obj_text = codecs.open(file_path, 'r', encoding='utf-8').read()
 json_data = json.loads(obj_text)
 
@@ -77,10 +78,11 @@ max_range_from_json = json_data['parameters']['Max_range']
 N_mins_from_json = json_data['parameters']['N_mins']
 d_none_from_json = json_data['parameters']['d_none']
 d_perf_from_json = json_data['parameters']['d_perf']
+d_tau_from_json = json_data['parameters']['d_tau']
 delta_expl_angle_from_json = json_data['parameters']['delta_expl_angle']
 xi_max_from_json = json_data['parameters']['xi_max']
 
-scs_from_json = SCS(json_data['beacons'][0]['ID'], max_range_from_json, xi_max=xi_max_from_json, d_perf=d_perf_from_json, d_none=d_none_from_json)
+scs_from_json = SCS(json_data['beacons'][0]['ID'], max_range_from_json, xi_max=xi_max_from_json, d_perf=d_perf_from_json, d_none=d_none_from_json,d_tau=d_tau_from_json)
 
 env_from_json = Env(
     entrance_point_from_json,
@@ -100,6 +102,7 @@ mins2 = [
     xi_max=xi_max_from_json,
     d_perf=d_perf_from_json,
     d_none=d_none_from_json,
+    d_tau=d_tau_from_json,
     delta_expl_angle=delta_expl_angle_from_json
     ) for i in range(N_mins_from_json)
 ]
@@ -124,7 +127,7 @@ mins_to_plot = deepcopy(mins2[:stop_min_ID])
 
 uniformity_list = json_data['uniformity']
 
-fig = plt.figure()#(figsize=(5,5))#plt.figure(figsize=(5.2,3))#
+fig = plt.figure(figsize=(5,5))#plt.figure(figsize=(5.2,3))#
 fig.canvas.set_window_title('Replay')
 # plt.grid()
 
@@ -263,9 +266,8 @@ else:
         ax.legend(ncol=2, prop={'size': 9})
         ax.axis('equal')
         ax.grid(False)
-        # plt.ylim([-2,12])
-        # plt.xticks(range(-1,16))
-        plt.yticks(range(-1,11))
+        plt.xticks(range(-1,11))
+        plt.yticks(range(-1,10))
 
 
 # fig_uniformity = plt.figure(figsize=(5.2,3))
