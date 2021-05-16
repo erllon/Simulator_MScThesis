@@ -46,8 +46,8 @@ class Min(Beacon):
     VectorTypes.INTERVAL: "orange"
   }
 
-  def __init__(self, min_id, max_range, deployment_strategy, xi_max=1, d_perf=1, d_none=3, k=0, a=0, v=np.zeros((2, ),), K_target=1, target_threshold=0.15, delta_expl_angle=np.pi/4):
-    super().__init__(min_id, max_range,xi_max, d_perf, d_none, pos=None)
+  def __init__(self, min_id, max_range, deployment_strategy, xi_max, d_perf, d_none, d_tau, k=0, a=0, v=np.zeros((2, ),), K_target=1, target_threshold=0.15, delta_expl_angle=np.pi/4):
+    super().__init__(min_id, max_range, xi_max, d_perf, d_none, d_tau, pos=None)
     self.K_target = K_target
     self.deployment_strategy = deployment_strategy
     self.target_threshold = target_threshold
@@ -179,7 +179,7 @@ class Min(Beacon):
       if not (MIN.get_vec_to_other(n) == 0).all():
         vec_from_neigh = -MIN.get_vec_to_other(n)#.reshape(2,))
         dist = np.linalg.norm(vec_from_neigh) #when using xi for RSSI, dist will be in the interval (0, 1.7916)
-        scaling = 4#2#4#2#4#MIN.d_none#1.7916#
+        scaling = MIN.d_tau#4#2#4#2#4#MIN.d_none#1.7916#
 
         vecs_from_neighs.append(((scaling-dist)/scaling)*MIN.range*normalize(vec_from_neigh))
         # vecs_from_neighs.append((MIN.range*(scaling-dist)/scaling)*normalize(vec_from_neigh))
@@ -208,7 +208,7 @@ class Min(Beacon):
         meas_length = np.linalg.norm(vec_from_obs)
         """Vector FROM drone TO obstacle"""
 
-        vec_from_obs = (MIN.range - meas_length)*MIN.range*normalize(vec_from_obs)
+        vec_from_obs = (MIN.range - meas_length)*normalize(vec_from_obs)
         vec_from_obs_scaled = (MIN.range - meas_length)*MIN.range*normalize(vec_away_from_obs)
         # vec_from_obs_scaled = ((MIN.range - meas_length)/1)*normalize(vec_away_from_obs)
 
