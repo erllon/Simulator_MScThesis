@@ -62,10 +62,10 @@ else:
         }
     )
 
-# folder_path = r'..\large-json-files\Stripa'
-# file_name = r'\stripa_80_drones_45_random_single_ray1.json'
+folder_path = r'..\large-json-files\Uniformity_comp_small_sR'
+file_name = r'\good_depl_1.json' #r'\unif_comp_small_rc_3_15_drones.json'
 
-file_path = r'json_files\unif_comp_big_rc_2.json' #folder_path + file_name
+file_path = r'zig_zag_test_30_10.json'# folder_path + file_name
 obj_text = codecs.open(file_path, 'r', encoding='utf-8').read()
 json_data = json.loads(obj_text)
 
@@ -88,7 +88,7 @@ env_from_json = Env(
 )
 
 start_animation_from_min_ID = 0
-stop_min_ID = 20#N_mins_from_json#1#
+stop_min_ID = N_mins_from_json#1#
 
 
 scs_from_json.insert_into_environment(env_from_json)
@@ -124,7 +124,7 @@ mins_to_plot = deepcopy(mins2[:stop_min_ID])
 
 uniformity_list = json_data['uniformity']
 
-fig = plt.figure(figsize=(5,5))#plt.figure(figsize=(5.2,3))#
+fig = plt.figure()#(figsize=(5,5))#plt.figure(figsize=(5.2,3))#
 fig.canvas.set_window_title('Replay')
 # plt.grid()
 
@@ -263,8 +263,10 @@ else:
         ax.legend(ncol=2, prop={'size': 9})
         ax.axis('equal')
         ax.grid(False)
-        plt.xticks(range(-1,11))
-        plt.yticks(range(-1,10))
+        # plt.ylim([-2,12])
+        # plt.xticks(range(-1,16))
+        plt.yticks(range(-1,11))
+
 
 # fig_uniformity = plt.figure(figsize=(5.2,3))
 # fig_uniformity.canvas.set_window_title('Replay uniformity')
