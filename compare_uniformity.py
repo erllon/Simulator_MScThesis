@@ -66,8 +66,8 @@ else:
 num_of_runs = 100
 global_list = []
 for i in tqdm(range(num_of_runs)):
-    folder_path = r'..\large-json-files\Uniformity_comp'
-    file_name = r'\unif_comp_' + str(i+1) + r'.json'
+    folder_path = r'..\large-json-files\Uniformity_comp_small_sR'
+    file_name = r'\avg_unif_comp_small_rs_15_drones_' + str(i+1) + r'.json'
 
     file_path = folder_path + file_name #r'json_files\unif_comp_26.json' #
     obj_text = codecs.open(file_path, 'r', encoding='utf-8').read()
@@ -83,6 +83,11 @@ fig = plt.figure(figsize=(5,5))
 fig.canvas.set_window_title(rf'Avg Uniformity, $num\_runs = {num_of_runs}$')
 
 ax = fig.add_subplot(1,1,1)
+ax.set(
+    xlabel = 'Beacons',
+    # ylabel = 'Uniformity',
+    title = 'Uniformity'
+)
 
 plt.xticks(range(len(average_uniformity)+1)) #ints on x-axis
 ax.plot(average_uniformity)
