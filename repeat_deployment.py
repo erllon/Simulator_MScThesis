@@ -62,10 +62,10 @@ else:
         }
     )
 
-folder_path = r'..\large-json-files\Uniformity_comp_small_sR'
-file_name = r'\good_depl_1.json' #r'\unif_comp_small_rc_3_15_drones.json'
+folder_path = r'..\large-json-files\Files_in_thesis' #r'json_files'
+file_name = r'\deployment_comp_uniform_small_cR_15_drones_3.json' #r'\unif_comp_10.json' #r'\unif_comp_small_rc_3_15_drones.json'
 
-file_path = r'..\large-json-files\test_redoing_plot_5.json'  # r'json_files\correct_avg_unif_comp_small_rs_15_drones_31.json'
+file_path = folder_path + file_name#r'..\large-json-files\zig_zag_test_3.json' # r'json_files\zig_zag_test_3.json' #r'..\large-json-files\zig_zag_test_3.json'  
 #r'json_files\correct_avg_unif_comp_small_rs_15_drones_21.json'#r'zig_zag_test_30_10.json'# folder_path + file_name
 obj_text = codecs.open(file_path, 'r', encoding='utf-8').read()
 json_data = json.loads(obj_text)
@@ -78,7 +78,7 @@ max_range_from_json = json_data['parameters']['Max_range']
 N_mins_from_json = json_data['parameters']['N_mins']
 d_none_from_json = json_data['parameters']['d_none']
 d_perf_from_json = json_data['parameters']['d_perf']
-d_tau_from_json = json_data['parameters']['d_tau']
+# d_tau_from_json = json_data['parameters']['d_tau']
 delta_expl_angle_from_json = json_data['parameters']['delta_expl_angle']
 xi_max_from_json = json_data['parameters']['xi_max']
 
@@ -266,7 +266,7 @@ else:
         ax.legend(ncol=2, prop={'size': 9})
         ax.axis('equal')
         ax.grid(False)
-        plt.xticks(range(-1,11))
+        plt.xticks(range(-1,10))
         plt.yticks(range(-1,10))
 
 
