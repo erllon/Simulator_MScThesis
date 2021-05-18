@@ -35,7 +35,7 @@ except Exception as e:
     )
 
 d_perf = 0.1
-d_none = 2.5
+d_none = 2.8#2.5
 xi_max = 1
 
 omega = np.pi/(d_none - d_perf)
@@ -46,13 +46,20 @@ D = np.linspace(0, d_none + 0.5)
 xi_fun = np.vectorize(xi)
 XI = [xi(d) for d in D]
 
-plt.plot(D, XI, color="blue")
-plt.title(r"$\xi(\|\|\mathbf{x}_i - \mathbf{x}_j\|\|,...)$")
-plt.axvline(x=d_perf, ymin=0, ymax=xi_max+0.5, color='green', label=r'$d_{perf}$', linestyle=':')
-plt.axvline(x=d_none, ymin=0, ymax=xi_max+0.5, color="red", label=r'$d_{none}$', linestyle='-.')
+fig = plt.figure(figsize=(5,5))
+ax = fig.add_subplot(1,1,1)
+ax.plot(D, XI, color="blue")
+
+# plt.title(r"$\xi(\|\|\mathbf{x}_i - \mathbf{x}_j\|\|,...)$")
+# plt.axvline(x=d_perf, ymin=0, ymax=xi_max+0.5, color='green', label=r'$d_{perf}$', linestyle=':')
+# plt.axvline(x=d_none, ymin=0, ymax=xi_max+0.5, color="red", label=r'$d_{none}$', linestyle='-.')
 # plt.axhline(y=xi_max, xmin=0, xmax=D[-1], color="black", label='xi_max')
-plt.axvline(x=0, color="black")
-plt.axhline(y=0, color="black")
-plt.ylim([-0.1, xi_max + 0.5])
+ax.axvline(x=0, color="black")
+ax.axhline(y=0, color="black")
+ax.set_xlim([0,d_none + 0.5])
+ax.set_ylim([-0.1, xi_max + 0.2])
+d_label = ax.set_xlabel(r"$d_{i,j}$",labelpad=-4,loc="right")
+xi_label = ax.set_ylabel(r"$\xi_{i,j}$",labelpad=-15, loc='top')
+xi_label.set_rotation(0)
 plt.legend()    
 plt.show()
