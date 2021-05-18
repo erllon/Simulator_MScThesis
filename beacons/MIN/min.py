@@ -109,18 +109,17 @@ class Min(Beacon):
 
     """Computing vectors FROM neighbors TO drone"""
     vecs_from_neighs, ang_from_neighs = Min.get_neigh_vecs_and_angles(self)
-    test = np.array(vecs_from_neighs)
-    if test.shape[0] == 1:
-      # sorted_vecs_from_neighs = vecs_from_neighs
-      tot_vec_from_neigh = test#vecs_from_neighs
+    vecs_from_neighs_arr = np.array(vecs_from_neighs)
+    if vecs_from_neighs_arr.shape[0] == 1:
+      tot_vec_from_neigh = vecs_from_neighs_arr#np.array(vecs_from_neighs) # test#vecs_from_neighs
     else:
-      sortidxs = np.argsort(np.linalg.norm(vecs_from_neighs[:], axis=-1))
-      sorted_vecs_from_neighs = test[sortidxs]#vecs_from_neighs[sortidxs]
+      sortidxs = np.argsort(np.linalg.norm(vecs_from_neighs_arr, axis=-1))#np.argsort(np.linalg.norm(vecs_from_neighs[:], axis=-1))
+      sorted_vecs_from_neighs = vecs_from_neighs_arr[sortidxs]#test[sortidxs]#vecs_from_neighs[sortidxs]
       # sorted_ang_from_neighs = ang_from_neighs[sortidxs]
 
     # tot_vec_from_neigh = np.sum(vecs_from_neighs,axis=0)
     # avg_ang_from_neigh = np.sum(ang_from_neighs, axis=0)/len(ang_from_neighs)
-    # THE VECTOR CORRESPONDING TO THE CLOSEST NEIGHBOR WILL BE THE **LAST** VECTOR IN sorted_vecs_from_neighs
+    # THE VECTOR CORRESPONDING TO THE CLOSEST NEIGHBOR WILL BE THE **LAST** VECTOR IN sorted_vecs_from_neighs DUE TO SCALING
       tot_vec_from_neigh = sorted_vecs_from_neighs[-1]#np.sum(sorted_vecs_from_neighs[0],axis=0)#np.sum(sorted_vecs_from_neighs[:4],axis=0)#
     
     """Calculating vectors FROM drone TO obstacles"""
