@@ -62,8 +62,8 @@ else:
         }
     )
 
-folder_path = '..\master_thesis' #r'json_files' #r'..\large-json-files'#r'..\large-json-files\Files_in_thesis' 
-file_name = r'\test_redoing_plot_small_cR_77.json' #r'\unif_comp_10.json' #r'\unif_comp_small_rc_3_15_drones.json'
+folder_path = '..\master_thesis' #r'..\large-json-files' #r'json_files' #r'..\large-json-files\Files_in_thesis' 
+file_name = r'\redoing_zig_zag_test_30_drones_14.json' #r'\test_redoing_plot_small_cR_77.json' #r'\unif_comp_10.json' #r'\unif_comp_small_rc_3_15_drones.json'
 
 file_path = folder_path + file_name#r'..\large-json-files\zig_zag_test_3.json' # r'json_files\zig_zag_test_3.json' #r'..\large-json-files\zig_zag_test_3.json'  
 #r'json_files\correct_avg_unif_comp_small_rs_15_drones_21.json'#r'zig_zag_test_30_10.json'# folder_path + file_name
@@ -127,7 +127,9 @@ mins_to_plot = deepcopy(mins2[:stop_min_ID])
 
 uniformity_list = json_data['uniformity']
 
-fig = plt.figure(figsize=(5,5))#plt.figure(figsize=(5.2,3))#
+fig = plt.figure()#plt.figure(figsize=(5.2,3))#plt.figure(figsize=(5,5))#
+#zig_zag: figsize=(5.3, 3.7)
+#open: figsize=(5,5)
 fig.canvas.set_window_title('Replay')
 # plt.grid()
 
@@ -266,8 +268,9 @@ else:
         ax.legend(ncol=2, prop={'size': 9})
         ax.axis('equal')
         ax.grid(False)
-        plt.xticks(range(-1,10))
-        plt.yticks(range(-1,10))
+        # plt.xticks(range(-1,10))
+        # plt.yticks(range(-1,10))
+        # plt.xticks(range())
 
 
 # fig_uniformity = plt.figure(figsize=(5.2,3))
