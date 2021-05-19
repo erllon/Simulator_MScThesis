@@ -231,9 +231,40 @@ class Min(Beacon):
   def plot(self, axis):
     self.heading_arrow = plot_vec(axis, p2v(1, self.heading), self.pos)
     self.point = axis.plot(*self.pos, color=self.clr[self.state], marker="o", markersize=4)[0]
-    # self.annotation = axis.annotate(self.ID, xy=(self.pos[0], self.pos[1]+0.003), fontsize=14)
-
-    return self.point#, self.annotation
+    self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]+0.003), fontsize=14)
+    return self.point, self.annotation
+    # if self.ID == 1:
+    #   self.annotation = axis.annotate(self.ID, xy=(1.95,0), fontsize=14)
+    # elif self.ID == 2:
+    #   self.annotation = axis.annotate(self.ID, xy=(1.75, 2.41), fontsize=14)
+    # elif self.ID == 3:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.002, self.pos[1]+0.003), fontsize=14)
+    # elif self.ID == 4:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.02, self.pos[1]+0.05), fontsize=14)
+    # elif self.ID == 5:
+    #   self.annotation = axis.annotate(self.ID, xy=(2.26, 6.04), fontsize=14)
+    # elif self.ID == 6:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]+0.003), fontsize=14)
+    # elif self.ID == 7:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0], self.pos[1]+0.003+0.001), fontsize=14)
+    # elif self.ID == 8:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.075, self.pos[1]+0.003), fontsize=14)
+    # elif self.ID == 9:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.003, self.pos[1]+0.1), fontsize=14)
+    # elif self.ID == 10:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0], self.pos[1]+0.003+0.001), fontsize=14)
+    # elif self.ID == 11:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0], self.pos[1]+0.003), fontsize=14)
+    # elif self.ID == 12:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.06, self.pos[1]), fontsize=14)
+    # elif self.ID == 13:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0], self.pos[1]+0.003), fontsize=14)
+    # elif self.ID == 14:
+    #   self.annotation = axis.annotate(self.ID, xy=(3.9, 4.75), fontsize=14)
+    # elif self.ID == 15:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.02, self.pos[1]+0.003), fontsize=14)
+    # else:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]+0.003), fontsize=14)
   
   def plot_vectors(self, ENV, axis):
 
