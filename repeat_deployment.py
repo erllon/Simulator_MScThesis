@@ -62,8 +62,8 @@ else:
         }
     )
 
-folder_path = '..\master_thesis' #r'..\large-json-files' #r'json_files' #r'..\large-json-files\Files_in_thesis' 
-file_name = r'\redoing_zig_zag_test_30_drones_14.json' #r'\test_redoing_plot_small_cR_77.json' #r'\unif_comp_10.json' #r'\unif_comp_small_rc_3_15_drones.json'
+folder_path = r'..\large-json-files\Files_in_thesis' #'..\master_thesis' #r'json_files' #r'..\large-json-files\Files_in_thesis' 
+file_name = r'\deployment_comp_uniform_small_cR_15_drones_3.json' #r'\redoing_stripa_test_80_drones_9.json' #r'\redoing_zig_zag_test_30_drones_54.json'  ##r'\test_redoing_plot_small_cR_77.json' #r'\unif_comp_10.json' #r'\unif_comp_small_rc_3_15_drones.json'
 
 file_path = folder_path + file_name#r'..\large-json-files\zig_zag_test_3.json' # r'json_files\zig_zag_test_3.json' #r'..\large-json-files\zig_zag_test_3.json'  
 #r'json_files\correct_avg_unif_comp_small_rs_15_drones_21.json'#r'zig_zag_test_30_10.json'# folder_path + file_name
@@ -127,9 +127,10 @@ mins_to_plot = deepcopy(mins2[:stop_min_ID])
 
 uniformity_list = json_data['uniformity']
 
-fig = plt.figure()#plt.figure(figsize=(5.2,3))#plt.figure(figsize=(5,5))#
+fig = plt.figure(figsize=(5,5))#plt.figure(figsize=(5.3, 3.7))#plt.figure(figsize=(5.2,3))#plt.figure(figsize=(5,5))#
 #zig_zag: figsize=(5.3, 3.7)
 #open: figsize=(5,5)
+#stripa: figsize=(5,4)
 fig.canvas.set_window_title('Replay')
 # plt.grid()
 
@@ -255,36 +256,38 @@ else:
 
 
     else:
+        # ax.set_ybound(-10,10)
         env_from_json.plot(ax)
         scs_from_json.plot(ax)
         
         for j in range(len(mins_to_plot)):
             mins_to_plot[j].plot(ax)
-            mins_to_plot[j].plot_traj_line(ax)
+            # mins_to_plot[j].plot_traj_line(ax)
             # if j == 0:
                 # mins_to_plot[j].plot_vectors(env_from_json, ax)
             # else:
                 # mins_to_plot[j].plot_vectors(env_from_json,ax)
         ax.legend(ncol=2, prop={'size': 9})
-        ax.axis('equal')
+        # ax.axis('equal')
         ax.grid(False)
         # plt.xticks(range(-1,10))
         # plt.yticks(range(-1,10))
         # plt.xticks(range())
 
 
-# fig_uniformity = plt.figure(figsize=(5.2,3))
+# fig_uniformity = plt.figure(figsize=(5,5))
 # fig_uniformity.canvas.set_window_title('Replay uniformity')
 
 # ax_uniformity = fig_uniformity.add_subplot(1,1,1)
 # ax_uniformity.set(
 #     xlabel = 'Beacons',
-#     ylabel = 'Uniformity',
+#     # ylabel = 'Uniformity',
 #     title = 'Uniformity'
 # )
 
-# plt.xticks(range(len(uniformity_list[:stop_min_ID])+1)) #ints on x-axis
+# ax_uniformity.set_xticks(range(0,len(uniformity_list[:stop_min_ID])+1,10))
+# # ax.set_xticks(range(0,len(uniformity_list[:stop_min_ID])+1,5))#([0,10,20,30])#(range(len(uniformity_list[:stop_min_ID])+1)) #ints on x-axis
 # ax_uniformity.plot(uniformity_list[:stop_min_ID+1])
-# ax_uniformity.plot(uniformity_list[:stop_min_ID+1], "or")
+# ax_uniformity.plot(uniformity_list[:stop_min_ID+1], "or", markersize=4)
 
 plt.show()
