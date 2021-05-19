@@ -22,6 +22,7 @@ class SCS(Beacon):
     def plot(self, axis):
         self.point = axis.plot(*self.pos, color="black", marker="o", markersize=6)[0]
         self.annotation = axis.annotate(self.ID, xy=(self.pos[0], self.pos[1]+0.003), fontsize=14)
+        # self.annotation = axis.annotate(self.ID, xy=(-0.45, self.pos[1]-0.25), fontsize=14)
         return self.point, self.annotation
     
     def toJson(self):
