@@ -275,19 +275,20 @@ else:
         # plt.xticks(range())
 
 
-# fig_uniformity = plt.figure(figsize=(5,5))
-# fig_uniformity.canvas.set_window_title('Replay uniformity')
+fig_uniformity = plt.figure(figsize=(5.2,3))
+fig_uniformity.canvas.set_window_title('Replay uniformity')
 
-# ax_uniformity = fig_uniformity.add_subplot(1,1,1)
-# ax_uniformity.set(
-#     xlabel = 'Beacons',
-#     # ylabel = 'Uniformity',
-#     title = 'Uniformity'
-# )
-
-# ax_uniformity.set_xticks(range(0,len(uniformity_list[:stop_min_ID])+1,10))
-# # ax.set_xticks(range(0,len(uniformity_list[:stop_min_ID])+1,5))#([0,10,20,30])#(range(len(uniformity_list[:stop_min_ID])+1)) #ints on x-axis
-# ax_uniformity.plot(uniformity_list[:stop_min_ID+1])
-# ax_uniformity.plot(uniformity_list[:stop_min_ID+1], "or", markersize=4)
+ax_uniformity = fig_uniformity.add_subplot(1,1,1)
+ax_uniformity.set(
+    xlabel = '# of landed agents', #'Deployed agents',
+    # ylabel = 'Uniformity',
+    title = 'Uniformity'
+)
+# unif_label = ax_uniformity.set_ylabel(r"$\mathcal{u}$",labelpad=-15, loc='top')
+# unif_label.set_rotation(0)
+ax_uniformity.set_xticks(range(0,len(uniformity_list[:stop_min_ID])+1,10))
+# ax.set_xticks(range(0,len(uniformity_list[:stop_min_ID])+1,5))#([0,10,20,30])#(range(len(uniformity_list[:stop_min_ID])+1)) #ints on x-axis
+ax_uniformity.plot(uniformity_list[:stop_min_ID+1])
+ax_uniformity.plot(uniformity_list[:stop_min_ID+1], "or", markersize=4)
 
 plt.show()
