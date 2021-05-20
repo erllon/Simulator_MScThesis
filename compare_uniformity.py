@@ -79,12 +79,12 @@ for i in tqdm(range(num_of_runs)):
 t = 2
 average_uniformity = np.sum(global_list,axis=0)/num_of_runs
 
-fig = plt.figure(figsize=(5,5))
+fig = plt.figure(figsize=(5,5)) #plt.figure(figsize=(5.3,3))
 fig.canvas.set_window_title(rf'Avg Uniformity, $num\_runs = {num_of_runs}$')
 
 ax = fig.add_subplot(1,1,1)
 ax.set(
-    xlabel = 'Beacons',
+    xlabel = '# of deployed agents',#'Beacons',
     # ylabel = 'Uniformity',
     title = 'Uniformity'
 )
