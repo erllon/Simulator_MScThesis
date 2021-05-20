@@ -21,7 +21,9 @@ class SCS(Beacon):
     """
     def plot(self, axis):
         self.point = axis.plot(*self.pos, color="black", marker="o", markersize=6)[0]
-        self.annotation = axis.annotate(self.ID, xy=(self.pos[0], self.pos[1]+0.003), fontsize=14)
+        """redoing_zig_zag_test_30_54.json"""
+        self.annotation = axis.annotate(self.ID, xy=(self.pos[0], self.pos[1]+0.1), fontsize=14)
+        """deployment_comp_uniform_small_cR_15_drones_3.json"""
         # self.annotation = axis.annotate(self.ID, xy=(-0.45, self.pos[1]-0.25), fontsize=14)
         return self.point, self.annotation
     

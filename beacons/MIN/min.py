@@ -233,6 +233,71 @@ class Min(Beacon):
     self.point = axis.plot(*self.pos, color=self.clr[self.state], marker="o", markersize=4)[0]
     self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]+0.003), fontsize=14)
     return self.point, self.annotation
+    """redoing_zig_zag_test_30_54.json"""
+    # if self.ID == 1:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]+0.2), fontsize=14)
+    # elif self.ID == 2:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.15, self.pos[1]+0.003), fontsize=14)
+    # elif self.ID == 3:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]+0.1), fontsize=14)
+    # elif self.ID == 4:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.1, self.pos[1]-0.4), fontsize=14)
+    # elif self.ID == 5:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]-0.5), fontsize=14)
+    # elif self.ID == 6:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]-0.65, self.pos[1]-0.3), fontsize=14)
+    # elif self.ID == 7:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]+0.003), fontsize=14)
+    # elif self.ID == 8:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]-0.2, self.pos[1]+0.2), fontsize=14)
+    # elif self.ID == 9:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.04, self.pos[1]+0.1), fontsize=14)
+    # elif self.ID == 10:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]+0.2), fontsize=14)
+    # elif self.ID == 11:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]+0.1), fontsize=14)
+    # elif self.ID == 12:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.2, self.pos[1]-0.2), fontsize=14)
+    # elif self.ID == 13:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.1, self.pos[1]-0.2), fontsize=14)
+    # elif self.ID == 14:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]+0.003), fontsize=14)
+    # elif self.ID == 15:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]-0.95, self.pos[1]+0.003), fontsize=14)
+    # elif self.ID == 16:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.1, self.pos[1]-0.4), fontsize=14)
+    # elif self.ID == 17:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]+0.003), fontsize=14)
+    # elif self.ID == 18:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]+0.003), fontsize=14)
+    # elif self.ID == 19:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]+0.003), fontsize=14)
+    # elif self.ID == 20:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.2, self.pos[1]+0.003), fontsize=14)
+    # elif self.ID == 21:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]+0.1), fontsize=14)
+    # elif self.ID == 22:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]-0.3, self.pos[1]+0.2), fontsize=14)
+    # elif self.ID == 23:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]-0.6), fontsize=14)
+    # elif self.ID == 24:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.2, self.pos[1]+0.003), fontsize=14)
+    # elif self.ID == 25:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.1, self.pos[1]+0.003), fontsize=14)
+    # elif self.ID == 26:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.1, self.pos[1]+0.003), fontsize=14)
+    # elif self.ID == 27:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.2, self.pos[1]+0.003), fontsize=14)
+    # elif self.ID == 28:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.3, self.pos[1]+0.003), fontsize=14)
+    # elif self.ID == 29:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]+0.1), fontsize=14)
+    # elif self.ID == 30:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]-0.8, self.pos[1]-0.6), fontsize=14)
+    # else:
+    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]+0.003), fontsize=14)
+
+    """deployment_comp_uniform_small_cR_15_drones_3.json"""
     # if self.ID == 1:
     #   self.annotation = axis.annotate(self.ID, xy=(1.95,0), fontsize=14)
     # elif self.ID == 2:
