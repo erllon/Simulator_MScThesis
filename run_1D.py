@@ -186,7 +186,7 @@ if __name__ == "__main__":
   file_path = r'json_files\line_explore_test123.json'
   dt = 0.01
 
-  scs = SCS(Beacon.get_ID(), max_range, xi_max=_xi_max, d_perf=_d_perf, d_none=_d_none)
+  scs = SCS(Beacon.get_ID(), max_range,d_tau=None, xi_max=_xi_max, d_perf=_d_perf, d_none=_d_none)
 
   """ Line exploration """
   mins = [
@@ -201,7 +201,8 @@ if __name__ == "__main__":
       ),
       xi_max=_xi_max,
       d_perf=_d_perf,
-      d_none=_d_none
+      d_none=_d_none,
+      d_tau=None
     ) for i in range(N_mins)
   ]
 
@@ -242,6 +243,9 @@ if __name__ == "__main__":
       ax1_1.title.set_text("Deployment")
       ax2_1.title.set_text(r"$\left\|\| F_{applied} \right\|\|$")
       ax2_2.title.set_text(r"$\xi$ from neighbors")
+      time_label = ax2_2.set_xlabel(r"$time$",labelpad=-4,loc="right")
+      xi_label = ax2_2.set_ylabel(r"$\xi_{6,i}$",labelpad=-15, loc='top')
+      xi_label.set_rotation(0)
   else:
     ax = fig.add_subplot(1,1,1)
     ax.title.set_text("Deployment")
