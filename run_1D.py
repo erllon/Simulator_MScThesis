@@ -186,7 +186,7 @@ if __name__ == "__main__":
   file_path = r'json_files\line_explore_test123.json'
   dt = 0.01
 
-  scs = SCS(Beacon.get_ID(), max_range, xi_max=_xi_max, d_perf=_d_perf, d_none=_d_none)
+  scs = SCS(Beacon.get_ID(), max_range, xi_max=_xi_max, d_perf=_d_perf, d_none=_d_none,d_tau=None)
 
   """ Line exploration """
   mins = [
@@ -201,7 +201,8 @@ if __name__ == "__main__":
       ),
       xi_max=_xi_max,
       d_perf=_d_perf,
-      d_none=_d_none
+      d_none=_d_none,
+      d_tau=None
     ) for i in range(N_mins)
   ]
 
@@ -349,3 +350,5 @@ if __name__ == "__main__":
   ax_uniformity.plot(uniformity_list, "or")
 
   plt.show()
+
+# %%
