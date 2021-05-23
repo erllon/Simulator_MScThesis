@@ -272,7 +272,7 @@ else:
                 # mins_to_plot[j].plot_vectors(env_from_json, ax)
             # else:
                 # mins_to_plot[j].plot_vectors(env_from_json,ax)
-        ax.legend(ncol=2, prop={'size': 9})
+        # ax.legend(ncol=2, prop={'size': 9})
         # ax.axis('equal')
         ax.grid(False)
         # plt.xticks(range(-1,10))
