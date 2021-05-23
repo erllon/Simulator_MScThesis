@@ -353,3 +353,5 @@ if __name__ == "__main__":
   ax_uniformity.plot(uniformity_list, "or")
 
   plt.show()
+
+# %%
