@@ -34,6 +34,7 @@ except Exception as e:
         }
     )
 
+
 d_perf = 0.1
 d_none = 2.8#2.5
 xi_max = 1
@@ -46,8 +47,9 @@ D = np.linspace(0, d_none + 0.5)
 xi_fun = np.vectorize(xi)
 XI = [xi(d) for d in D]
 
-fig = plt.figure(figsize=(5,5))
+fig = plt.figure()#plt.figure(figsize=(5,5))
 ax = fig.add_subplot(1,1,1)
+ax.grid(False)
 ax.plot(D, XI, color="blue")
 
 # plt.title(r"$\xi(\|\|\mathbf{x}_i - \mathbf{x}_j\|\|,...)$")
@@ -61,5 +63,5 @@ ax.set_ylim([-0.1, xi_max + 0.2])
 d_label = ax.set_xlabel(r"$d_{i,j}$",labelpad=-4,loc="right")
 xi_label = ax.set_ylabel(r"$\xi_{i,j}$",labelpad=-15, loc='top')
 xi_label.set_rotation(0)
-plt.legend()    
+# plt.legend()    
 plt.show()
