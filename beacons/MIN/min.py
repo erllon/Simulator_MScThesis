@@ -230,53 +230,55 @@ class Min(Beacon):
   """""
   def plot(self, axis):
     """redoing_stripa_test_80_drones_9.json"""
-    self.point = axis.plot(*self.pos, color=self.clr[self.state], marker="o", markersize=4)[0]
-    if self.ID == 43 or self.ID == 32 or self.ID == 68 or self.ID == 37 or self.ID == 75 or self.ID == 72 or self.ID == 47 or self.ID == 40 or self.ID == 30 or self.ID == 60:# or self.ID == 2 or self.ID == 2 or self.ID == 2 or self.ID == 2 or self.ID == 2 or self.ID == 2 or self.ID == 2:
-      self.heading_arrow = plot_vec(axis, p2v(0.7, self.heading), self.pos)
-    elif self.ID == 5 or self.ID == 4 or self.ID == 2 or self.ID == 71 or self.ID == 65 or self.ID == 80 or self.ID == 77 or self.ID == 46 or self.ID == 39 or self.ID == 41 or self.ID == 48 or self.ID == 49 or self.ID == 42 or self.ID == 22 or self.ID == 23 or self.ID == 27 or self.ID == 18 or self.ID == 10 or self.ID == 8 or self.ID == 6 or self.ID == 3 or self.ID == 18:# or self.ID == 2 or self.ID == 2 or self.ID == 2 or self.ID == 2 or self.ID == 2 or self.ID == 2::
-      self.heading_arrow = plot_vec(axis, p2v(0.5, self.heading), self.pos)    
-    elif self.ID == 15 or self.ID == 61 or self.ID == 62 or self.ID == 12 or self.ID == 13 or self.ID == 33 or self.ID == 34 or self.ID == 36 or self.ID == 38 or self.ID == 44 or self.ID == 79 or self.ID == 69 or self.ID == 52:# or self.ID == 2 or self.ID == 2 or self.ID == 2 or self.ID == 2:
-      self.heading_arrow = plot_vec(axis, p2v(2, self.heading), self.pos) 
-    elif self.ID == 78 or self.ID == 70 or self.ID == 66 or self.ID == 20 or self.ID == 21:
-      self.heading_arrow = plot_vec(axis, p2v(1.4, self.heading), self.pos)
-    else:
-      # self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]+0.1), fontsize=14)
-      self.heading_arrow = plot_vec(axis, p2v(1, self.heading), self.pos)
+    # self.point = axis.plot(*self.pos, color=self.clr[self.state], marker="o", markersize=4)[0]
+    # if self.ID == 43 or self.ID == 32 or self.ID == 68 or self.ID == 37 or self.ID == 75 or self.ID == 72 or self.ID == 47 or self.ID == 40 or self.ID == 30 or self.ID == 60:# or self.ID == 2 or self.ID == 2 or self.ID == 2 or self.ID == 2 or self.ID == 2 or self.ID == 2 or self.ID == 2:
+    #   self.heading_arrow = plot_vec(axis, p2v(0.7, self.heading), self.pos)
+    # elif self.ID == 5 or self.ID == 4 or self.ID == 2 or self.ID == 71 or self.ID == 65 or self.ID == 80 or self.ID == 77 or self.ID == 46 or self.ID == 39 or self.ID == 41 or self.ID == 48 or self.ID == 49 or self.ID == 42 or self.ID == 22 or self.ID == 23 or self.ID == 27 or self.ID == 18 or self.ID == 10 or self.ID == 8 or self.ID == 6 or self.ID == 3 or self.ID == 18:# or self.ID == 2 or self.ID == 2 or self.ID == 2 or self.ID == 2 or self.ID == 2 or self.ID == 2::
+    #   self.heading_arrow = plot_vec(axis, p2v(0.5, self.heading), self.pos)    
+    # elif self.ID == 15 or self.ID == 61 or self.ID == 62 or self.ID == 12 or self.ID == 13 or self.ID == 33 or self.ID == 34 or self.ID == 36 or self.ID == 38 or self.ID == 44 or self.ID == 79 or self.ID == 69 or self.ID == 52:# or self.ID == 2 or self.ID == 2 or self.ID == 2 or self.ID == 2:
+    #   self.heading_arrow = plot_vec(axis, p2v(2, self.heading), self.pos) 
+    # elif self.ID == 78 or self.ID == 70 or self.ID == 66 or self.ID == 20 or self.ID == 21:
+    #   self.heading_arrow = plot_vec(axis, p2v(1.4, self.heading), self.pos)
+    # else:
+    #   # self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]+0.1), fontsize=14)
+    #   self.heading_arrow = plot_vec(axis, p2v(1, self.heading), self.pos)
     # self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]+0.1), fontsize=14)
     # self.annotation = axis.annotate(self.ID, xy=(self.pos[0], self.pos[1]), fontsize=14)
     """test_redoing_plot_large_cR_2"""
-    # if self.ID == 1:
-    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]+0.1), fontsize=14)
-    # elif self.ID == 2:
-    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.15, self.pos[1]-0.4), fontsize=14)
-    # elif self.ID == 3:
-    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.1, self.pos[1]+0.003), fontsize=14)
-    # elif self.ID == 4:
-    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.2, self.pos[1]-0.1), fontsize=14)
-    # elif self.ID == 5:
-    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]-0.37, self.pos[1]+0.003), fontsize=14)
-    # elif self.ID == 6:
-    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.1, self.pos[1]+0.003), fontsize=14)
-    # elif self.ID == 7:
-    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]-0.4, self.pos[1]-0.2), fontsize=14)
-    # elif self.ID == 8:
-    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.2, self.pos[1]-0.2), fontsize=14)
-    # elif self.ID == 9:
-    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.1, self.pos[1]-0.2), fontsize=14)
-    # elif self.ID == 10:
-    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.1, self.pos[1]+0.003), fontsize=14)
-    # elif self.ID == 11:
-    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.1, self.pos[1]-0.4), fontsize=14)
-    # elif self.ID == 12:
-    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.1, self.pos[1]+0.003), fontsize=14)
-    # elif self.ID == 13:
-    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.1, self.pos[1]-0.4), fontsize=14)
-    # elif self.ID == 14:
-    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.1, self.pos[1]+0.003), fontsize=14)
-    # elif self.ID == 15:
-    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]+0.1), fontsize=14)      
-    # else:
-    #   self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]+0.003), fontsize=14)
+    self.point = axis.plot(*self.pos, color=self.clr[self.state], marker="o", markersize=4)[0]
+    self.heading_arrow = plot_vec(axis, p2v(+.7*1, self.heading), self.pos)
+    if self.ID == 1:
+      self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]+0.2), fontsize=14)
+    elif self.ID == 2:
+      self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.15, self.pos[1]-0.4), fontsize=14)
+    elif self.ID == 3:
+      self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.2, self.pos[1]+0.003), fontsize=14)
+    elif self.ID == 4:
+      self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.2, self.pos[1]-0.1), fontsize=14)
+    elif self.ID == 5:
+      self.annotation = axis.annotate(self.ID, xy=(self.pos[0]-0.45, self.pos[1]-0.01), fontsize=14)
+    elif self.ID == 6:
+      self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.1, self.pos[1]+0.003), fontsize=14)
+    elif self.ID == 7:
+      self.annotation = axis.annotate(self.ID, xy=(self.pos[0]-0.4, self.pos[1]-0.2), fontsize=14)
+    elif self.ID == 8:
+      self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.2, self.pos[1]-0.2), fontsize=14)
+    elif self.ID == 9:
+      self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.1, self.pos[1]-0.2), fontsize=14)
+    elif self.ID == 10:
+      self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.1, self.pos[1]+0.003), fontsize=14)
+    elif self.ID == 11:
+      self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.1, self.pos[1]-0.5), fontsize=14)
+    elif self.ID == 12:
+      self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.1, self.pos[1]+0.003), fontsize=14)
+    elif self.ID == 13:
+      self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.1, self.pos[1]-0.4), fontsize=14)
+    elif self.ID == 14:
+      self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.1, self.pos[1]+0.003), fontsize=14)
+    elif self.ID == 15:
+      self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]+0.1), fontsize=14)      
+    else:
+      self.annotation = axis.annotate(self.ID, xy=(self.pos[0]+0.001, self.pos[1]+0.003), fontsize=14)
 
     return self.point#, self.annotation
     """redoing_zig_zag_test_30_54.json"""

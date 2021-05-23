@@ -65,7 +65,7 @@ else:
     )
 
 folder_path = r'..\large-json-files' #r'..\large-json-files\Files_in_thesis' #'..\master_thesis' #r'json_files' # 
-file_name = r'\redoing_stripa_test_80_drones_9.json' #r'\test_redoing_plot_large_cR_2.json' #r'\redoing_zig_zag_test_30_drones_54.json'  #r'\deployment_comp_uniform_small_cR_15_drones_3.json' ##r'\test_redoing_plot_small_cR_77.json' #r'\unif_comp_10.json' #r'\unif_comp_small_rc_3_15_drones.json'
+file_name = r'\redoing_stripa_test_80_drones_9.json'# r'\test_redoing_plot_large_cR_2.json' ##r'\redoing_zig_zag_test_30_drones_54.json' #r'\deployment_comp_uniform_small_cR_15_drones_3.json' ##r'\test_redoing_plot_small_cR_77.json' #r'\unif_comp_10.json' #r'\unif_comp_small_rc_3_15_drones.json'
 
 file_path = folder_path + file_name#r'..\large-json-files\zig_zag_test_3.json' # r'json_files\zig_zag_test_3.json' #r'..\large-json-files\zig_zag_test_3.json'  
 #r'json_files\correct_avg_unif_comp_small_rs_15_drones_21.json'#r'zig_zag_test_30_10.json'# folder_path + file_name
@@ -280,20 +280,20 @@ else:
         # plt.xticks(range())
 
 
-# fig_uniformity = plt.figure(figsize=(5.2,3))
-# fig_uniformity.canvas.set_window_title('Replay uniformity')
+fig_uniformity = plt.figure(figsize=(5.2,3))
+fig_uniformity.canvas.set_window_title('Replay uniformity')
 
-# ax_uniformity = fig_uniformity.add_subplot(1,1,1)
-# ax_uniformity.set(
-#     xlabel = '# of deployed agents', #'Deployed agents',
-#     # ylabel = 'Uniformity',
-#     title = 'Uniformity'
-# )
-# # unif_label = ax_uniformity.set_ylabel(r"$\mathcal{u}$",labelpad=-15, loc='top')
-# # unif_label.set_rotation(0)
-# ax_uniformity.set_xticks(range(0,len(uniformity_list[:stop_min_ID])+1,10))
-# # ax.set_xticks(range(0,len(uniformity_list[:stop_min_ID])+1,5))#([0,10,20,30])#(range(len(uniformity_list[:stop_min_ID])+1)) #ints on x-axis
-# ax_uniformity.plot(uniformity_list[:stop_min_ID+1])
-# ax_uniformity.plot(uniformity_list[:stop_min_ID+1], "or", markersize=4)
+ax_uniformity = fig_uniformity.add_subplot(1,1,1)
+ax_uniformity.set(
+    xlabel = '# of deployed agents', #'Deployed agents',
+    # ylabel = 'Uniformity',
+    title = 'Uniformity'
+)
+# unif_label = ax_uniformity.set_ylabel(r"$\mathcal{u}$",labelpad=-15, loc='top')
+# unif_label.set_rotation(0)
+ax_uniformity.set_xticks(range(0,len(uniformity_list[:stop_min_ID])+1,10))
+# ax.set_xticks(range(0,len(uniformity_list[:stop_min_ID])+1,5))#([0,10,20,30])#(range(len(uniformity_list[:stop_min_ID])+1)) #ints on x-axis
+ax_uniformity.plot(uniformity_list[:stop_min_ID+1])
+ax_uniformity.plot(uniformity_list[:stop_min_ID+1], "or", markersize=2)
 
 plt.show()
