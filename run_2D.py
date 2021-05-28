@@ -5,11 +5,7 @@ from beacons.SCS.scs import SCS
 from beacons.MIN.min import Min, MinState
 
 from deployment.following_strategies.attractive_follow import AttractiveFollow
-from deployment.following_strategies.straight_line_follow import StraightLineFollow
-from deployment.following_strategies.new_attractive_follow import NewAttractiveFollow
 from deployment.exploration_strategies.potential_fields_explore import PotentialFieldsExplore
-from deployment.exploration_strategies.new_potential_fields_explore import NewPotentialFieldsExplore
-from deployment.exploration_strategies.heuristic_explore import HeuristicExplore
 from deployment.following_strategies.no_follow import NoFollow
 from deployment.exploration_strategies.line_explore import LineExplore, LineExploreKind
 from deployment.deployment_fsm import DeploymentFSM
@@ -276,8 +272,8 @@ if __name__ == "__main__":
   _K_o = 1.2#0.9#1.2 #1.75
 
 
-  N_mins = 15#20#15#7
-  file_path = r'test_redoing_plot_20.json'#r'json_files\correct_avg_unif_comp_small_rs_15_drones_100.json'
+  N_mins = 3#20#15#7
+  file_path = r'json_files\test_redoing_plot_20.json'#r'json_files\correct_avg_unif_comp_small_rs_15_drones_100.json'
   dt = 0.01
 
   scs = SCS(Beacon.get_ID(), max_range,xi_max=_xi_max, d_perf=_d_perf, d_none=_d_none, d_tau=_d_tau)
@@ -287,8 +283,8 @@ if __name__ == "__main__":
       Beacon.get_ID(),
       max_range,
       DeploymentFSM(
-        NewAttractiveFollow(K_o=_K_o),
-        NewPotentialFieldsExplore(K_o=_K_o, target_point_or_line=NewPotentialFieldsExplore.Target.LINE)
+        AttractiveFollow(K_o=_K_o),
+        PotentialFieldsExplore(K_o=_K_o, target_point_or_line=PotentialFieldsExplore.Target.LINE)
       ),
       xi_max=_xi_max,
       d_perf=_d_perf,
@@ -440,7 +436,7 @@ if __name__ == "__main__":
 
   plt.xticks(range(len(uniformity_list)+1)) #ints on x-axis
   ax_uniformity.plot(uniformity_list)
-  ax_uniformity.plot(uniformity_list, "or")
+  ax_uniformity.plot(uniformity_list, "or",markersize=2)
 
   plt.show()
 

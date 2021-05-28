@@ -5,11 +5,7 @@ from beacons.SCS.scs import SCS
 from beacons.MIN.min import Min, MinState
 
 from deployment.following_strategies.attractive_follow import AttractiveFollow
-from deployment.following_strategies.straight_line_follow import StraightLineFollow
-from deployment.following_strategies.new_attractive_follow import NewAttractiveFollow
 from deployment.exploration_strategies.potential_fields_explore import PotentialFieldsExplore
-from deployment.exploration_strategies.new_potential_fields_explore import NewPotentialFieldsExplore
-from deployment.exploration_strategies.heuristic_explore import HeuristicExplore
 from deployment.following_strategies.no_follow import NoFollow
 from deployment.exploration_strategies.line_explore import LineExplore, LineExploreKind
 from deployment.deployment_fsm import DeploymentFSM
@@ -350,7 +346,7 @@ if __name__ == "__main__":
 
   plt.xticks(range(len(uniformity_list)+1)) #ints on x-axis
   ax_uniformity.plot(uniformity_list)
-  ax_uniformity.plot(uniformity_list, "or")
+  ax_uniformity.plot(uniformity_list, "or", markersize=2)
 
   plt.show()
 

@@ -64,8 +64,8 @@ else:
         }
     )
 
-folder_path = r'..\large-json-files' #r'..\large-json-files\Files_in_thesis' #'..\master_thesis' #r'json_files' # 
-file_name = r'\redoing_stripa_test_80_drones_9.json'# r'\test_redoing_plot_large_cR_2.json' ##r'\redoing_zig_zag_test_30_drones_54.json' #r'\deployment_comp_uniform_small_cR_15_drones_3.json' ##r'\test_redoing_plot_small_cR_77.json' #r'\unif_comp_10.json' #r'\unif_comp_small_rc_3_15_drones.json'
+folder_path = r'json_files'#r'..\large-json-files' #r'..\large-json-files\Files_in_thesis' #'..\master_thesis' #r'json_files' # 
+file_name = r'\line_explore_test123.json'# r'\test_redoing_plot_large_cR_2.json' ##r'\redoing_zig_zag_test_30_drones_54.json' #r'\deployment_comp_uniform_small_cR_15_drones_3.json' ##r'\test_redoing_plot_small_cR_77.json' #r'\unif_comp_10.json' #r'\unif_comp_small_rc_3_15_drones.json'
 
 file_path = folder_path + file_name#r'..\large-json-files\zig_zag_test_3.json' # r'json_files\zig_zag_test_3.json' #r'..\large-json-files\zig_zag_test_3.json'  
 #r'json_files\correct_avg_unif_comp_small_rs_15_drones_21.json'#r'zig_zag_test_30_10.json'# folder_path + file_name
@@ -83,7 +83,10 @@ max_range_from_json = json_data['parameters']['Max_range']
 N_mins_from_json = json_data['parameters']['N_mins']
 d_none_from_json = json_data['parameters']['d_none']
 d_perf_from_json = json_data['parameters']['d_perf']
-d_tau_from_json = json_data['parameters']['d_tau']
+try:
+    d_tau_from_json = json_data['parameters']['d_tau']
+except:
+    d_tau_from_json = None
 delta_expl_angle_from_json = json_data['parameters']['delta_expl_angle']
 xi_max_from_json = json_data['parameters']['xi_max']
 
