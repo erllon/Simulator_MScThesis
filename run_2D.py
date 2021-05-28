@@ -12,7 +12,7 @@ from deployment.deployment_fsm import DeploymentFSM
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
+from matplotlib.animation import FuncAnimation, PillowWriter, FFMpegWriter 
 
 from helpers import polar_to_vec as p2v
 
@@ -106,7 +106,10 @@ def write_to_file(file_path, data_to_write):
 
 
 if __name__ == "__main__":
-  _animate, save_animation, plot_propterties = False, False, True
+  # If _animate=True it is recommended that plot_properties=False due to slow animation
+  # If it is desirable to animate the deployment AND the properties it is recommended to save the animation and watch the saved animation
+  # Decreasing _save_count decreases the time it takes to save the animation
+  _animate, save_animation, plot_properties = False, False, True
   start_animation_from_min_ID = 0
 
 # %% Plotting styles
@@ -313,7 +316,7 @@ if __name__ == "__main__":
   fig = plt.figure(figsize=(5,5))#plt.figure(figsize=(5.2,3))
   fig.canvas.set_window_title(f"Deployment {file_path[:-5]}")
   
-  if plot_propterties:
+  if plot_properties:
     if _animate:
       ax1_1 = fig.add_subplot(3,1,1)
       ax1_2 = fig.add_subplot(3,1,2)
@@ -339,7 +342,7 @@ if __name__ == "__main__":
 
   if _animate:
     for mn in beacons[1:start_animation_from_min_ID]: #SCS is already plotted
-      if plot_propterties:
+      if plot_properties:
         mn.plot(ax1_1)
         mn.plot_traj_line(ax1_1)
         mn.plot_force_traj_line(ax1_2)
@@ -355,7 +358,7 @@ if __name__ == "__main__":
     offset, min_counter = [0], [start_animation_from_min_ID]
 
     def init():
-      if plot_propterties:
+      if plot_properties:
         scs.plot(ax1_1)
         env.plot(ax1_1)
         artists = []
@@ -383,7 +386,7 @@ if __name__ == "__main__":
       if i - offset[0] >= mins[min_counter[0]].get_pos_traj_length():
         offset[0] += mins[min_counter[0]].get_pos_traj_length()
         min_counter[0] += 1
-      if plot_propterties:
+      if plot_properties:
         plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
         plt_force_traj = mins[min_counter[0]].plot_force_from_traj_index(i-offset[0])
         plt_xi_traj = mins[min_counter[0]].plot_xi_from_traj_index(i-offset[0])
@@ -392,15 +395,19 @@ if __name__ == "__main__":
         plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
         return plt_pos_traj
   
-    anim = FuncAnimation(fig, animate, init_func=init, interval=2, blit=False)
+    _save_count = 2000
+    anim = FuncAnimation(fig, animate, init_func=init, interval=2, blit=False, save_count=_save_count)
     
     if save_animation:
-      animation_name = "animation.gif"
-      print("Saving animation")
-      anim.save(animation_name)
-      print(f"Animation saved to {animation_name}")
+        writervideo = FFMpegWriter(fps=60)
+
+        animation_name_video = "animation_test123.mp4"
+        print("Saving animation. Depending on the choise of 'save_count' this might take some time...")
+        print(f"Chosen 'save_count' = {_save_count}")
+        anim.save(animation_name_video,writer=writervideo)   
+        print(f"Animation saved to {animation_name_video}")
   else:
-    if plot_propterties:
+    if plot_properties:
       env.plot(ax1_1)
       scs.plot(ax1_1)
       for mn in beacons[1:]:#SCS is already plotted, using beacons instead of mins so that only landed mins are taken into account

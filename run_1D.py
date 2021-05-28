@@ -12,7 +12,7 @@ from deployment.deployment_fsm import DeploymentFSM
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
+from matplotlib.animation import FuncAnimation, PillowWriter, FFMpegWriter 
 
 from helpers import polar_to_vec as p2v
 
@@ -41,16 +41,15 @@ def simulate(dt, mins, scs, env):
   scs.generate_target_pos(beacons, env, mins[0])
   uniformity_list.append(np.sum([beacon.calc_uniformity() for beacon in beacons])/len(beacons))
 
-  # If we deploy drones until some condition on the uniformity is fulfilled
+  # If the deployment should stop when some condition on the uniformity is fulfilled
   delta_uniformity = 0
   delta_limit = 0.5
-  limit = 0.3#2#1.5#2#0.05 #Try 1.5?
+  limit = 0.3
   i = 0
 
   tic = timeit.default_timer()
 
   while i < N_mins:#uniformity_list[-1] < limit and i < N_mins:#delta_uniformity <= limit:
-  # for i in range(len(mins)):
     mins[i].insert_into_environment(env)
     while not mins[i].state == MinState.LANDED:
       mins[i].do_step(beacons, scs, env, dt)
@@ -73,13 +72,8 @@ def simulate(dt, mins, scs, env):
     
     
     print(f"min {mins[i].ID} landed at pos\t\t\t {mins[i].pos}")
-    print(f"min {mins[i].ID} tot_vec = {mins[i].tot_vec}")
-    # print(f"min {mins[i].ID} target\t\t\t\t {mins[i].target_pos}")
     print(f"min {mins[i].ID} neighbors: {[n.ID for n in mins[i].neighbors]}")
     print(f"distance between n+1 and n = {np.linalg.norm(beacons[-1].pos-beacons[-2].pos)}")
-    if not mins[i].deployment_strategy.get_target() is None:
-          print(f"Its target now has {len(mins[i].deployment_strategy.get_target().neighbors)} neighs", )
-    print(f"uniformity after min {mins[i].ID} landed: {uniformity_list[-1]}")
     print("------------------")
     i += 1
   pr.disable()
@@ -93,15 +87,7 @@ def simulate(dt, mins, scs, env):
   for i in range(len(beacons)):
     print(beacons[i].pos[0])
     if i > 0:
-      pos_diff.append(beacons[i].pos[0] - beacons[i-1].pos[0])
-  print(f"uniformity_list: {uniformity_list}")
-  print(f"pos_diff: {pos_diff}")
-  
-  # s = io.StringIO()
-  # sortby = SortKey.CUMULATIVE
-  # ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-  # ps.print_stats()
-  # print(s.getvalue())
+      pos_diff.append(beacons[i].pos[0] - beacons[i-1].pos[0])  
   return beacons
 
 def write_to_file(file_path, data_to_write):
@@ -110,7 +96,10 @@ def write_to_file(file_path, data_to_write):
 
 
 if __name__ == "__main__":
-  _animate, save_animation, plot_propterties = False, False, True
+  # If _animate=True it is recommended that plot_properties=False due to slow animation
+  # If it is desirable to animate the deployment AND the properties it is recommended to save the animation and watch the saved animation
+  # Decreasing _save_count decreases the time it takes to save the animation
+  _animate, save_animation, plot_properties = True, False, True
   start_animation_from_min_ID = 0
 
 # %% Plotting styles
@@ -220,7 +209,7 @@ if __name__ == "__main__":
   fig = plt.figure(figsize=(5,5))
   fig.canvas.set_window_title(f"Deployment {file_path[:-5]}")
   
-  if plot_propterties:
+  if plot_properties:
     if _animate:
       ax1_1 = fig.add_subplot(3,1,1)
       ax1_2 = fig.add_subplot(3,1,2)
@@ -249,7 +238,7 @@ if __name__ == "__main__":
 
   if _animate:
     for mn in beacons[1:start_animation_from_min_ID]: #SCS is already plotted
-      if plot_propterties:
+      if plot_properties:
         mn.plot(ax1_1)
         mn.plot_traj_line(ax1_1)
         mn.plot_force_traj_line(ax1_2)
@@ -265,7 +254,7 @@ if __name__ == "__main__":
     offset, min_counter = [0], [start_animation_from_min_ID]
 
     def init():
-      if plot_propterties:
+      if plot_properties:
         scs.plot(ax1_1)
         env.plot(ax1_1)
         artists = []
@@ -293,7 +282,7 @@ if __name__ == "__main__":
       if i - offset[0] >= mins[min_counter[0]].get_pos_traj_length():
         offset[0] += mins[min_counter[0]].get_pos_traj_length()
         min_counter[0] += 1
-      if plot_propterties:
+      if plot_properties:
         plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
         plt_force_traj = mins[min_counter[0]].plot_force_from_traj_index(i-offset[0])
         plt_xi_traj = mins[min_counter[0]].plot_xi_from_traj_index(i-offset[0])
@@ -304,13 +293,25 @@ if __name__ == "__main__":
   
     anim = FuncAnimation(fig, animate, init_func=init, interval=2, blit=False)
     
+    _save_count = 1750
+    anim = FuncAnimation(fig, animate, init_func=init, interval=2, blit=False, save_count=_save_count)
+    
     if save_animation:
-      animation_name = "animation.gif"
-      print("Saving animation")
-      anim.save(animation_name)
-      print(f"Animation saved to {animation_name}")
+        # f = r"c://Users/xx/Desktop/animation.gif" 
+        writergif = PillowWriter(fps=30) 
+        writervideo = FFMpegWriter(fps=60)
+
+        # anim.save(f, writer=writergif)
+
+        animation_name_gif = "animation_test.gif"
+        animation_name_video = "animation_test123.mp4"
+        print("Saving animation. Depending on the choise of 'save_count' this might take some time...")
+        print(f"Chosen 'save_count' = {_save_count}")
+        # anim.save(animation_name, writer=writergif)
+        anim.save(animation_name_video,writer=writervideo)   
+        print(f"Animation saved to {animation_name_video}")
   else:
-    if plot_propterties:
+    if plot_properties:
       env.plot(ax1_1)
       scs.plot(ax1_1)
       for mn in beacons[1:]:#SCS is already plotted, using beacons instead of mins so that only landed mins are taken into account
@@ -334,19 +335,19 @@ if __name__ == "__main__":
           mins[j].plot_vectors(env,ax)
       ax.legend(ncol=2, prop={'size': 9})
       ax.axis('equal')  
-  fig_uniformity = plt.figure(figsize=(5,5))#plt.figure(figsize=(5.2,3))
-  fig_uniformity.canvas.set_window_title(f"Uniformity {file_path[:-5]}")
+  # fig_uniformity = plt.figure(figsize=(5,5))#plt.figure(figsize=(5.2,3))
+  # fig_uniformity.canvas.set_window_title(f"Uniformity {file_path[:-5]}")
 
-  ax_uniformity = fig_uniformity.add_subplot(1,1,1)
-  ax_uniformity.set(
-    xlabel = 'Beacons',
-    ylabel = 'Uniformity',
-    title = 'Uniformity'
-  )
+  # ax_uniformity = fig_uniformity.add_subplot(1,1,1)
+  # ax_uniformity.set(
+  #   xlabel = 'Beacons',
+  #   ylabel = 'Uniformity',
+  #   title = 'Uniformity'
+  # )
 
-  plt.xticks(range(len(uniformity_list)+1)) #ints on x-axis
-  ax_uniformity.plot(uniformity_list)
-  ax_uniformity.plot(uniformity_list, "or", markersize=2)
+  # plt.xticks(range(len(uniformity_list)+1)) #ints on x-axis
+  # ax_uniformity.plot(uniformity_list)
+  # ax_uniformity.plot(uniformity_list, "or", markersize=2)
 
   plt.show()
 
