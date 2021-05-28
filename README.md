@@ -17,10 +17,11 @@ This simulator was developed as part of my master thesis within Cybernetics and 
 <!-- GETTING STARTED -->
 ## Getting Started
 
-### Prerequisites
+### Prerequisites (with download links)
 * [python](https://www.python.org/downloads/)
 * [numpy](https://pypi.org/project/numpy/)
 * [matplotlib](https://pypi.org/project/matplotlib/)
+* [SciencePlots](https://pypi.org/project/SciencePlots/)
 
 ### Installation
 
