@@ -12,7 +12,7 @@ e-style-links
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-
+This simulator was developed as part of my master thesis within Cybernetics and Robotics at Norwegian University of Sceince and Technology (NTNU)
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -21,46 +21,15 @@ This is an example of how you may give instructions on setting up your project l
 To get a local copy up and running follow these simple example steps.
 
 ### Prerequisites
-
-This is an example of how to list things you need to use the software and how to install them.
-* numpu
-  ```sh
-   pip install numpy
-   ```
-* matplotlib
-   ```sh
-   pip install matplotlib
-   ```
- * timeit
-   ```sh
-   pip install timeit
-   ```
- * cProfile
-   ```sh
-   pip install cProfile
-   ```
- * pstats
-   ```sh
-   pip install pstats
-   ```
- * io
-   ```sh
-   pip install io
-   ```
- * json
-   ```sh
-   pip install json
-   ```
- * codecs
-   ```sh
-   pip install codecs
-   ```
+[python](https://www.python.org/downloads/)
+[numpy](https://pypi.org/project/numpy/)
+[matplotlib](https://pypi.org/project/matplotlib/)
 
 ### Installation
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/your_username_/Project-Name.git
+   git clone https://github.com/erllon/Simulator_MScThesis.git
    ```
 2. Install required packages (see above)
 
