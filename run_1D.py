@@ -179,7 +179,7 @@ if __name__ == "__main__":
   _K_o = 0.9
 
   N_mins = 6
-  file_path = r'json_files\line_explore_test123.json'
+  file_path = r'json_files\test_1D.json'
   dt = 0.01
 
   scs = SCS(Beacon.get_ID(), max_range,d_tau=None, xi_max=_xi_max, d_perf=_d_perf, d_none=_d_none)
@@ -217,7 +217,7 @@ if __name__ == "__main__":
 
   write_to_file(file_path, data)
   
-  fig = plt.figure(figsize=(5,5))#plt.figure(figsize=(5.2,3))
+  fig = plt.figure(figsize=(5,5))
   fig.canvas.set_window_title(f"Deployment {file_path[:-5]}")
   
   if plot_propterties:
@@ -229,7 +229,7 @@ if __name__ == "__main__":
       ax1_2.title.set_text(r"$\left\|\| F_{applied} \right\|\|$")
       ax1_3.title.set_text(r"$\xi$ from neighbors")
     else:
-      fig2 = plt.figure(figsize=(5,5))#plt.figure(figsize=(5,5), tight_layout=True)
+      fig2 = plt.figure(figsize=(5,5))
       fig2.canvas.set_window_title(f"Properties {file_path[:-5]}")
 
       ax1_1 = fig.add_subplot(1,1,1)
