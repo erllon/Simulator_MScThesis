@@ -12,18 +12,15 @@ e-style-links
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-This simulator was developed as part of my master thesis within Cybernetics and Robotics at Norwegian University of Sceince and Technology (NTNU)
+This simulator was developed as part of my master thesis within Cybernetics and Robotics at Norwegian University of Sceince and Technology (NTNU). The goal of the thesis was to investigate how micro indoor drones could be deployed incrementally into a GNSS denied disaster area to aid the localization of first responders.
 
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
-
 ### Prerequisites
-[python](https://www.python.org/downloads/)
-[numpy](https://pypi.org/project/numpy/)
-[matplotlib](https://pypi.org/project/matplotlib/)
+* [python](https://www.python.org/downloads/)
+* [numpy](https://pypi.org/project/numpy/)
+* [matplotlib](https://pypi.org/project/matplotlib/)
 
 ### Installation
 
