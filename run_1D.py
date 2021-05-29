@@ -206,17 +206,18 @@ if __name__ == "__main__":
 
   write_to_file(file_path, data)
   
-  fig = plt.figure(figsize=(5,5))
+  fig = plt.figure(figsize=(5,5), tight_layout=True)
   fig.canvas.set_window_title(f"Deployment {file_path[:-5]}")
   
   if plot_properties:
     if _animate:
-      ax1_1 = fig.add_subplot(3,1,1)
-      ax1_2 = fig.add_subplot(3,1,2)
-      ax1_3 = fig.add_subplot(3,1,3, sharex=ax1_2)
+      ax1_1 = fig.add_subplot(2,1,1)
+      ax1_2 = fig.add_subplot(2,1,2)
+      # ax1_3 = fig.add_subplot(3,1,3, sharex=ax1_2)
       ax1_1.title.set_text("Deployment")
       ax1_2.title.set_text(r"$\left\|\| F_{applied} \right\|\|$")
-      ax1_3.title.set_text(r"$\xi$ from neighbors")
+      
+      # ax1_3.title.set_text(r"$\xi$ from neighbors")
     else:
       fig2 = plt.figure(figsize=(5,5))
       fig2.canvas.set_window_title(f"Properties {file_path[:-5]}")
@@ -262,12 +263,12 @@ if __name__ == "__main__":
           artists += mn.plot(ax1_1)
           artists += (mn.plot_traj_line(ax1_1), )
           artists += (mn.plot_force_traj_line(ax1_2), )
-          artists += (mn.plot_xi_traj_line(ax1_3), )
+          # artists += (mn.plot_xi_traj_line(ax1_3), )
           mn.plot_pos_from_pos_traj_index(0)
           mn.plot_force_from_traj_index(0)
-          mn.plot_xi_from_traj_index(0)
+          # mn.plot_xi_from_traj_index(0)
         if start_animation_from_min_ID == 0:
-          ax1_2.legend(ncol=2, prop={'size': 9})  
+          ax1_2.legend(ncol=2, prop={'size': 9})
       else:
         scs.plot(ax)
         env.plot(ax)
@@ -285,8 +286,8 @@ if __name__ == "__main__":
       if plot_properties:
         plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
         plt_force_traj = mins[min_counter[0]].plot_force_from_traj_index(i-offset[0])
-        plt_xi_traj = mins[min_counter[0]].plot_xi_from_traj_index(i-offset[0])
-        return  plt_force_traj, plt_xi_traj, plt_pos_traj
+        # plt_xi_traj = mins[min_counter[0]].plot_xi_from_traj_index(i-offset[0])
+        return  plt_force_traj, plt_pos_traj, # plt_xi_traj 
       else:
         plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
         return plt_pos_traj
@@ -298,12 +299,12 @@ if __name__ == "__main__":
     
     if save_animation:
         # f = r"c://Users/xx/Desktop/animation.gif" 
-        writergif = PillowWriter(fps=30) 
+        # writergif = PillowWriter(fps=30) 
         writervideo = FFMpegWriter(fps=60)
 
         # anim.save(f, writer=writergif)
 
-        animation_name_gif = "animation_test.gif"
+        # animation_name_gif = "animation_test.gif"
         animation_name_video = "animation_test123.mp4"
         print("Saving animation. Depending on the choise of 'save_count' this might take some time...")
         print(f"Chosen 'save_count' = {_save_count}")
@@ -317,9 +318,9 @@ if __name__ == "__main__":
       for mn in beacons[1:]:#SCS is already plotted, using beacons instead of mins so that only landed mins are taken into account
         mn.plot(ax1_1)
         mn.plot_traj_line(ax1_1)
-        mn.plot_vectors(env, ax1_1)
+        # mn.plot_vectors(env, ax1_1)
         mn.plot_force_traj_line(ax2_1)
-        mn.plot_xi_traj_line(ax2_2)
+        # mn.plot_xi_traj_line(ax2_2)
       ax2_1.legend(ncol=2, prop={'size': 9})
 
     else:
