@@ -33,9 +33,4 @@ This simulator was developed as part of my master thesis within Cybernetics and 
 
 <!-- USAGE EXAMPLES -->
 ## Usage
-
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-<<<<<<< HEAD
-
-=======
->>>>>>> uniformity_comp
+![This is an example](https://github.com/erllon/Simulator_MScThesis/blob/master/deployment_comp_uniform_large_cR_15_drones_3_correct_annotations_wo_labelbox2.png?raw=true)
