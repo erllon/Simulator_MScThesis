@@ -108,38 +108,18 @@ class Min(Beacon):
     self.compute_neighbors(beacons)
 
     """Computing vectors FROM neighbors TO drone"""
-<<<<<<< HEAD
-    returned_vecs, ang_from_neighs = Min.get_neigh_vecs_and_angles(self)
-    vecs_from_neighs = np.array(returned_vecs)
-    if vecs_from_neighs.shape[0] == 1:
-      # sorted_vecs_from_neighs = vecs_from_neighs
-      tot_vec_from_neigh = vecs_from_neighs#vecs_from_neighs
-    else:
-      sortidxs = np.argsort(np.linalg.norm(vecs_from_neighs[:], axis=-1))
-      sorted_vecs_from_neighs = vecs_from_neighs[sortidxs]#vecs_from_neighs[sortidxs]
-=======
     vecs_from_neighs, ang_from_neighs = Min.get_neigh_vecs_and_angles(self)
     vecs_from_neighs_arr = np.array(vecs_from_neighs)
     if vecs_from_neighs_arr.shape[0] == 1:
-      tot_vec_from_neigh = vecs_from_neighs_arr#np.array(vecs_from_neighs) # test#vecs_from_neighs
+      tot_vec_from_neigh = vecs_from_neighs_arr
     else:
-      sortidxs = np.argsort(np.linalg.norm(vecs_from_neighs_arr, axis=-1))#np.argsort(np.linalg.norm(vecs_from_neighs[:], axis=-1))
-      sorted_vecs_from_neighs = vecs_from_neighs_arr[sortidxs]#test[sortidxs]#vecs_from_neighs[sortidxs]
->>>>>>> uniformity_comp
-      # sorted_ang_from_neighs = ang_from_neighs[sortidxs]
+      sortidxs = np.argsort(np.linalg.norm(vecs_from_neighs_arr, axis=-1))
+      sorted_vecs_from_neighs = vecs_from_neighs_arr[sortidxs]
 
-    # tot_vec_from_neigh = np.sum(vecs_from_neighs,axis=0)
-    # avg_ang_from_neigh = np.sum(ang_from_neighs, axis=0)/len(ang_from_neighs)
-<<<<<<< HEAD
-    # 
-      tot_vec_from_neigh = np.sum(sorted_vecs_from_neighs[:4],axis=0)
-=======
     # THE VECTOR CORRESPONDING TO THE CLOSEST NEIGHBOR WILL BE THE **LAST** VECTOR IN sorted_vecs_from_neighs DUE TO SCALING
-      tot_vec_from_neigh = sorted_vecs_from_neighs[-1]#np.sum(sorted_vecs_from_neighs[0],axis=0)#np.sum(sorted_vecs_from_neighs[:4],axis=0)#
+      tot_vec_from_neigh = sorted_vecs_from_neighs[-1]
     
->>>>>>> uniformity_comp
     """Calculating vectors FROM drone TO obstacles"""
-    # vecs_from_obs, ang_from_obs = Min.get_obs_vecs_and_angles(self, ENV)
     vecs_from_obs, _ = Min.get_obs_vecs_and_angles(self, ENV)
 
     expl_ang = 0
@@ -172,7 +152,7 @@ class Min(Beacon):
 
     # Could increase the distance the target point is generated at, to increase the force applied to the min
     # It is the fact that the distance is 1 that the force is not saturated when entering the exploration phase
-    target_pos = self.pos + p2v(1, next_min.target_angle) #1.5
+    target_pos = self.pos + p2v(1, next_min.target_angle)
     
     if next_min.first_target_pos == None:
       next_min.first_target_pos = deepcopy(target_pos.reshape(2, ))
@@ -189,24 +169,15 @@ class Min(Beacon):
 
   @staticmethod
   def get_neigh_vecs_and_angles(MIN):
-    vecs_from_neighs, ang_from_neighs = [], []#np.array([]), np.array([]) #[], []#
+    vecs_from_neighs, ang_from_neighs = [], []
     for n in MIN.neighbors:
       if not (MIN.get_vec_to_other(n) == 0).all():
-<<<<<<< HEAD
-        vec_from_neigh = -MIN.get_vec_to_other(n)#.reshape(2, 1)
-        dist = np.linalg.norm(vec_from_neigh) #when using xi for RSSI, dist will be in the interval (0, 1.7916)
-        scaling = 1.7916#MIN.d_none##
-=======
-        vec_from_neigh = -MIN.get_vec_to_other(n)#.reshape(2,))
-        dist = np.linalg.norm(vec_from_neigh) #when using xi for RSSI, dist will be in the interval (0, 1.7916)
-        scaling = MIN.d_tau#4#2#4#2#4#MIN.d_none#1.7916#
->>>>>>> uniformity_comp
+        vec_from_neigh = -MIN.get_vec_to_other(n)
+        dist = np.linalg.norm(vec_from_neigh)
+        scaling = MIN.d_tau
 
         vecs_from_neighs.append(((scaling-dist)/scaling)*MIN.range*normalize(vec_from_neigh))
-        # vecs_from_neighs.append((MIN.range*(scaling-dist)/scaling)*normalize(vec_from_neigh))
         ang_from_neighs.append(gva(vec_from_neigh.reshape(2, )))
-        # vecs_from_neighs = np.append(vecs_from_neighs, (scaling-dist)*normalize(vec_from_neigh),axis=-1)
-        # ang_from_neighs = np.append(ang_from_neighs, gva(vec_from_neigh.reshape(2, )))
     return vecs_from_neighs, ang_from_neighs
     
   @staticmethod
@@ -231,10 +202,7 @@ class Min(Beacon):
 
         vec_from_obs = (MIN.range - meas_length)*normalize(vec_from_obs)
         vec_from_obs_scaled = (MIN.range - meas_length)*MIN.range*normalize(vec_away_from_obs)
-        # vec_from_obs_scaled = ((MIN.range - meas_length)/1)*normalize(vec_away_from_obs)
-
-
-        # vecs_from_obs.append(vec_from_obs.reshape(2, ))
+        
         vecs_from_obs.append(vec_from_obs_scaled.reshape(2, ))
 
         ang_from_obs.append(gva(vec_from_obs.reshape(2, )))
