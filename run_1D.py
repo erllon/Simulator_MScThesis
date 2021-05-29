@@ -99,7 +99,7 @@ if __name__ == "__main__":
   # If _animate=True it is recommended that plot_properties=False due to slow animation
   # If it is desirable to animate the deployment AND the properties it is recommended to save the animation and watch the saved animation
   # Decreasing _save_count decreases the time it takes to save the animation
-  _animate, save_animation, plot_properties = True, False, True
+  _animate, save_animation, plot_properties = False, False, True
   start_animation_from_min_ID = 0
 
 # %% Plotting styles
@@ -164,7 +164,6 @@ if __name__ == "__main__":
   _xi_max = 1
   _d_perf = 0.1
   _d_none = 2.5
-  _delta_expl_angle = 0#np.pi/4 #np.pi/6
   _K_o = 0.9
 
   N_mins = 6
@@ -201,7 +200,7 @@ if __name__ == "__main__":
     'xi_max': _xi_max,
     'd_perf': _d_perf,
     'd_none': _d_none,
-    'delta_expl_angle': _delta_expl_angle
+    'delta_expl_angle': None #_delta_expl_angle
   }
 
   write_to_file(file_path, data)
@@ -213,11 +212,8 @@ if __name__ == "__main__":
     if _animate:
       ax1_1 = fig.add_subplot(2,1,1)
       ax1_2 = fig.add_subplot(2,1,2)
-      # ax1_3 = fig.add_subplot(3,1,3, sharex=ax1_2)
       ax1_1.title.set_text("Deployment")
-      ax1_2.title.set_text(r"$\left\|\| F_{applied} \right\|\|$")
-      
-      # ax1_3.title.set_text(r"$\xi$ from neighbors")
+      ax1_2.title.set_text(r"$\left\|\| F_{applied} \right\|\|$")      
     else:
       fig2 = plt.figure(figsize=(5,5))
       fig2.canvas.set_window_title(f"Properties {file_path[:-5]}")
@@ -230,7 +226,7 @@ if __name__ == "__main__":
       ax2_1.title.set_text(r"$\left\|\| F_{applied} \right\|\|$")
       ax2_2.title.set_text(r"$\xi$ from neighbors")
       time_label = ax2_2.set_xlabel(r"$time$",labelpad=-4,loc="right")
-      xi_label = ax2_2.set_ylabel(r"$\xi_{6,i}$",labelpad=-15, loc='top')
+      xi_label = ax2_2.set_ylabel(r"$\xi$",labelpad=-15, loc='top')
       xi_label.set_rotation(0)
   else:
     ax = fig.add_subplot(1,1,1)
@@ -243,11 +239,9 @@ if __name__ == "__main__":
         mn.plot(ax1_1)
         mn.plot_traj_line(ax1_1)
         mn.plot_force_traj_line(ax1_2)
-        mn.plot_xi_traj_line(ax1_3)
         mn.plot(ax1_1)
         mn.plot_traj_line(ax1_1)
         mn.plot_force_traj_line(ax1_2)
-        mn.plot_xi_traj_line(ax1_3)
       else:
         mn.plot(ax)
         mn.plot_vectors(env, ax)
@@ -263,10 +257,8 @@ if __name__ == "__main__":
           artists += mn.plot(ax1_1)
           artists += (mn.plot_traj_line(ax1_1), )
           artists += (mn.plot_force_traj_line(ax1_2), )
-          # artists += (mn.plot_xi_traj_line(ax1_3), )
           mn.plot_pos_from_pos_traj_index(0)
           mn.plot_force_from_traj_index(0)
-          # mn.plot_xi_from_traj_index(0)
         if start_animation_from_min_ID == 0:
           ax1_2.legend(ncol=1, prop={'size': 9}, bbox_to_anchor=(1,1), loc='upper left')
       else:
@@ -286,7 +278,6 @@ if __name__ == "__main__":
       if plot_properties:
         plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
         plt_force_traj = mins[min_counter[0]].plot_force_from_traj_index(i-offset[0])
-        # plt_xi_traj = mins[min_counter[0]].plot_xi_from_traj_index(i-offset[0])
         return  plt_force_traj, plt_pos_traj, # plt_xi_traj 
       else:
         plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
@@ -298,20 +289,13 @@ if __name__ == "__main__":
     anim = FuncAnimation(fig, animate, init_func=init, interval=2, blit=False, save_count=_save_count)
     
     if save_animation:
-        # f = r"c://Users/xx/Desktop/animation.gif" 
         writergif = PillowWriter(fps=60) 
-        # writervideo = FFMpegWriter(fps=60)
-
-        # anim.save(f, writer=writergif)
 
         animation_name_gif = "animation_test1D.gif"
-        animation_name_video = "animation_test123.mp4"
         print("Saving animation. Depending on the choise of 'save_count' this might take some time...")
         print(f"Chosen 'save_count' = {_save_count}")
-        # anim.save(animation_name, writer=writergif)
-        # anim.save(animation_name_video,writer=writervideo)
         anim.save(animation_name_gif,writer=writergif)   
-        print(f"Animation saved to {animation_name_video}")
+        print(f"Animation saved to {animation_name_gif}")
   else:
     if plot_properties:
       env.plot(ax1_1)
@@ -319,9 +303,8 @@ if __name__ == "__main__":
       for mn in beacons[1:]:#SCS is already plotted, using beacons instead of mins so that only landed mins are taken into account
         mn.plot(ax1_1)
         mn.plot_traj_line(ax1_1)
-        # mn.plot_vectors(env, ax1_1)
         mn.plot_force_traj_line(ax2_1)
-        # mn.plot_xi_traj_line(ax2_2)
+      beacons[-1].plot_xi_traj_line(ax2_2)
       ax2_1.legend(ncol=1, prop={'size': 9}, bbox_to_anchor=(1.05,1), loc='upper left')
 
     else:
@@ -336,20 +319,7 @@ if __name__ == "__main__":
         else:
           mins[j].plot_vectors(env,ax)
       ax.legend(ncol=2, prop={'size': 9})
-      ax.axis('equal')  
-  # fig_uniformity = plt.figure(figsize=(5,5))#plt.figure(figsize=(5.2,3))
-  # fig_uniformity.canvas.set_window_title(f"Uniformity {file_path[:-5]}")
-
-  # ax_uniformity = fig_uniformity.add_subplot(1,1,1)
-  # ax_uniformity.set(
-  #   xlabel = 'Beacons',
-  #   ylabel = 'Uniformity',
-  #   title = 'Uniformity'
-  # )
-
-  # plt.xticks(range(len(uniformity_list)+1)) #ints on x-axis
-  # ax_uniformity.plot(uniformity_list)
-  # ax_uniformity.plot(uniformity_list, "or", markersize=2)
+      ax.axis('equal')
 
   plt.show()
 
