@@ -33,4 +33,5 @@ This simulator was developed as part of my master thesis within Cybernetics and 
 
 <!-- USAGE EXAMPLES -->
 ## Usage
+<figure><img src="blob/deployment_comp_uniform_large_cR_15_drones_3_correct_annotations_wo_labelbox2.png"><figcaption>image caption</figcaption></figure>
 ![This is an example](https://https://github.com/erllon/Simulator_MScThesis/tree/master/blob/deployment_comp_uniform_large_cR_15_drones_3_correct_annotations_wo_labelbox2.png?raw=true)
