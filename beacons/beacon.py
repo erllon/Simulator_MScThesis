@@ -22,7 +22,7 @@ class Beacon():
     Beacon.ID_counter += 1
     return ret
 
-  def __init__(self, b_id, range, xi_max, d_perf, d_none, k=0, a=0, v=np.zeros((2, )), pos=None):
+  def __init__(self, b_id, range, xi_max, d_perf, d_none, d_tau, k=0, a=0, v=np.zeros((2, )), pos=None):
     self.range = range
     self.target_r = range #TODO: Scale this down, so that the target is not generated at border?
     self.pos = pos
@@ -34,6 +34,7 @@ class Beacon():
     self.xi_max = xi_max
     self.d_perf = d_perf
     self.d_none = d_none
+    self.d_tau = d_tau
     self._omega = np.pi/(self.d_none - self.d_perf)
     self._phi = -(np.pi*self.d_perf) / (self.d_none - self.d_perf)
     self._xi_max_decrease = (self.xi_max/2)*self._omega
@@ -51,7 +52,7 @@ class Beacon():
     return dist < self.range and dist < other.range
 
   def compute_neighbors(self, others):
-    self.neighbors = list(filter(lambda other: self.get_xi_to_other_from_model(other) > Beacon.RSSI_THRESHOLD_NEIGHBORS*self.xi_max and self != other, others))
+    self.neighbors = list(filter(lambda other: self.get_xi_to_other_from_model(other) >= Beacon.RSSI_THRESHOLD_NEIGHBORS*self.xi_max and self != other, others))
   
   @abstractmethod
   def generate_target_pos(self, beacons, ENV, next_min):

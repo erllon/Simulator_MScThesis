@@ -15,6 +15,8 @@ from pstats import SortKey
 import json, codecs
 from copy import deepcopy
 
+from tqdm import tqdm
+
 
 _animate, save_animation, plot_propterties = False,False,True#True, True, False
 
@@ -41,7 +43,7 @@ if not _animate or (_animate and save_animation):
                 # Legend
                 "legend.frameon": True,
                 "legend.framealpha": 1.0,
-                "legend.fancybox": True,
+                "legend.fancybox": True,    
                 "legend.numpoints": 1,
             }
         )
@@ -49,7 +51,7 @@ else:
     plt.rcParams.update(
         {
             # setgrid
-            "axes.grid": True,
+            "axes.grid": False,#True,
             "grid.linestyle": ":",
             "grid.color": "k",
             "grid.alpha": 0.5,
@@ -62,14 +64,17 @@ else:
         }
     )
 
-# file_path = r'json_files\line_explore_test123.json'
-folder_path = r'..\large-json-files\Stripa'
-file_name = r'\stripa_80_drones_45_random_single_ray1.json'
-# obj_text = codecs.open(file_path, 'r', encoding='utf-8').read()
-test = folder_path + file_name
-obj_text = codecs.open(folder_path + file_name, 'r', encoding='utf-8').read()
-json_data = json.loads(obj_text)
+folder_path = r'json_files'
+file_name = r'\test_1D.json' #r'\test_2D.json'
 
+file_path = folder_path + file_name#r'..\large-json-files\zig_zag_test_3.json' # r'json_files\zig_zag_test_3.json' #r'..\large-json-files\zig_zag_test_3.json'  
+#r'json_files\correct_avg_unif_comp_small_rs_15_drones_21.json'#r'zig_zag_test_30_10.json'# folder_path + file_name
+print(f"Reading json-file: '{file_path}'")
+obj_text = codecs.open(file_path, 'r', encoding='utf-8').read()
+print("Finished reading json-file...")
+print("Making json_data...")
+json_data = json.loads(obj_text)
+print("Finishing making json_data...")
 obstacle_corners_from_json = [np.array(corner) for corner in json_data['environment'][0]['Obstacle_corners']]
 entrance_point_from_json = np.array(json_data['environment'][0]['Entrance_point'])
 
@@ -78,10 +83,14 @@ max_range_from_json = json_data['parameters']['Max_range']
 N_mins_from_json = json_data['parameters']['N_mins']
 d_none_from_json = json_data['parameters']['d_none']
 d_perf_from_json = json_data['parameters']['d_perf']
+try:
+    d_tau_from_json = json_data['parameters']['d_tau']
+except:
+    d_tau_from_json = None
 delta_expl_angle_from_json = json_data['parameters']['delta_expl_angle']
 xi_max_from_json = json_data['parameters']['xi_max']
 
-scs_from_json = SCS(json_data['beacons'][0]['ID'], max_range_from_json, xi_max=xi_max_from_json, d_perf=d_perf_from_json, d_none=d_none_from_json)
+scs_from_json = SCS(json_data['beacons'][0]['ID'], max_range_from_json, xi_max=xi_max_from_json, d_perf=d_perf_from_json, d_none=d_none_from_json,d_tau=d_tau_from_json)
 
 env_from_json = Env(
     entrance_point_from_json,
@@ -89,7 +98,7 @@ env_from_json = Env(
 )
 
 start_animation_from_min_ID = 0
-stop_min_ID = 20#N_mins_from_json#1#
+stop_min_ID = N_mins_from_json#1#
 
 
 scs_from_json.insert_into_environment(env_from_json)
@@ -101,12 +110,13 @@ mins2 = [
     xi_max=xi_max_from_json,
     d_perf=d_perf_from_json,
     d_none=d_none_from_json,
+    d_tau=d_tau_from_json,
     delta_expl_angle=delta_expl_angle_from_json
     ) for i in range(N_mins_from_json)
 ]
 
 
-for e in range(len(mins2)):
+for e in tqdm(range(len(mins2))):
     mins2[e]._pos_traj = np.array(json_data['beacons'][e+1]['pos_traj'])
     mins2[e]._v_traj = np.array(json_data['beacons'][e+1]['force_traj'])
     mins2[e]._heading_traj = np.array(json_data['beacons'][e+1]['heading_traj'])
@@ -115,7 +125,7 @@ for e in range(len(mins2)):
     if e != len(mins2)-1:
         mins2[e].tot_vec = np.array(json_data['beacons'][e+1]['vectors']['tot_vec'])
         mins2[e].obs_vec = np.array(json_data['beacons'][e+1]['vectors']['obs_vec'])
-        print(f"mins2[{e}].tot_vec: {mins2[e].tot_vec}")
+        # print(f"mins2[{e}].tot_vec: {mins2[e].tot_vec}")
 
     mins2[e].heading = mins2[e]._heading_traj[-1]
     mins2[e].pos = np.array([mins2[e]._pos_traj[0][-1], mins2[e]._pos_traj[1][-1]])
@@ -125,7 +135,10 @@ mins_to_plot = deepcopy(mins2[:stop_min_ID])
 
 uniformity_list = json_data['uniformity']
 
-fig = plt.figure(figsize=(5.2,3))
+fig = plt.figure(figsize=(5,4))#plt.figure(figsize=(5.3, 3.7))#plt.figure(figsize=(5.2,3))#plt.figure(figsize=(5,5))#
+#zig_zag: figsize=(5.3, 3.7)
+#open: figsize=(5,5)
+#stripa: figsize=(5,4)
 fig.canvas.set_window_title('Replay')
 # plt.grid()
 
@@ -147,13 +160,14 @@ if plot_propterties:
         # ax2_2 = fig2.add_subplot(2,1,2)
         ax3_1 = fig3.add_subplot(1,1,1)
 
-        ax1_1.title.set_text("Deployment")
+        # ax1_1.title.set_text("Deployment")
+        ax1_1.grid(False)
         ax2_1.title.set_text(r"$\left\|\| F_{applied} \right\|\|$") #Set title
         # ax2_2.title.set_text(r"$\xi$ from neighbors")
         ax3_1.title.set_text(r"$\xi$ from neighbors") 
 else:
-    ax = fig.add_subplot(1,1,1)
-    ax.title.set_text("Deployment")
+    ax = fig.add_subplot(1,1,1)    
+    # ax.title.set_text("Deployment")
 
 
 if _animate:
@@ -161,17 +175,14 @@ if _animate:
         if plot_propterties:
             mn.plot(ax1_1)
             mn.plot_traj_line(ax1_1)
-            # mn.plot_vectors(env, ax[0])
             mn.plot_force_traj_line(ax1_2)
             mn.plot_xi_traj_line(ax1_3)
             mn.plot(ax1_1)
             mn.plot_traj_line(ax1_1)
-            # mn.plot_vectors(env, ax[0])
             mn.plot_force_traj_line(ax1_2)
             mn.plot_xi_traj_line(ax1_3)
         else:
             mn.plot(ax)
-            # mn.plot_vectors(env_from_json, ax)
 
     offset, min_counter = [0], [start_animation_from_min_ID]
 
@@ -201,35 +212,36 @@ if _animate:
             return artists
 
     def animate(i):
-        if i - offset[0] >= mins_to_plot[min_counter[0]].get_pos_traj_length():
-            offset[0] += mins_to_plot[min_counter[0]].get_pos_traj_length()
-            min_counter[0] += 1
-        if plot_propterties:
-            plt_pos_traj = mins_to_plot[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
-            plt_force_traj = mins_to_plot[min_counter[0]].plot_force_from_traj_index(i-offset[0])
-            plt_xi_traj = mins_to_plot[min_counter[0]].plot_xi_from_traj_index(i-offset[0])
-            return  plt_force_traj, plt_xi_traj, plt_pos_traj
-        else:
-            plt_pos_traj =  mins_to_plot[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
-            return plt_pos_traj
+        try:
+            if i - offset[0] >= mins_to_plot[min_counter[0]].get_pos_traj_length():
+                offset[0] += mins_to_plot[min_counter[0]].get_pos_traj_length()
+                min_counter[0] += 1
+            if plot_propterties:
+                plt_pos_traj = mins_to_plot[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
+                plt_force_traj = mins_to_plot[min_counter[0]].plot_force_from_traj_index(i-offset[0])
+                plt_xi_traj = mins_to_plot[min_counter[0]].plot_xi_from_traj_index(i-offset[0])
+                return  plt_force_traj, plt_xi_traj, plt_pos_traj
+            else:
+                plt_pos_traj =  mins_to_plot[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
+                return plt_pos_traj
+        except:
+            print("Animation finished")
     
     _save_count = 2000
     anim = FuncAnimation(fig, animate, init_func=init, interval=2, blit=False, save_count=_save_count)
     
     if save_animation:
         # f = r"c://Users/xx/Desktop/animation.gif" 
-        writergif = PillowWriter(fps=30) 
-        writervideo = FFMpegWriter(fps=60)
+        writergif = PillowWriter(fps=60)
 
         # anim.save(f, writer=writergif)
 
         animation_name_gif = "animation_test.gif"
-        animation_name_video = "animation_test123.mp4"
         print("Saving animation. Depending on the choise of 'save_count' this might take some time")
         print(f"Chosen 'save_count' = {_save_count}")
         # anim.save(animation_name, writer=writergif)
-        anim.save(animation_name_video,writer=writervideo)   
-        print(f"Animation saved to {animation_name_video}")
+        anim.save(animation_name_gif,writer=writergif)   
+        print(f"Animation saved to {animation_name_gif}")
 else:
     if plot_propterties:
         env_from_json.plot(ax1_1)
@@ -237,14 +249,11 @@ else:
         for mn in mins_to_plot:
             mn.plot(ax1_1)
             mn.plot_traj_line(ax1_1)
-            # mn.plot_vectors(env_from_json, ax1_1)
             mn.plot_force_traj_line(ax2_1)
             # mn.plot_xi_traj_line(ax2_2)
         # mins_to_plot[-1].plot_xi_traj_line(ax2_2)
         mins_to_plot[-1].plot_xi_traj_line(ax3_1)
-
-        # ax2_1.legend(ncol=2, prop={'size': 9})
-        # ax3_1.legend(ncol=2, prop={'size': 9})
+        
         ax2_1.legend(ncol=1, prop={'size': 9}, handlelength=1, bbox_to_anchor=(1.13,1), borderaxespad=0)
         ax3_1.legend(ncol=1, prop={'size': 9}, handlelength=1, bbox_to_anchor=(1.13,1), borderaxespad=0)
 
@@ -256,26 +265,20 @@ else:
         for j in range(len(mins_to_plot)):
             mins_to_plot[j].plot(ax)
             mins_to_plot[j].plot_traj_line(ax)
-            # if j == 0:
-                # mins_to_plot[j].plot_vectors(env_from_json, ax)
-            # else:
-                # mins_to_plot[j].plot_vectors(env_from_json,ax)
-        ax.legend(ncol=2, prop={'size': 9})
-        ax.axis('equal')
+        
+        ax.grid(False)
 
+fig_uniformity = plt.figure(figsize=(5.2,3))
+fig_uniformity.canvas.set_window_title('Replay uniformity')
 
-# fig_uniformity = plt.figure(figsize=(5.2,3))
-# fig_uniformity.canvas.set_window_title('Replay uniformity')
+ax_uniformity = fig_uniformity.add_subplot(1,1,1)
+ax_uniformity.set(
+    xlabel = '# of deployed agents',
+    title = 'Uniformity'
+)
+ax_uniformity.set_xticks(range(0,len(uniformity_list[:stop_min_ID])+1,10))
+ax_uniformity.plot(uniformity_list[:stop_min_ID+1])
+ax_uniformity.plot(uniformity_list[:stop_min_ID+1], "or", markersize=2)
 
-# ax_uniformity = fig_uniformity.add_subplot(1,1,1)
-# ax_uniformity.set(
-#     xlabel = 'Beacons',
-#     ylabel = 'Uniformity',
-#     title = 'Uniformity'
-# )
-
-# plt.xticks(range(len(uniformity_list[:stop_min_ID])+1)) #ints on x-axis
-# ax_uniformity.plot(uniformity_list[:stop_min_ID+1])
-# ax_uniformity.plot(uniformity_list[:stop_min_ID+1], "or")
-
-plt.show()
+if not save_animation:
+    plt.show()

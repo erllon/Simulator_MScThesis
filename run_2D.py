@@ -5,18 +5,14 @@ from beacons.SCS.scs import SCS
 from beacons.MIN.min import Min, MinState
 
 from deployment.following_strategies.attractive_follow import AttractiveFollow
-from deployment.following_strategies.straight_line_follow import StraightLineFollow
-from deployment.following_strategies.new_attractive_follow import NewAttractiveFollow
 from deployment.exploration_strategies.potential_fields_explore import PotentialFieldsExplore
-from deployment.exploration_strategies.new_potential_fields_explore import NewPotentialFieldsExplore
-from deployment.exploration_strategies.heuristic_explore import HeuristicExplore
 from deployment.following_strategies.no_follow import NoFollow
 from deployment.exploration_strategies.line_explore import LineExplore, LineExploreKind
 from deployment.deployment_fsm import DeploymentFSM
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
+from matplotlib.animation import FuncAnimation, PillowWriter, FFMpegWriter 
 
 from helpers import polar_to_vec as p2v
 
@@ -87,17 +83,15 @@ def simulate(dt, mins, scs, env):
     print(f"uniformity after min {mins[i].ID} landed: {uniformity_list[-1]}")
     print("------------------")
     i += 1
+
+  for b in beacons:
+    b.compute_neighbors(beacons)
+    print(f"Beacon ID {b.ID}, neighbors: {[neigh.ID for neigh in b.neighbors]}")
   pr.disable()
   toc = timeit.default_timer()
   tot = toc - tic
   print(f"minimum number of neighbors: {min(beacons, key=lambda b: len(b.neighbors))}") 
   print(f"Total elapsed time for simulation: {tot}")
-  
-  # s = io.StringIO()
-  # sortby = SortKey.CUMULATIVE
-  # ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-  # ps.print_stats()
-  # print(s.getvalue())
   return beacons
 
 def write_to_file(file_path, data_to_write):
@@ -106,7 +100,16 @@ def write_to_file(file_path, data_to_write):
 
 
 if __name__ == "__main__":
-  _animate, save_animation, plot_propterties = False, False, True
+  """
+    If _animate=False
+      The total vector that points in the calculated direction AWAY from obstacles and neighbors is plotted in red
+      The yellow vectors that are plotted shows the interval where the exploration direction is generated within
+    If _animate=True it is recommended that plot_properties=False due to slow animation
+    If it is desirable to animate the deployment AND the properties it is recommended to save the animation and watch the saved animation
+    Decreasing _save_count decreases the time it takes to save the animation
+  """
+
+  _animate, save_animation, plot_properties = False, False, True
   start_animation_from_min_ID = 0
 
 # %% Plotting styles
@@ -188,8 +191,8 @@ if __name__ == "__main__":
       np.array([
         [-1, -1],
         [-1,   5],
-        [5,      5],#[7,    7],
-        [5,     -1],#[7,    -1],#,
+        [5,      5],
+        [5,     -1],
       ]),
     ]
   
@@ -246,6 +249,7 @@ if __name__ == "__main__":
   ]
 
   open_uniformity_comp = [
+<<<<<<< HEAD
     np.array([
       [-1, -1],
       [-1,  9],
@@ -253,40 +257,52 @@ if __name__ == "__main__":
       [ 9, -1],
     ]),
   ]
+=======
+      np.array([
+        [-1, -1],
+        [-1,  9],
+        [ 9,  9],
+        [ 9, -1],
+      ]),
+    ]
+>>>>>>> uniformity_comp
 
   env = Env(
     np.array([
       0, 0
     ]),
-    obstacle_corners = stripa#open_small#open_large #[]#open_w_sq_obs #open_large#obs_zig_zag#[]#
+    obstacle_corners = open_uniformity_comp
   )
   data['environment'].append(env.toJson())
 
 # %%Parameter initialization
-  max_range = 3
+  max_range = 2
   _xi_max = 1
   _d_perf = 0.1
-  _d_none = 2.5
-  _delta_expl_angle = 0#np.pi/4 #np.pi/6
-  _K_o = 0.9
+  _d_none = 2.8
+  _d_tau = 2
+  _delta_expl_angle = np.pi/4
+  _K_o = 1.2
+
 
   N_mins = 6
-  file_path = r'json_files\ds_test_123.json'
+  file_path = r'json_files\test_2D.json'
   dt = 0.01
 
-  scs = SCS(Beacon.get_ID(), max_range,xi_max=_xi_max, d_perf=_d_perf, d_none=_d_none)
+  scs = SCS(Beacon.get_ID(), max_range,xi_max=_xi_max, d_perf=_d_perf, d_none=_d_none, d_tau=_d_tau)
   """ Potential fields exploration """
   mins = [
     Min(
       Beacon.get_ID(),
       max_range,
       DeploymentFSM(
-        NewAttractiveFollow(K_o=_K_o),
-        NewPotentialFieldsExplore(K_o=_K_o, target_point_or_line=NewPotentialFieldsExplore.Target.LINE)
+        AttractiveFollow(K_o=_K_o),
+        PotentialFieldsExplore(K_o=_K_o, target_point_or_line=PotentialFieldsExplore.Target.LINE)
       ),
       xi_max=_xi_max,
       d_perf=_d_perf,
       d_none=_d_none,
+      d_tau = _d_tau,
       delta_expl_angle=_delta_expl_angle
     ) for i in range(N_mins)
   ]
@@ -301,15 +317,16 @@ if __name__ == "__main__":
     'xi_max': _xi_max,
     'd_perf': _d_perf,
     'd_none': _d_none,
+    'd_tau': _d_tau,
     'delta_expl_angle': _delta_expl_angle
   }
 
   write_to_file(file_path, data)
   
-  fig = plt.figure(figsize=(5,5))#plt.figure(figsize=(5.2,3))
+  fig = plt.figure(figsize=(5,5), tight_layout=True)
   fig.canvas.set_window_title(f"Deployment {file_path[:-5]}")
   
-  if plot_propterties:
+  if plot_properties:
     if _animate:
       ax1_1 = fig.add_subplot(3,1,1)
       ax1_2 = fig.add_subplot(3,1,2)
@@ -318,7 +335,7 @@ if __name__ == "__main__":
       ax1_2.title.set_text(r"$\left\|\| F_{applied} \right\|\|$")
       ax1_3.title.set_text(r"$\xi$ from neighbors")
     else:
-      fig2 = plt.figure(figsize=(5,5))#plt.figure(figsize=(5,5), tight_layout=True)
+      fig2 = plt.figure(figsize=(5,5), tight_layout=True)
       fig2.canvas.set_window_title(f"Properties {file_path[:-5]}")
 
       ax1_1 = fig.add_subplot(1,1,1)
@@ -335,7 +352,7 @@ if __name__ == "__main__":
 
   if _animate:
     for mn in beacons[1:start_animation_from_min_ID]: #SCS is already plotted
-      if plot_propterties:
+      if plot_properties:
         mn.plot(ax1_1)
         mn.plot_traj_line(ax1_1)
         mn.plot_force_traj_line(ax1_2)
@@ -351,7 +368,7 @@ if __name__ == "__main__":
     offset, min_counter = [0], [start_animation_from_min_ID]
 
     def init():
-      if plot_propterties:
+      if plot_properties:
         scs.plot(ax1_1)
         env.plot(ax1_1)
         artists = []
@@ -376,27 +393,34 @@ if __name__ == "__main__":
       return artists
 
     def animate(i):
-      if i - offset[0] >= mins[min_counter[0]].get_pos_traj_length():
-        offset[0] += mins[min_counter[0]].get_pos_traj_length()
-        min_counter[0] += 1
-      if plot_propterties:
-        plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
-        plt_force_traj = mins[min_counter[0]].plot_force_from_traj_index(i-offset[0])
-        plt_xi_traj = mins[min_counter[0]].plot_xi_from_traj_index(i-offset[0])
-        return  plt_force_traj, plt_xi_traj, plt_pos_traj
-      else:
-        plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
-        return plt_pos_traj
+      try:
+        if i - offset[0] >= mins[min_counter[0]].get_pos_traj_length():
+          offset[0] += mins[min_counter[0]].get_pos_traj_length()
+          min_counter[0] += 1
+        if plot_properties:
+          plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
+          plt_force_traj = mins[min_counter[0]].plot_force_from_traj_index(i-offset[0])
+          plt_xi_traj = mins[min_counter[0]].plot_xi_from_traj_index(i-offset[0])
+          return  plt_force_traj, plt_xi_traj, plt_pos_traj
+        else:
+          plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
+          return plt_pos_traj
+      except:
+        print("Animation finished")
   
-    anim = FuncAnimation(fig, animate, init_func=init, interval=2, blit=False)
+    _save_count = 2000
+    anim = FuncAnimation(fig, animate, init_func=init, interval=2, blit=False, save_count=_save_count)
     
     if save_animation:
-      animation_name = "animation.gif"
-      print("Saving animation")
-      anim.save(animation_name)
-      print(f"Animation saved to {animation_name}")
+        writervideo = FFMpegWriter(fps=60)
+
+        animation_name_video = "animation_test123.mp4"
+        print("Saving animation. Depending on the choise of 'save_count' this might take some time...")
+        print(f"Chosen 'save_count' = {_save_count}")
+        anim.save(animation_name_video,writer=writervideo)   
+        print(f"Animation saved to {animation_name_video}")
   else:
-    if plot_propterties:
+    if plot_properties:
       env.plot(ax1_1)
       scs.plot(ax1_1)
       for mn in beacons[1:]:#SCS is already plotted, using beacons instead of mins so that only landed mins are taken into account
@@ -420,7 +444,7 @@ if __name__ == "__main__":
           mins[j].plot_vectors(env,ax)
       ax.legend(ncol=2, prop={'size': 9})
       ax.axis('equal')  
-  fig_uniformity = plt.figure(figsize=(5,5))#plt.figure(figsize=(5.2,3))
+  fig_uniformity = plt.figure(figsize=(5,5))
   fig_uniformity.canvas.set_window_title(f"Uniformity {file_path[:-5]}")
 
   ax_uniformity = fig_uniformity.add_subplot(1,1,1)
@@ -432,8 +456,9 @@ if __name__ == "__main__":
 
   plt.xticks(range(len(uniformity_list)+1)) #ints on x-axis
   ax_uniformity.plot(uniformity_list)
-  ax_uniformity.plot(uniformity_list, "or")
+  ax_uniformity.plot(uniformity_list, "or",markersize=2)
 
-  plt.show()
+  if not save_animation:
+    plt.show()
 
 # %%

@@ -34,9 +34,10 @@ except Exception as e:
         }
     )
 
-d_perf = 0.1
-d_none = 2.5
-xi_max = 1
+
+d_perf = 0.8*1#0.1
+d_none = 2.5#2.8#2.5
+xi_max = 3*1
 
 omega = np.pi/(d_none - d_perf)
 phi = -(np.pi*d_perf) / (d_none - d_perf)
@@ -46,13 +47,43 @@ D = np.linspace(0, d_none + 0.5)
 xi_fun = np.vectorize(xi)
 XI = [xi(d) for d in D]
 
-plt.plot(D, XI, color="blue")
-plt.title(r"$\xi(\|\|\mathbf{x}_i - \mathbf{x}_j\|\|,...)$")
-plt.axvline(x=d_perf, ymin=0, ymax=xi_max+0.5, color='green', label=r'$d_{perf}$', linestyle=':')
-plt.axvline(x=d_none, ymin=0, ymax=xi_max+0.5, color="red", label=r'$d_{none}$', linestyle='-.')
+fig = plt.figure()#plt.figure(figsize=(5,5))
+ax = fig.add_subplot(1,1,1)
+# ax.grid(False)
+# 
+# ax.axvline(x=0, color="black", linestyle='--', alpha=0.2)
+# ax.axvline(x=d_perf, color="black", linestyle='--', alpha=0.2)
+# ax.axvline(x=d_none, color="black", linestyle='--', alpha=0.2)
+# 
+# ax.axhline(y=0, color="black", linestyle='--', alpha=0.2)
+# ax.axhline(y=xi_max, color="black", linestyle='--', alpha=0.2)
+
+ax.plot(D, XI, color="blue")
+
+# plt.title(r"$\xi(\|\|\mathbf{x}_i - \mathbf{x}_j\|\|,...)$")
+# plt.axvline(x=d_perf, ymin=0, ymax=xi_max+0.5, color='green', label=r'$d_{perf}$', linestyle=':')
+# plt.axvline(x=d_none, ymin=0, ymax=xi_max+0.5, color="red", label=r'$d_{none}$', linestyle='-.')
 # plt.axhline(y=xi_max, xmin=0, xmax=D[-1], color="black", label='xi_max')
-plt.axvline(x=0, color="black")
-plt.axhline(y=0, color="black")
-plt.ylim([-0.1, xi_max + 0.5])
-plt.legend()    
+# ax.axvline(x=0, color="black")
+# ax.axhline(y=0, color="black")
+# ax.set_xlim([0,d_none + 0.5])
+# ax.set_ylim([-0.1, xi_max + 0.2])
+
+x_ticks = [0,d_perf,d_none]
+x_ticklabels = [r"$0$", r"$d_{perf}$", r"$d_{none}$"]
+
+y_ticks = [0,3]
+y_ticklabels = [r"$0$", r"$\overline{\xi}$"]
+
+ax.set_xticks(x_ticks)
+ax.set_xticklabels(x_ticklabels)
+ax.set_yticks(y_ticks)
+ax.set_yticklabels(y_ticklabels)
+
+# d_label = ax.set_xlabel(r"$d_{i,j}$",labelpad=-4,loc="right")
+# xi_label = ax.set_ylabel(r"$\xi_{i,j}$",labelpad=-15, loc='top')
+# xi_label.set_rotation(0)
+d_label = ax.set_xlabel(r"$d_{i,j}$",labelpad=-6)
+xi_label = ax.set_ylabel(r"$\xi_{i,j}$",labelpad=-6)
+# plt.legend()    
 plt.show()
