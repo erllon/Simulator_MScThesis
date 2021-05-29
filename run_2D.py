@@ -92,12 +92,6 @@ def simulate(dt, mins, scs, env):
   tot = toc - tic
   print(f"minimum number of neighbors: {min(beacons, key=lambda b: len(b.neighbors))}") 
   print(f"Total elapsed time for simulation: {tot}")
-  
-  # s = io.StringIO()
-  # sortby = SortKey.CUMULATIVE
-  # ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-  # ps.print_stats()
-  # print(s.getvalue())
   return beacons
 
 def write_to_file(file_path, data_to_write):
@@ -106,9 +100,15 @@ def write_to_file(file_path, data_to_write):
 
 
 if __name__ == "__main__":
-  # If _animate=True it is recommended that plot_properties=False due to slow animation
-  # If it is desirable to animate the deployment AND the properties it is recommended to save the animation and watch the saved animation
-  # Decreasing _save_count decreases the time it takes to save the animation
+  """
+    If _animate=False
+      The total vector that points in the calculated direction AWAY from obstacles and neighbors is plotted in red
+      The yellow vectors that are plotted shows the interval where the exploration direction is generated within
+    If _animate=True it is recommended that plot_properties=False due to slow animation
+    If it is desirable to animate the deployment AND the properties it is recommended to save the animation and watch the saved animation
+    Decreasing _save_count decreases the time it takes to save the animation
+  """
+
   _animate, save_animation, plot_properties = False, False, True
   start_animation_from_min_ID = 0
 
@@ -191,8 +191,8 @@ if __name__ == "__main__":
       np.array([
         [-1, -1],
         [-1,   5],
-        [5,      5],#[7,    7],
-        [5,     -1],#[7,    -1],#,
+        [5,      5],
+        [5,     -1],
       ]),
     ]
   
@@ -261,7 +261,7 @@ if __name__ == "__main__":
     np.array([
       0, 0
     ]),
-    obstacle_corners = open_uniformity_comp#open_w_sq_obs #obs_zig_zag#stripa#open_large #obs_zig_zag# open_small#[]#open_large#[]#
+    obstacle_corners = open_uniformity_comp
   )
   data['environment'].append(env.toJson())
 
@@ -275,8 +275,8 @@ if __name__ == "__main__":
   _K_o = 1.2
 
 
-  N_mins = 3#15
-  file_path = r'json_files\test_2D.json'#r'json_files\correct_avg_unif_comp_small_rs_15_drones_100.json'
+  N_mins = 6
+  file_path = r'json_files\test_2D.json'
   dt = 0.01
 
   scs = SCS(Beacon.get_ID(), max_range,xi_max=_xi_max, d_perf=_d_perf, d_none=_d_none, d_tau=_d_tau)
@@ -313,7 +313,7 @@ if __name__ == "__main__":
 
   write_to_file(file_path, data)
   
-  fig = plt.figure(figsize=(5,5))#plt.figure(figsize=(5.2,3))
+  fig = plt.figure(figsize=(5,5), tight_layout=True)
   fig.canvas.set_window_title(f"Deployment {file_path[:-5]}")
   
   if plot_properties:
@@ -325,7 +325,7 @@ if __name__ == "__main__":
       ax1_2.title.set_text(r"$\left\|\| F_{applied} \right\|\|$")
       ax1_3.title.set_text(r"$\xi$ from neighbors")
     else:
-      fig2 = plt.figure(figsize=(5,5))#plt.figure(figsize=(5,5), tight_layout=True)
+      fig2 = plt.figure(figsize=(5,5), tight_layout=True)
       fig2.canvas.set_window_title(f"Properties {file_path[:-5]}")
 
       ax1_1 = fig.add_subplot(1,1,1)
@@ -431,7 +431,7 @@ if __name__ == "__main__":
           mins[j].plot_vectors(env,ax)
       ax.legend(ncol=2, prop={'size': 9})
       ax.axis('equal')  
-  fig_uniformity = plt.figure(figsize=(5,5))#plt.figure(figsize=(5.2,3))
+  fig_uniformity = plt.figure(figsize=(5,5))
   fig_uniformity.canvas.set_window_title(f"Uniformity {file_path[:-5]}")
 
   ax_uniformity = fig_uniformity.add_subplot(1,1,1)
