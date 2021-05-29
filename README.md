@@ -33,4 +33,4 @@ This simulator was developed as part of my master thesis within Cybernetics and 
 
 <!-- USAGE EXAMPLES -->
 ## Usage
-![This is an example](https://github.com/erllon/Simulator_MScThesis/blob/master/deployment_comp_uniform_large_cR_15_drones_3_correct_annotations_wo_labelbox2.png?raw=true)
+![This is an example](https://https://github.com/erllon/Simulator_MScThesis/tree/master/blob/deployment_comp_uniform_large_cR_15_drones_3_correct_annotations_wo_labelbox2.png?raw=true)
