@@ -383,17 +383,20 @@ if __name__ == "__main__":
       return artists
 
     def animate(i):
-      if i - offset[0] >= mins[min_counter[0]].get_pos_traj_length():
-        offset[0] += mins[min_counter[0]].get_pos_traj_length()
-        min_counter[0] += 1
-      if plot_properties:
-        plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
-        plt_force_traj = mins[min_counter[0]].plot_force_from_traj_index(i-offset[0])
-        plt_xi_traj = mins[min_counter[0]].plot_xi_from_traj_index(i-offset[0])
-        return  plt_force_traj, plt_xi_traj, plt_pos_traj
-      else:
-        plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
-        return plt_pos_traj
+      try:
+        if i - offset[0] >= mins[min_counter[0]].get_pos_traj_length():
+          offset[0] += mins[min_counter[0]].get_pos_traj_length()
+          min_counter[0] += 1
+        if plot_properties:
+          plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
+          plt_force_traj = mins[min_counter[0]].plot_force_from_traj_index(i-offset[0])
+          plt_xi_traj = mins[min_counter[0]].plot_xi_from_traj_index(i-offset[0])
+          return  plt_force_traj, plt_xi_traj, plt_pos_traj
+        else:
+          plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
+          return plt_pos_traj
+      except:
+        print("Animation finished")
   
     _save_count = 2000
     anim = FuncAnimation(fig, animate, init_func=init, interval=2, blit=False, save_count=_save_count)
@@ -445,6 +448,7 @@ if __name__ == "__main__":
   ax_uniformity.plot(uniformity_list)
   ax_uniformity.plot(uniformity_list, "or",markersize=2)
 
-  plt.show()
+  if not save_animation:
+    plt.show()
 
 # %%
