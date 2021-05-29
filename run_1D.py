@@ -268,7 +268,7 @@ if __name__ == "__main__":
           mn.plot_force_from_traj_index(0)
           # mn.plot_xi_from_traj_index(0)
         if start_animation_from_min_ID == 0:
-          ax1_2.legend(ncol=2, prop={'size': 9})
+          ax1_2.legend(ncol=1, prop={'size': 9}, bbox_to_anchor=(1,1), loc='upper left')
       else:
         scs.plot(ax)
         env.plot(ax)
@@ -299,17 +299,18 @@ if __name__ == "__main__":
     
     if save_animation:
         # f = r"c://Users/xx/Desktop/animation.gif" 
-        # writergif = PillowWriter(fps=30) 
-        writervideo = FFMpegWriter(fps=60)
+        writergif = PillowWriter(fps=60) 
+        # writervideo = FFMpegWriter(fps=60)
 
         # anim.save(f, writer=writergif)
 
-        # animation_name_gif = "animation_test.gif"
+        animation_name_gif = "animation_test1D.gif"
         animation_name_video = "animation_test123.mp4"
         print("Saving animation. Depending on the choise of 'save_count' this might take some time...")
         print(f"Chosen 'save_count' = {_save_count}")
         # anim.save(animation_name, writer=writergif)
-        anim.save(animation_name_video,writer=writervideo)   
+        # anim.save(animation_name_video,writer=writervideo)
+        anim.save(animation_name_gif,writer=writergif)   
         print(f"Animation saved to {animation_name_video}")
   else:
     if plot_properties:
@@ -321,7 +322,7 @@ if __name__ == "__main__":
         # mn.plot_vectors(env, ax1_1)
         mn.plot_force_traj_line(ax2_1)
         # mn.plot_xi_traj_line(ax2_2)
-      ax2_1.legend(ncol=2, prop={'size': 9})
+      ax2_1.legend(ncol=1, prop={'size': 9}, bbox_to_anchor=(1.05,1), loc='upper left')
 
     else:
       env.plot(ax)
