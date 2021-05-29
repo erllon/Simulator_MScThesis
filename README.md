@@ -33,5 +33,12 @@ This simulator was developed as part of my master thesis within Cybernetics and 
 
 <!-- USAGE EXAMPLES -->
 ## Usage
-<figure><img src="blob/deployment_comp_uniform_large_cR_15_drones_3_correct_annotations_wo_labelbox2.png"><figcaption>image caption</figcaption></figure>
-![This is an example](https://https://github.com/erllon/Simulator_MScThesis/tree/master/blob/deployment_comp_uniform_large_cR_15_drones_3_correct_annotations_wo_labelbox2.png?raw=true)
+<figure><img src="blob/Line_explore_correct_force_6_drones_deployment_smaller_markersize.png"><figcaption>Deployment in 1D</figcaption></figure>
+
+<figure><img src="blob/Line_explore_correct_force_6_drones_all_F_and_xi_6.png"><figcaption>Experienced force as the agents deploy and inverse RSS distance for agent 6</figcaption></figure>
+
+<figure><img src="blob/deployment_comp_uniform_large_cR_15_drones_3_correct_annotations_wo_labelbox2.png"><figcaption>2D deployment in an empty rectangular environment</figcaption></figure>
+
+<figure><img src="blob/deployment_redoing_zig_zag_test_30_drones_54_correct_annotations_wo_labelbox.png"><figcaption>Deployment in an environnment with vertical obstacles</figcaption></figure>
+
+<figure><img src="blob/deployment_redoing_stripa_test_80_drones_9_wo_labelbox_zig_zag_figsize.png"><figcaption>Deployment in an environnment with vertical obstacles</figcaption></figure>
