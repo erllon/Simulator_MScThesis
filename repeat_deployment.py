@@ -268,5 +268,9 @@ ax_uniformity.set_xticks(range(0,len(uniformity_list[:stop_min_ID])+1,10))
 ax_uniformity.plot(uniformity_list[:stop_min_ID+1])
 ax_uniformity.plot(uniformity_list[:stop_min_ID+1], "or", markersize=2)
 
+for m in mins2:
+    m.compute_neighbors(mins2)
+    print(f"Neighbors of MIN {m.ID} = {[n.ID for n in m.neighbors]}")
+
 if not save_animation:
     plt.show()
