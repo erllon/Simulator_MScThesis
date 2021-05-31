@@ -279,7 +279,7 @@ if __name__ == "__main__":
           plt_pos_traj = mins[min_counter[0]].plot_pos_from_pos_traj_index(i - offset[0])
           return plt_pos_traj
       except:
-        print("Animation finished")
+        pass
   
     anim = FuncAnimation(fig, animate, init_func=init, interval=2, blit=False)
     
