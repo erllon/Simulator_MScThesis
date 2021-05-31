@@ -41,15 +41,10 @@ def simulate(dt, mins, scs, env):
   scs.generate_target_pos(beacons, env, mins[0])
   uniformity_list.append(np.sum([beacon.calc_uniformity() for beacon in beacons])/len(beacons))
 
-  # If the deployment should stop when some condition on the uniformity is fulfilled
-  delta_uniformity = 0
-  delta_limit = 0.5
-  limit = 0.3
-  i = 0
-
   tic = timeit.default_timer()
 
-  while i < N_mins:#uniformity_list[-1] < limit and i < N_mins:#delta_uniformity <= limit:
+  i = 0
+  while i < N_mins:
     mins[i].insert_into_environment(env)
     while not mins[i].state == MinState.LANDED:
       mins[i].do_step(beacons, scs, env, dt)
@@ -194,7 +189,7 @@ if __name__ == "__main__":
   data['uniformity'] = [float(number) for number in uniformity_list]
 
   data['parameters'] = {
-    'N_mins': len(beacons)-1,#N_mins, len(beacons)-1 so that it works when deploying unknown number of mins
+    'N_mins': len(beacons)-1,#len(beacons)-1 so that it works when deploying unknown number of mins
     'Max_range' : max_range,
     'K_o': _K_o,
     'xi_max': _xi_max,

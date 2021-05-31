@@ -45,7 +45,7 @@ class PotentialFieldsExplore(ExplorationStrategy):
         
 
         F_sum = F_att + F_rep
-        if np.linalg.norm(F_sum) > self.__min_force_threshold and np.any(np.array([MIN.get_xi_to_other_from_model(n) for n in MIN.neighbors]) >= self.MIN_RSSI_STRENGTH_BEFORE_LAND*MIN.xi_max):
+        if np.linalg.norm(F_sum) > self.__min_force_threshold and np.any(np.array([MIN.get_xi_to_other_from_model(n) for n in MIN.neighbors]) >= self.MIN_RSSI_BEFORE_LAND*MIN.xi_max):
 
             if self.__point_or_line == PotentialFieldsExplore.Target.LINE and np.any(MIN.delta_pos != None):
                 MIN.generate_virtual_target()
@@ -55,7 +55,7 @@ class PotentialFieldsExplore(ExplorationStrategy):
         else:
             if np.linalg.norm(F_sum) <= self.__min_force_threshold:
                 print("Too small force")
-            if np.any(np.array([MIN.get_xi_to_other_from_model(n) for n in MIN.neighbors]) < self.MIN_RSSI_STRENGTH_BEFORE_LAND*MIN.xi_max):
+            if np.any(np.array([MIN.get_xi_to_other_from_model(n) for n in MIN.neighbors]) < self.MIN_RSSI_BEFORE_LAND*MIN.xi_max):
                 print("Too low RSSI")
             raise AtLandingConditionException
 
@@ -72,10 +72,6 @@ class PotentialFieldsExplore(ExplorationStrategy):
             (R_z(MIN.heading)@R_z(s.host_relative_angle))[:2,:2]@p2v(s.measurement.get_val(), s.measurement.get_angle()).reshape(2,)
             for s in MIN.sensors if s.measurement.is_valid()
         ]
-        # vecs_to_obs = [
-            # p2v(s.measurement.get_val(), s.measurement.get_angle()).reshape(2,)
-            # for s in MIN.sensors if s.measurement.is_valid()
-        # ]
         
         return get_generic_force_vector(vecs_to_obs, K_o, d_o=MIN.range)
     

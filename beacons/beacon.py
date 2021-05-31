@@ -15,7 +15,7 @@ class Beacon():
   ID_counter = 0
   RSSI_THRESHOLD_NEIGHBORS = 0.2
   # Important to ensure that this value is greater than
-  # exploration_strategy.MIN_RSSI_STRENGTH_BEFORE_LAND
+  # exploration_strategy.MIN_RSSI_BEFORE_LAND
   @staticmethod
   def get_ID():
     ret = Beacon.ID_counter
@@ -24,7 +24,7 @@ class Beacon():
 
   def __init__(self, b_id, range, xi_max, d_perf, d_none, d_tau, k=0, a=0, v=np.zeros((2, )), pos=None):
     self.range = range
-    self.target_r = range #TODO: Scale this down, so that the target is not generated at border?
+    self.target_r = range
     self.pos = pos
     self.prev_pos = None
     self.delta_pos = None

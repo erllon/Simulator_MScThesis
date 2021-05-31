@@ -69,7 +69,7 @@ for i in tqdm(range(num_of_runs)):
     folder_path = r'..\large-json-files\Uniformity_comp_small_sR\Correct'
     file_name = r'\correct_avg_unif_comp_small_rs_15_drones_' + str(i+1) + r'.json'
 
-    file_path = folder_path + file_name #r'json_files\unif_comp_26.json' #
+    file_path = folder_path + file_name
     obj_text = codecs.open(file_path, 'r', encoding='utf-8').read()
     json_data = json.loads(obj_text)
 
@@ -79,22 +79,18 @@ for i in tqdm(range(num_of_runs)):
 t = 2
 average_uniformity = np.sum(global_list,axis=0)/num_of_runs
 
-fig = plt.figure(figsize=(5.2,3)) #plt.figure(figsize=(5,5)) #
+fig = plt.figure(figsize=(5.2,3))
 fig.canvas.set_window_title(rf'Avg Uniformity, $num\_runs = {num_of_runs}$')
 
 ax = fig.add_subplot(1,1,1)
 ax.set(
-    xlabel = '# of deployed agents',#'Beacons',
-    # ylabel = 'Uniformity',
+    xlabel = '# of deployed agents',
     title = 'Uniformity'
 )
 
 plt.xticks(range(len(average_uniformity)+1)) #ints on x-axis
 ax.plot(average_uniformity)
 ax.plot(average_uniformity, "or", markersize=2)
-# e = [i for i in range(len(average_uniformity))]
-# ee = average_uniformity
-# ax.bar([i for i in range(len(average_uniformity))], [u for u in average_uniformity], 0.1)
-# ax.plot(average_uniformity, "or", markersize=4)
+
 print(f"Final avg uniformity: {average_uniformity[-1]}")
 plt.show()

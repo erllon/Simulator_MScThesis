@@ -14,7 +14,6 @@ class AttractiveFollow(FollowingStrategy):
         self.target = beacons[-1]
 
     def prepare_following(self, MIN, beacons, SCS):
-        # super().prepare_following(MIN, beacons, SCS)
         self.target = beacons[-1]
         print(f"{MIN.ID} targeting {self.target.ID}")
         self.beacons_to_follow = SCS.path_tree.get_beacon_path_to_target(self.target.ID)

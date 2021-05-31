@@ -20,44 +20,12 @@ def get_obstacle_forces(K_o, MIN, ENV):
 def get_generic_force_vector(vecs, gain, sigma_x=1, sigma_y=1, d_o=1):
     try:
         mat = np.vstack(vecs)
-
-        """Exponential force"""
-        # first_x = -2*(gain)/sigma_x**2 * mat[0,:] #vec
-        # first_y = -2*(gain)/sigma_y**2 * mat[1,:] #vec
-        # first = np.vstack((first_x, first_y))
-
-        # exponent_x = mat[0,:]**2/sigma_x**2
-        # exponent_y = mat[1,:]**2/sigma_y**2
-        # exponent = -(exponent_x + exponent_y)
-
-        # tot = first*np.e**exponent
-        # exponential_force = np.sum(tot,axis=1)
-        first_x = -2*(gain)/sigma_x**2 * mat[:,0] #vec
-        first_y = -2*(gain)/sigma_y**2 * mat[:,1] #vec
-        first = np.vstack((first_x, first_y))
-
-        exponent_x = mat[:,0]**2/sigma_x**2
-        exponent_y = mat[:,1]**2/sigma_y**2
-        exponent = -(exponent_x + exponent_y)
-
-        tot = first*np.e**exponent
-        exponential_force = np.sum(tot,axis=1)
-        
-        """Reciprocal force"""
-        
-        reciprocal_force = -gain*np.sum(mat/np.linalg.norm(mat, axis=0)**3, axis=1)
-        # print(f"reciprocal_force: {reciprocal_force}")
-        #reciprocal_force = -gain*np.sum(mat/np.linalg.norm(mat, axis=0)**3*(1/np.linalg.norm(mat, axis=0) - 1/d_o), axis=1)
-        """Quadratic force"""
-        quadratic_force = -1*gain/5*np.sum(mat,axis=1)
-
-        #the below line is correctly calculated
         """Reciprocal force within range"""
         within_range_mat = [vec for vec in mat if np.linalg.norm(vec) < d_o]
         individual_recip_force_within_range = [-gain*vec/np.linalg.norm(vec,axis=0)**3*(1/np.linalg.norm(vec,axis=0)-1/d_o) for vec in within_range_mat]        
         reciprocal_force_within_range = np.sum(individual_recip_force_within_range,axis=0)
         
-        return reciprocal_force_within_range#reciprocal_force ##reciprocal_force_within_range#quadratic_force#reciprocal_force#exponential_force#exponential_force
+        return reciprocal_force_within_range
     except:
         # e = sys.exc_info()[0]
         # print(f"Error: {e}")

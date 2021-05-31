@@ -18,15 +18,13 @@ class LineExploreKind(IntEnum):
 
 class LineExplore(ExplorationStrategy):
 
-  # MIN_RSSI_NEIGH_THRESHOLD = 0.2
-  MIN_RSSI_STRENGTH_BEFORE_LAND = 0.22
+  # MIN_RSSI_NEIGH_THRESHOLD = 0.2, MIN_RSSI_BEFORE_LAND has to be > MIN_RSSI_NEIGH
+  MIN_RSSI_BEFORE_LAND = 0.22
 
-  def __init__(self, K_o=1, force_threshold=0.1, kind=LineExploreKind.ONE_DIM_GLOBAL): #RSSI_threshold=0.6
+  def __init__(self, K_o=1, force_threshold=0.1, kind=LineExploreKind.ONE_DIM_GLOBAL):
     self.K_o = K_o
     self.kind = kind
     self.force_threshold = force_threshold
-    # self.RSSI_threshold = RSSI_threshold
-    # self.ndims = ndims
     self.prev_xi_rand = None
     self.prev_neigh_indices = None
   
@@ -47,7 +45,7 @@ class LineExplore(ExplorationStrategy):
     MIN._xi_traj = np.column_stack((MIN._xi_traj, xi_is))
 
     """ LOCAL METHODS """
-    neigh_indices_within_landing_threshold, = np.where(xi_is > self.MIN_RSSI_STRENGTH_BEFORE_LAND*MIN.xi_max)#np.where(xi_is > self.RSSI_THRESHOLD)
+    neigh_indices_within_landing_threshold, = np.where(xi_is > self.MIN_RSSI_BEFORE_LAND*MIN.xi_max)
     actual_neigh_indices, = np.where(xi_is > Beacon.RSSI_THRESHOLD_NEIGHBORS*MIN.xi_max)
     land_due_to_no_neighs = len(neigh_indices_within_landing_threshold) == 0
     if land_due_to_no_neighs:
@@ -65,26 +63,11 @@ class LineExplore(ExplorationStrategy):
 
       delta_is = np.array([b.get_xi_max_decrease() for b in beacons[actual_neigh_indices]])
       derivative_RSSI = [-(MIN.xi_max/2)*MIN._omega*np.sin(MIN._omega*d + MIN._phi) if MIN.d_perf < d and d < MIN.d_none else 0 for d in dists]
-      # derivative_RSSI = -(MIN.xi_max/2)*MIN._omega*np.sin(MIN._omega*np.abs(dists) + MIN._phi)
-      
-      """ Test """
-      # k_is = np.ones(x_is.shape)
-      # a_is = 1.1*np.ones(x_is.shape)
 
-      # a_is[m] = (1/k_is[m])*np.sum(k_is) + 1
-
-
-      """ Leads to equally spaced drones """
       k_is = np.zeros(x_is.shape)
       a_is = np.zeros(x_is.shape)
       k_is[m] = 1
       a_is[m] = 1
-
-      """ Using qualitative info. about xi function vol. 1"""
-      # k_is = np.zeros(x_is.shape)        
-      # a_is = np.ones(x_is.shape)
-      # k_is[m] = 1
-      # a_is[m] = 1.1
 
       beta_is = a_is*derivative_RSSI
 
@@ -101,15 +84,8 @@ class LineExplore(ExplorationStrategy):
         {a_is[m]} >=? 1 and
         {k_is[m]*(a_is[m]-1)} >=? {np.sum(k_is[:m] + a_is[:m]*delta_is[:m])} and {a_is[m]} >= 1.
         """
-        # print(f"a_is*derivative_RSSI: {a_is*derivative_RSSI}")
       F_n = np.array([-np.sum(k_is*(MIN.pos[0] - a_is*(x_is + xi_is)*(1-beta_is))), 0])
-        # print(f"k_is[m]:{k_is[m]}")
-        # print(f"(MIN.pos[0] - a_is[m]*(x_is[m] + xi_is[m]):{(MIN.pos[0] - a_is[m]*(x_is[m] + xi_is[m]))}")
-        # print(f"derivative_RSSI[m]:{derivative_RSSI[m]}")
-        # print(f"a_is[m]:{a_is[m]}")
-
-        # F_n = np.array([-k_is[m]*(MIN.pos[0] - a_is[m]*(x_is[m] + xi_is[m])*(1-a_is[m]*derivative_RSSI[m])),0])
-        # F_n = np.array([-k_is[m]*(MIN.pos[0] - a_is[m]*(x_is[m] + xi_is[m])*(1-a_is[m]*derivative_RSSI)), 0])
+      
     F_n = self.__clamp(F_n,3)
     F = F_n
     at_landing_condition = land_due_to_no_neighs or np.linalg.norm(F) <= self.force_threshold

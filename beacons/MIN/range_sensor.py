@@ -63,7 +63,7 @@ class RangeSensor():
         valid_crossings = np.array([np.inf])
         closed_corners = np.vstack((corners, corners[0, :])) #Contains all the line segments that defines an obstacle
 
-        num_of_rays = 5 # 5rays total, 2 pairs + "0-angle"
+        num_of_rays = 5 # 5 rays total, 2 pairs + "0-angle"
         fov_angle = np.deg2rad(27) #Total field-of-view
         start_ang = -fov_angle/2.0
         if num_of_rays == 1:

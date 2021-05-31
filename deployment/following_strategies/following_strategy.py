@@ -19,7 +19,7 @@ class AtTargetException(Exception):
 class FollowingStrategy(ABC):
 
     MAX_FOLLOWING_SPEED = 2
-    MIN_RSSI_SWITCH_BEACON = 0.95#np.exp(-0.05)
+    MIN_RSSI_SWITCH_BEACON = 0.95
     DEADZONE_RSSI_STRENGTH = np.exp(-0.05)
 
     def __init__(self, same_num_neighs_differentiator, rand_lim = np.pi/4):
@@ -62,7 +62,6 @@ class FollowingStrategy(ABC):
             self.__prev_RSSI = self.__curr_RSSI
             self.__curr_RSSI = MIN.get_xi_to_other_from_model(self.btf)
             if self.is_following_final_target():
-                #HERE
                 if self.__curr_RSSI >= FollowingStrategy.MIN_RSSI_SWITCH_BEACON*MIN.xi_max:
                     raise AtTargetException
 

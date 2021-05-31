@@ -50,7 +50,6 @@ def simulate(dt, mins, scs, env):
   tic = timeit.default_timer()
 
   while i < N_mins:#uniformity_list[-1] < limit and i < N_mins:#delta_uniformity <= limit:
-  # for i in range(len(mins)):
     print(f"file: {file_path}")
     mins[i].insert_into_environment(env)
     while not mins[i].state == MinState.LANDED:
@@ -301,7 +300,7 @@ if __name__ == "__main__":
   data['uniformity'] = [float(number) for number in uniformity_list]
 
   data['parameters'] = {
-    'N_mins': len(beacons)-1,#N_mins, len(beacons)-1 so that it works when deploying unknown number of mins
+    'N_mins': len(beacons)-1,#len(beacons)-1 so that it works when deploying unknown number of mins
     'Max_range' : max_range,
     'K_o': _K_o,
     'xi_max': _xi_max,
